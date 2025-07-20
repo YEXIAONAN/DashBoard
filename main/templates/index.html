@@ -645,6 +645,11 @@ document.querySelectorAll('.func-item').forEach(item => {
             e.preventDefault();
             window.location.href = '/repo/';
         });
+    }else if (label === '我的收藏') {
+        item.addEventListener('click', e => {
+            e.preventDefault();
+            window.location.href = '/Collection/';
+        });
     }else if (label === '营养食谱') {
         item.addEventListener('click', e => {
             e.preventDefault();
