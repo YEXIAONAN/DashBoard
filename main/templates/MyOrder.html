@@ -568,16 +568,22 @@
     <!-- 页面内容容器 -->
     <div class="page-container">
         <!-- 顶部标题栏 -->
-        <div class="header">
-            <a href="javascript:void(0);" class="back-btn" id="backButton">
-                <i class="fas fa-arrow-left"></i>
-            </a>
+<div class="header">
+    <a href="javascript:void(0);" class="back-btn" id="backButton">
+        <i class="fas fa-arrow-left"></i>
+    </a>
             <div class="header-title">我的订单</div>
             <a href="javascript:void(0);" class="search-btn" id="searchButton">
                 <i class="fas fa-search"></i>
             </a>
         </div>
-
+<script>
+    // 绑定返回按钮事件
+    document.getElementById('backButton').addEventListener('click', function() {
+        // 使用 Django URL 配置的路径进行跳转
+        window.location.href = '/profile/';
+    });
+</script>
         <!-- 订单统计 -->
         <div class="stats-container">
             <div class="stat-item">
@@ -753,25 +759,7 @@
             </div>
         </div>
 
-        <!-- 底部导航栏 -->
-        <div class="bottom-nav">
-            <a href="javascript:void(0);" class="nav-item" data-target="index">
-                <i class="fas fa-home"></i>
-                <span class="nav-label">首页</span>
-            </a>
-            <a href="javascript:void(0);" class="nav-item" data-target="orders">
-                <i class="fas fa-utensils"></i>
-                <span class="nav-label">点餐</span>
-            </a>
-            <a href="javascript:void(0);" class="nav-item" data-target="repo">
-                <i class="fas fa-chart-pie"></i>
-                <span class="nav-label">报告</span>
-            </a>
-            <a href="javascript:void(0);" class="nav-item active" data-target="profile">
-                <i class="fas fa-user"></i>
-                <span class="nav-label">我的</span>
-            </a>
-        </div>
+
     </div>
 
     <script>

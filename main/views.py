@@ -53,3 +53,6 @@ def Collection(request):
 
 def NoComment(request):
     return render(request, 'NoComment.html')
+
+def profile_view(request):
+    return render(request, 'profile.html')  # 渲染 profile.html 模板

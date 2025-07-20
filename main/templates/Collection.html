@@ -579,16 +579,22 @@
     <!-- 页面内容容器 -->
     <div class="page-container">
         <!-- 顶部标题栏 -->
-        <div class="header">
-            <a href="javascript:void(0);" class="back-btn" id="backButton">
-                <i class="fas fa-arrow-left"></i>
-            </a>
+<div class="header">
+    <a href="javascript:void(0);" class="back-btn" id="backButton">
+        <i class="fas fa-arrow-left"></i>
+    </a>
             <div class="header-title">我的收藏</div>
             <a href="javascript:void(0);" class="search-btn" id="searchButton">
                 <i class="fas fa-search"></i>
             </a>
         </div>
-
+<script>
+    // 绑定返回按钮事件
+    document.getElementById('backButton').addEventListener('click', function() {
+        // 使用 Django URL 配置的路径进行跳转
+        window.location.href = '/profile/';
+    });
+</script>
         <!-- 分类标签 -->
         <div class="category-tabs">
             <div class="category-tab active">全部收藏</div>
@@ -600,12 +606,12 @@
 
         <!-- 收藏容器 -->
         <div class="favorites-container">
-            <div class="section-title">收藏的菜品 (6)</div>
-
+            <div class="section-title">收藏的菜品 </div>
+{% load static %}
             <!-- 收藏卡片1 - 清蒸鲈鱼 -->
             <div class="favorite-card">
                 <div class="food-image">
-                    <img src="DashBoard/main/static/Images/清蒸鲈鱼.jpg" alt="清蒸鲈鱼">
+                    <img src="{% static 'Images/清蒸鲈鱼.jpg' %}" alt="清蒸鲈鱼">
                 </div>
                 <div class="food-info">
                     <div class="food-header">
@@ -636,7 +642,7 @@
             <!-- 收藏卡片2 - 可乐鸡翅 -->
             <div class="favorite-card">
                 <div class="food-image">
-                    <img src="DashBoard/main/static/Images/可乐鸡翅.png" alt="可乐鸡翅">
+                    <img src="{% static 'Images/可乐鸡翅.jpg' %}" alt="可乐鸡翅">
                 </div>
                 <div class="food-info">
                     <div class="food-header">
@@ -667,7 +673,7 @@
             <!-- 收藏卡片3 - 鱼香肉丝 -->
             <div class="favorite-card">
                 <div class="food-image">
-                    <img src="DashBoard/main/static/Images/鱼香肉丝.png" alt="鱼香肉丝">
+                    <img src="{% static 'Images/鱼香肉丝.jpg' %}" alt="鱼香肉丝">
                 </div>
                 <div class="food-info">
                     <div class="food-header">
@@ -695,21 +701,21 @@
                 </div>
             </div>
 
-            <!-- 收藏卡片4 - 健康秘食套餐 -->
+            <!-- 收藏卡片4 - 糖醋里脊 -->
             <div class="favorite-card">
                 <div class="food-image">
-                    <img src="DashBoard/main/static/Images/健康秘食.png" alt="健康秘食套餐">
+                    <img src="{% static 'Images/糖醋里脊.jpg' %}" alt="糖醋里脊">
                 </div>
                 <div class="food-info">
                     <div class="food-header">
-                        <div class="food-name">健康秘食套餐</div>
+                        <div class="food-name">糖醋里脊</div>
                         <button class="favorite-btn">
                             <i class="fas fa-heart"></i>
                         </button>
                     </div>
-                    <div class="food-desc">低脂高蛋白，藜麦、鸡胸肉、西兰花等健康食材</div>
+                    <div class="food-desc">酸甜可口，外酥里嫩，深受喜爱。</div>
                     <div class="food-meta">
-                        <div class="food-calories">热量: 320 kcal</div>
+                        <div class="food-calories">热量: 536 kcal</div>
                         <div class="food-rating">
                             <i class="fas fa-star"></i>
                             <i class="fas fa-star"></i>
@@ -726,58 +732,9 @@
                 </div>
             </div>
 
-            <!-- 收藏卡片5 - 牛肉汉堡套餐 -->
-            <div class="favorite-card">
-                <div class="food-image">
-                    <img src="DashBoard/main/static/Images/牛肉汉堡.png" alt="牛肉汉堡套餐">
-                </div>
-                <div class="food-info">
-                    <div class="food-header">
-                        <div class="food-name">牛肉汉堡套餐</div>
-                        <button class="favorite-btn">
-                            <i class="fas fa-heart"></i>
-                        </button>
-                    </div>
-                    <div class="food-desc">厚切牛肉饼，配新鲜蔬菜和特制酱料，附薯条和饮料</div>
-                    <div class="food-meta">
-                        <div class="food-calories">热量: 450 kcal</div>
-                        <div class="food-rating">
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="far fa-star"></i>
-                            <span>4.2</span>
-                        </div>
-                    </div>
-                    <div class="food-footer">
-                        <div class="food-price">¥38.0</div>
-                        <button class="add-to-cart-btn">加入点餐</button>
-                    </div>
-                </div>
-            </div>
-        </div>
 
-        <!-- 底部导航栏 -->
-        <div class="bottom-nav">
-            <a href="javascript:void(0);" class="nav-item" data-target="index">
-                <i class="fas fa-home"></i>
-                <span class="nav-label">首页</span>
-            </a>
-            <a href="javascript:void(0);" class="nav-item" data-target="orders">
-                <i class="fas fa-utensils"></i>
-                <span class="nav-label">点餐</span>
-            </a>
-            <a href="javascript:void(0);" class="nav-item" data-target="repo">
-                <i class="fas fa-chart-pie"></i>
-                <span class="nav-label">报告</span>
-            </a>
-            <a href="javascript:void(0);" class="nav-item active" data-target="profile">
-                <i class="fas fa-user"></i>
-                <span class="nav-label">我的</span>
-            </a>
-        </div>
-    </div>
+
+
 
     <script>
         // 页面加载完成后隐藏加载动画

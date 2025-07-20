@@ -558,20 +558,30 @@
     <!-- 页面内容容器 -->
     <div class="page-container">
         <!-- 顶部标题栏 -->
-        <div class="header">
-            <a href="javascript:void(0);" class="back-btn" id="backButton">
-                <i class="fas fa-arrow-left"></i>
-            </a>
-            <div class="header-title">待评价</div>
-            <a href="javascript:void(0);" class="search-btn" id="searchButton">
-                <i class="fas fa-search"></i>
-            </a>
-        </div>
+<div class="header">
+    <a href="javascript:void(0);" class="back-btn" id="backButton">
+        <i class="fas fa-arrow-left"></i>
+    </a>
+    <div class="header-title">待评价</div>
+    <a href="javascript:void(0);" class="search-btn" id="searchButton">
+        <i class="fas fa-search"></i>
+    </a>
+</div>
+
+<script>
+    // 绑定返回按钮事件
+    document.getElementById('backButton').addEventListener('click', function() {
+        // 使用 Django URL 配置的路径进行跳转
+        window.location.href = '/profile/';
+    });
+</script>
+
+
 
         <!-- 评论容器 -->
         <div class="review-container">
             <div class="section-title">待评价订单 (3)</div>
-
+{% load static %}
             <!-- 评论卡片1 - 清蒸鲈鱼 -->
             <div class="review-card">
                 <div class="order-header">
@@ -583,7 +593,7 @@
 
                 <div class="food-item">
                     <div class="food-image">
-                        <img src="DashBoard/main/static/Images/清蒸鲈鱼.png" alt="清蒸鲈鱼">
+                        <img src="{% static 'Images/清蒸鲈鱼.jpg' %}" alt="清蒸鲈鱼">
                     </div>
                     <div class="food-info">
                         <div class="food-name">清蒸鲈鱼</div>
@@ -618,7 +628,7 @@
 
                 <div class="food-item">
                     <div class="food-image">
-                        <img src="DashBoard/main/static/Images/可乐鸡翅.png" alt="可乐鸡翅">
+                        <img src="{% static 'Images/可乐鸡翅.jpg' %}" alt="可乐鸡翅">
                     </div>
                     <div class="food-info">
                         <div class="food-name">可乐鸡翅</div>
@@ -643,7 +653,7 @@
 
                 <div class="food-item">
                     <div class="food-image">
-                        <img src="DashBoard/main/static/Images/鱼香肉丝.png" alt="鱼香肉丝">
+                        <img src="{% static 'Images/鱼香肉丝.jpg' %}" alt="鱼香肉丝">
                     </div>
                     <div class="food-info">
                         <div class="food-name">鱼香肉丝</div>
@@ -668,130 +678,8 @@
             </div>
         </div>
 
-        <!-- 底部导航栏 -->
-        <div class="bottom-nav">
-            <a href="javascript:void(0);" class="nav-item" data-target="index">
-                <i class="fas fa-home"></i>
-                <span class="nav-label">首页</span>
-            </a>
-            <a href="javascript:void(0);" class="nav-item" data-target="orders">
-                <i class="fas fa-utensils"></i>
-                <span class="nav-label">点餐</span>
-            </a>
-            <a href="javascript:void(0);" class="nav-item" data-target="repo">
-                <i class="fas fa-chart-pie"></i>
-                <span class="nav-label">报告</span>
-            </a>
-            <a href="javascript:void(0);" class="nav-item active" data-target="profile">
-                <i class="fas fa-user"></i>
-                <span class="nav-label">我的</span>
-            </a>
-        </div>
-    </div>
 
-    <script>
-        // 页面加载完成后隐藏加载动画
-        window.addEventListener('load', function() {
-            setTimeout(function() {
-                document.querySelector('.loader').style.display = 'none';
-            }, 1200);
-        });
-
-        // 水波动画效果
-        function createRipple(event) {
-            const button = event.currentTarget;
-            const circle = document.createElement("span");
-            const diameter = Math.max(button.clientWidth, button.clientHeight);
-            const radius = diameter / 2;
-
-            circle.style.width = circle.style.height = `${diameter}px`;
-            circle.style.left = `${event.clientX - button.getBoundingClientRect().left - radius}px`;
-            circle.style.top = `${event.clientY - button.getBoundingClientRect().top - radius}px`;
-            circle.classList.add("ripple");
-
-            const ripple = button.getElementsByClassName("ripple")[0];
-            if (ripple) ripple.remove();
-
-            button.appendChild(circle);
-        }
-
-        // 为所有按钮添加水波动画
-        const buttons = document.querySelectorAll('.submit-btn, .star, .close-btn');
-        buttons.forEach(button => {
-            button.addEventListener('click', createRipple);
-        });
-
-        // 顶部返回按钮功能
-        document.getElementById('backButton').addEventListener('click', function() {
-            // 添加页面转出动画
-            document.querySelector('.page-container').style.animation = 'fadeOut 0.4s forwards';
-
-            setTimeout(() => {
-                alert('返回上一页');
-                // window.history.back();
-                // 重置动画
-                document.querySelector('.page-container').style.animation = '';
-            }, 400);
-        });
-
-        // 顶部搜索按钮功能
-        document.getElementById('searchButton').addEventListener('click', function() {
-            // 添加页面转出动画
-            document.querySelector('.page-container').style.animation = 'fadeOut 0.4s forwards';
-
-            setTimeout(() => {
-                alert('跳转到搜索页面');
-                // window.location.href = '/search/';
-                // 重置动画
-                document.querySelector('.page-container').style.animation = '';
-            }, 400);
-        });
-
-        // 底部导航点击跳转
-        document.querySelectorAll('.bottom-nav .nav-item').forEach(item => {
-            item.addEventListener('click', function(e) {
-                e.preventDefault();
-
-                // 添加页面转出动画
-                document.querySelector('.page-container').style.animation = 'fadeOut 0.4s forwards';
-
-                setTimeout(() => {
-                    // 获取对应的页面路径
-                    const target = this.getAttribute('data-target');
-                    let targetUrl = '';
-
-                    switch(target) {
-                        case 'index':
-                            targetUrl = "/index/";  // 首页路径
-                            break;
-                        case 'orders':
-                            targetUrl = "/orders/";  // 点餐路径
-                            break;
-                        case 'repo':
-                            targetUrl = "/repo/";    // 报告路径
-                            break;
-                        case 'profile':
-                            targetUrl = "/profile/"; // 个人中心路径
-                            break;
-                        default:
-                            break;
-                    }
-
-                    // 显示跳转提示（实际应用中应直接跳转）
-                    alert(`跳转到: ${targetUrl}`);
-
-                    // 激活样式效果
-                    document.querySelectorAll('.bottom-nav .nav-item').forEach(i => {
-                        i.classList.remove('active');
-                    });
-                    this.classList.add('active');
-
-                    // 重置动画
-                    document.querySelector('.page-container').style.animation = '';
-                }, 400);
-            });
-        });
-
+<script>
         // 星级评分功能
         document.querySelectorAll('.star').forEach(star => {
             star.addEventListener('click', function() {
