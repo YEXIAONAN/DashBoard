@@ -1,6 +1,6 @@
 # 修正后的完整代码
 from django.contrib import admin
-from main import views,dishdb
+from main import views,dishdb,api
 # 1. 导入必要的模块
 from django.conf import settings
 from django.conf.urls.static import static
@@ -15,6 +15,7 @@ urlpatterns = [
     path('profile/', views.profile, name='profile'),
     path('MyOrder/', views.MyOrder, name='MyOrder'),
     path('dishdb/',dishdb.dishdb),
+    path('submit-order/', api.submit_order, name='submit-order'),
 
 
 ]

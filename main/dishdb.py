@@ -1,5 +1,5 @@
 from django.http import HttpResponse
-from main.models import DishOrderTable
+from main.models import models
 
 # 定义数据库操作
 def dishdb(request):
