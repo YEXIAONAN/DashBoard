@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>我的订单 - 智慧食堂</title>
+    <title>我的收藏 - 智慧食堂</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap">
     <style>
@@ -83,56 +83,8 @@
             letter-spacing: 0.5px;
         }
 
-        /* 订单统计 */
-        .stats-container {
-            display: flex;
-            background: white;
-            border-radius: 16px;
-            padding: 18px 15px;
-            margin: 20px 15px;
-            box-shadow: 0 6px 16px rgba(0,0,0,0.05);
-            border: 1px solid rgba(75, 108, 183, 0.1);
-            animation: slideUp 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .stat-item {
-            flex: 1;
-            text-align: center;
-            padding: 5px;
-            transition: transform 0.3s ease;
-        }
-
-        .stat-item:hover {
-            transform: translateY(-3px);
-        }
-
-        .stat-value {
-            font-size: 22px;
-            font-weight: 700;
-            color: #4b6cb7;
-            margin-bottom: 5px;
-            text-shadow: 0 2px 4px rgba(75, 108, 183, 0.15);
-        }
-
-        .stat-label {
-            font-size: 13px;
-            color: #666;
-            font-weight: 500;
-        }
-
-        .divider {
-            width: 1px;
-            background: linear-gradient(to bottom, transparent, #e0e0e0, transparent);
-            margin: 0 10px;
-        }
-
-        /* 订单状态标签 */
-        .order-tabs {
+        /* 分类标签 */
+        .category-tabs {
             display: flex;
             background: white;
             padding: 0 10px;
@@ -145,11 +97,11 @@
             border-radius: 0 0 12px 12px;
         }
 
-        .order-tabs::-webkit-scrollbar {
+        .category-tabs::-webkit-scrollbar {
             display: none;
         }
 
-        .tab {
+        .category-tab {
             flex: 0 0 auto;
             padding: 16px 18px;
             font-size: 14px;
@@ -160,16 +112,16 @@
             transition: all 0.3s ease;
         }
 
-        .tab:hover {
+        .category-tab:hover {
             color: #4b6cb7;
         }
 
-        .tab.active {
+        .category-tab.active {
             color: #4b6cb7;
             font-weight: 600;
         }
 
-        .tab.active::after {
+        .category-tab.active::after {
             content: '';
             position: absolute;
             bottom: 0;
@@ -187,8 +139,8 @@
             to { width: 24px; }
         }
 
-        /* 订单容器 */
-        .order-container {
+        /* 收藏容器 */
+        .favorites-container {
             padding: 10px 15px;
         }
 
@@ -213,8 +165,8 @@
             border-radius: 2px;
         }
 
-        /* 订单卡片 */
-        .order-card {
+        /* 收藏卡片 */
+        .favorite-card {
             background: white;
             border-radius: 16px;
             box-shadow: 0 8px 20px rgba(0,0,0,0.05);
@@ -226,174 +178,213 @@
             transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
             animation: cardAppear 0.6s ease-out;
             animation-fill-mode: backwards;
+            display: flex;
         }
 
-        .order-card:nth-child(1) { animation-delay: 0.1s; }
-        .order-card:nth-child(2) { animation-delay: 0.2s; }
-        .order-card:nth-child(3) { animation-delay: 0.3s; }
+        .favorite-card:nth-child(1) { animation-delay: 0.1s; }
+        .favorite-card:nth-child(2) { animation-delay: 0.2s; }
+        .favorite-card:nth-child(3) { animation-delay: 0.3s; }
 
         @keyframes cardAppear {
             from { opacity: 0; transform: translateY(20px) scale(0.95); }
             to { opacity: 1; transform: translateY(0) scale(1); }
         }
 
-        .order-card:hover {
+        .favorite-card:hover {
             transform: translateY(-5px);
             box-shadow: 0 12px 25px rgba(0,0,0,0.08);
             border-color: rgba(75, 108, 183, 0.2);
         }
 
-        .order-header {
-            display: flex;
-            justify-content: space-between;
-            padding-bottom: 12px;
-            margin-bottom: 12px;
-            border-bottom: 1px dashed #f0f0f0;
+        .food-image {
+            width: 100px;
+            height: 100px;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-right: 15px;
+            flex-shrink: 0;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
-        .order-id {
+        .favorite-card:hover .food-image {
+            transform: scale(1.05);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+        }
+
+        .food-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .food-info {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .food-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 8px;
+        }
+
+        .food-name {
+            font-size: 16px;
+            font-weight: 700;
+            color: #333;
+            letter-spacing: 0.3px;
+        }
+
+        .favorite-btn {
+            background: none;
+            border: none;
+            color: #ff6b6b;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .favorite-btn:hover {
+            transform: scale(1.15);
+        }
+
+        .food-desc {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 10px;
+            line-height: 1.5;
+            flex: 1;
+        }
+
+        .food-meta {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .food-calories {
+            font-size: 12px;
+            color: #888;
+            margin-right: 15px;
+            background: rgba(245, 247, 250, 0.7);
+            padding: 4px 8px;
+            border-radius: 8px;
+        }
+
+        .food-rating {
+            display: flex;
+            align-items: center;
+        }
+
+        .food-rating i {
+            color: #ffc107;
+            font-size: 14px;
+            margin-right: 3px;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+
+        .food-rating span {
             font-size: 13px;
             color: #666;
             font-weight: 500;
         }
 
-        .order-status {
-            font-size: 12px;
-            padding: 5px 12px;
-            border-radius: 12px;
-            font-weight: 500;
-        }
-
-        .status-pending {
-            background: linear-gradient(to right, #fff8e1, #ffecb3);
-            color: #ff9800;
-        }
-
-        .status-processing {
-            background: linear-gradient(to right, #e3f2fd, #bbdefb);
-            color: #2196f3;
-        }
-
-        .status-completed {
-            background: linear-gradient(to right, #e8f5e9, #c8e6c9);
-            color: #4caf50;
-        }
-
-        .status-cancelled {
-            background: linear-gradient(to right, #f5f5f5, #e0e0e0);
-            color: #9e9e9e;
-        }
-
-        .order-time {
-            font-size: 13px;
-            color: #777;
-            margin: 0 0 12px 0;
-            display: flex;
-            align-items: center;
-            padding-left: 2px;
-        }
-
-        .order-time i {
-            margin-right: 8px;
-            font-size: 14px;
-            color: #4b6cb7;
-        }
-
-        .order-items {
-            margin-bottom: 8px;
-        }
-
-        .order-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 10px 0;
-            border-bottom: 1px solid #f9f9f9;
-            transition: background 0.3s;
-        }
-
-        .order-item:hover {
-            background: rgba(245, 247, 250, 0.5);
-        }
-
-        .item-name {
-            font-size: 15px;
-            display: flex;
-            align-items: center;
-            color: #333;
-            font-weight: 500;
-        }
-
-        .item-quantity {
-            color: #888;
-            font-size: 13px;
-            margin-left: 8px;
-            background: #f5f7fa;
-            padding: 2px 6px;
-            border-radius: 8px;
-        }
-
-        .item-price {
-            font-size: 15px;
-            font-weight: 600;
-            color: #e74c3c;
-        }
-
-        .order-footer {
+        .food-footer {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-top: 15px;
-            padding-top: 15px;
-            border-top: 1px solid #f5f5f5;
+            margin-top: 5px;
         }
 
-        .total-price {
-            font-size: 17px;
+        .food-price {
+            font-size: 18px;
             font-weight: 700;
             color: #e74c3c;
             letter-spacing: 0.5px;
         }
 
-        .order-actions {
-            display: flex;
-            gap: 10px;
-        }
-
-        .action-btn {
-            padding: 8px 16px;
+        .add-to-cart-btn {
+            padding: 8px 18px;
             border-radius: 18px;
-            font-size: 13px;
+            font-size: 14px;
             font-weight: 600;
             border: none;
             outline: none;
             cursor: pointer;
+            background: linear-gradient(135deg, #4b6cb7, #182848);
+            color: white;
             transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+            box-shadow: 0 4px 10px rgba(75, 108, 183, 0.25);
         }
 
-        .action-btn:active {
+        .add-to-cart-btn:hover {
+            background: linear-gradient(135deg, #3a5ca5, #0f1e40);
+            box-shadow: 0 6px 14px rgba(75, 108, 183, 0.35);
+            transform: translateY(-2px);
+        }
+
+        .add-to-cart-btn:active {
             transform: scale(0.96);
         }
 
-        .btn-primary {
+        /* 空状态 */
+        .empty-favorites {
+            text-align: center;
+            padding: 60px 20px;
+            animation: fadeIn 0.8s ease;
+        }
+
+        .empty-icon {
+            font-size: 80px;
+            color: #4b6cb7;
+            opacity: 0.15;
+            margin-bottom: 20px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .empty-title {
+            font-size: 18px;
+            margin-bottom: 10px;
+            color: #182848;
+            font-weight: 600;
+        }
+
+        .empty-desc {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 25px;
+            max-width: 300px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .browse-btn {
+            display: inline-block;
+            padding: 12px 35px;
             background: linear-gradient(135deg, #4b6cb7, #182848);
             color: white;
+            border-radius: 24px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 15px;
+            box-shadow: 0 6px 15px rgba(75, 108, 183, 0.35);
+            transition: all 0.3s ease;
         }
 
-        .btn-outline {
-            background: white;
-            color: #4b6cb7;
-            border: 1px solid #4b6cb7;
-        }
-
-        .btn-primary:hover {
-            background: linear-gradient(135deg, #3a5ca5, #0f1e40);
-            box-shadow: 0 6px 14px rgba(75, 108, 183, 0.25);
-        }
-
-        .btn-outline:hover {
-            background: rgba(75, 108, 183, 0.05);
-            box-shadow: 0 6px 14px rgba(75, 108, 183, 0.15);
+        .browse-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(75, 108, 183, 0.4);
         }
 
         /* 底部导航 */
@@ -478,15 +469,35 @@
         }
 
         /* 响应式调整 */
+        @media (max-width: 480px) {
+            .food-image {
+                width: 85px;
+                height: 85px;
+            }
+
+            .food-name {
+                font-size: 15px;
+            }
+
+            .food-price {
+                font-size: 16px;
+            }
+
+            .add-to-cart-btn {
+                padding: 7px 15px;
+                font-size: 13px;
+            }
+        }
+
         @media (max-width: 380px) {
-            .order-tabs .tab {
+            .category-tabs .category-tab {
                 padding: 14px 16px;
                 font-size: 13px;
             }
 
-            .action-btn {
-                padding: 7px 14px;
-                font-size: 12px;
+            .food-image {
+                width: 75px;
+                height: 75px;
             }
 
             .nav-item i {
@@ -572,182 +583,176 @@
             <a href="javascript:void(0);" class="back-btn" id="backButton">
                 <i class="fas fa-arrow-left"></i>
             </a>
-            <div class="header-title">我的订单</div>
+            <div class="header-title">我的收藏</div>
             <a href="javascript:void(0);" class="search-btn" id="searchButton">
                 <i class="fas fa-search"></i>
             </a>
         </div>
 
-        <!-- 订单统计 -->
-        <div class="stats-container">
-            <div class="stat-item">
-                <div class="stat-value">28</div>
-                <div class="stat-label">本月订单</div>
-            </div>
-            <div class="divider"></div>
-            <div class="stat-item">
-                <div class="stat-value">¥684.5</div>
-                <div class="stat-label">本月消费</div>
-            </div>
-            <div class="divider"></div>
-            <div class="stat-item">
-                <div class="stat-value">4.8</div>
-                <div class="stat-label">平均评分</div>
-            </div>
+        <!-- 分类标签 -->
+        <div class="category-tabs">
+            <div class="category-tab active">全部收藏</div>
+            <div class="category-tab">中餐热菜</div>
+            <div class="category-tab">西式快餐</div>
+            <div class="category-tab">健康秘食</div>
+            <div class="category-tab">特色汤</div>
         </div>
 
-        <!-- 订单状态标签 -->
-        <div class="order-tabs">
-            <div class="tab active">全部订单</div>
-            <div class="tab">待付款</div>
-            <div class="tab">进行中</div>
-            <div class="tab">待取餐</div>
-            <div class="tab">已完成</div>
-            <div class="tab">已取消</div>
-        </div>
+        <!-- 收藏容器 -->
+        <div class="favorites-container">
+            <div class="section-title">收藏的菜品 (6)</div>
 
-        <!-- 订单列表容器 -->
-        <div class="order-container">
-            <div class="section-title">今日订单</div>
-
-            <!-- 订单卡片1 -->
-            <div class="order-card">
-                <div class="order-header">
-                    <div class="order-id">#202507191235</div>
-                    <div class="order-status status-completed">已完成</div>
+            <!-- 收藏卡片1 - 清蒸鲈鱼 -->
+            <div class="favorite-card">
+                <div class="food-image">
+                    <img src="DashBoard/main/static/Images/清蒸鲈鱼.jpg" alt="清蒸鲈鱼">
                 </div>
-                <div class="order-time">
-                    <i class="far fa-clock"></i> 2025-07-19 12:35
-                </div>
-
-                <div class="order-items">
-                    <div class="order-item">
-                        <div class="item-name">
-                            清蒸鲈鱼套餐
-                            <span class="item-quantity">x1</span>
-                        </div>
-                        <div class="item-price">¥28.8</div>
+                <div class="food-info">
+                    <div class="food-header">
+                        <div class="food-name">清蒸鲈鱼</div>
+                        <button class="favorite-btn">
+                            <i class="fas fa-heart"></i>
+                        </button>
                     </div>
-
-                    <div class="order-item">
-                        <div class="item-name">
-                            时蔬沙拉
-                            <span class="item-quantity">x1</span>
+                    <div class="food-desc">新鲜鲈鱼清蒸，保留原汁原味，搭配纯净的酱油汁</div>
+                    <div class="food-meta">
+                        <div class="food-calories">热量: 265 kcal</div>
+                        <div class="food-rating">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star-half-alt"></i>
+                            <span>4.5</span>
                         </div>
-                        <div class="item-price">¥15.0</div>
                     </div>
-                </div>
-
-                <div class="order-footer">
-                    <div class="total-price">总计: ¥43.8</div>
-                    <div class="order-actions">
-                        <button class="action-btn btn-outline">再来一单</button>
-                        <button class="action-btn btn-primary">评价</button>
+                    <div class="food-footer">
+                        <div class="food-price">¥28.8</div>
+                        <button class="add-to-cart-btn">加入点餐</button>
                     </div>
                 </div>
             </div>
 
-            <!-- 订单卡片2 -->
-            <div class="order-card">
-                <div class="order-header">
-                    <div class="order-id">#202507191002</div>
-                    <div class="order-status status-processing">进行中</div>
+            <!-- 收藏卡片2 - 可乐鸡翅 -->
+            <div class="favorite-card">
+                <div class="food-image">
+                    <img src="DashBoard/main/static/Images/可乐鸡翅.png" alt="可乐鸡翅">
                 </div>
-                <div class="order-time">
-                    <i class="far fa-clock"></i> 2025-07-19 10:02
-                </div>
-
-                <div class="order-items">
-                    <div class="order-item">
-                        <div class="item-name">
-                            香辣鸡翅
-                            <span class="item-quantity">x2</span>
-                        </div>
-                        <div class="item-price">¥37.6</div>
+                <div class="food-info">
+                    <div class="food-header">
+                        <div class="food-name">可乐鸡翅</div>
+                        <button class="favorite-btn">
+                            <i class="fas fa-heart"></i>
+                        </button>
                     </div>
-
-                    <div class="order-item">
-                        <div class="item-name">
-                            特色汤品
-                            <span class="item-quantity">x1</span>
+                    <div class="food-desc">鸡翅与可乐完美融合，甜香可口，肉质鲜嫩</div>
+                    <div class="food-meta">
+                        <div class="food-calories">热量: 312 kcal</div>
+                        <div class="food-rating">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <span>4.9</span>
                         </div>
-                        <div class="item-price">¥12.0</div>
                     </div>
-                </div>
-
-                <div class="order-footer">
-                    <div class="total-price">总计: ¥49.6</div>
-                    <div class="order-actions">
-                        <button class="action-btn btn-outline">取消订单</button>
-                        <button class="action-btn btn-primary">查看进度</button>
+                    <div class="food-footer">
+                        <div class="food-price">¥18.8</div>
+                        <button class="add-to-cart-btn">加入点餐</button>
                     </div>
                 </div>
             </div>
 
-            <div class="section-title">昨日订单</div>
-
-            <!-- 订单卡片3 -->
-            <div class="order-card">
-                <div class="order-header">
-                    <div class="order-id">#202507181830</div>
-                    <div class="order-status status-completed">已完成</div>
+            <!-- 收藏卡片3 - 鱼香肉丝 -->
+            <div class="favorite-card">
+                <div class="food-image">
+                    <img src="DashBoard/main/static/Images/鱼香肉丝.png" alt="鱼香肉丝">
                 </div>
-                <div class="order-time">
-                    <i class="far fa-clock"></i> 2025-07-18 18:30
-                </div>
-
-                <div class="order-items">
-                    <div class="order-item">
-                        <div class="item-name">
-                            糖醋排骨
-                            <span class="item-quantity">x1</span>
-                        </div>
-                        <div class="item-price">¥26.5</div>
+                <div class="food-info">
+                    <div class="food-header">
+                        <div class="food-name">鱼香肉丝</div>
+                        <button class="favorite-btn">
+                            <i class="fas fa-heart"></i>
+                        </button>
                     </div>
-
-                    <div class="order-item">
-                        <div class="item-name">
-                            香辣鸡翅
-                            <span class="item-quantity">x2</span>
+                    <div class="food-desc">猪肉丝与木耳、竹笋搭配，鱼香汁调味，酸甜微辣</div>
+                    <div class="food-meta">
+                        <div class="food-calories">热量: 368 kcal</div>
+                        <div class="food-rating">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star-half-alt"></i>
+                            <span>4.6</span>
                         </div>
-                        <div class="item-price">¥37.6</div>
                     </div>
-                </div>
-
-                <div class="order-footer">
-                    <div class="total-price">总计: ¥64.1</div>
-                    <div class="order-actions">
-                        <button class="action-btn btn-outline">再来一单</button>
-                        <button class="action-btn btn-primary">查看详情</button>
+                    <div class="food-footer">
+                        <div class="food-price">¥26.5</div>
+                        <button class="add-to-cart-btn">加入点餐</button>
                     </div>
                 </div>
             </div>
 
-            <!-- 订单卡片4 -->
-            <div class="order-card">
-                <div class="order-header">
-                    <div class="order-id">#202507181210</div>
-                    <div class="order-status status-cancelled">已取消</div>
+            <!-- 收藏卡片4 - 健康秘食套餐 -->
+            <div class="favorite-card">
+                <div class="food-image">
+                    <img src="DashBoard/main/static/Images/健康秘食.png" alt="健康秘食套餐">
                 </div>
-                <div class="order-time">
-                    <i class="far fa-clock"></i> 2025-07-18 12:10
-                </div>
-
-                <div class="order-items">
-                    <div class="order-item">
-                        <div class="item-name">
-                            健康秘食套餐
-                            <span class="item-quantity">x1</span>
+                <div class="food-info">
+                    <div class="food-header">
+                        <div class="food-name">健康秘食套餐</div>
+                        <button class="favorite-btn">
+                            <i class="fas fa-heart"></i>
+                        </button>
+                    </div>
+                    <div class="food-desc">低脂高蛋白，藜麦、鸡胸肉、西兰花等健康食材</div>
+                    <div class="food-meta">
+                        <div class="food-calories">热量: 320 kcal</div>
+                        <div class="food-rating">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <span>4.8</span>
                         </div>
-                        <div class="item-price">¥35.0</div>
+                    </div>
+                    <div class="food-footer">
+                        <div class="food-price">¥32.0</div>
+                        <button class="add-to-cart-btn">加入点餐</button>
                     </div>
                 </div>
+            </div>
 
-                <div class="order-footer">
-                    <div class="total-price">总计: ¥35.0</div>
-                    <div class="order-actions">
-                        <button class="action-btn btn-outline">重新下单</button>
-                        <button class="action-btn btn-primary">删除</button>
+            <!-- 收藏卡片5 - 牛肉汉堡套餐 -->
+            <div class="favorite-card">
+                <div class="food-image">
+                    <img src="DashBoard/main/static/Images/牛肉汉堡.png" alt="牛肉汉堡套餐">
+                </div>
+                <div class="food-info">
+                    <div class="food-header">
+                        <div class="food-name">牛肉汉堡套餐</div>
+                        <button class="favorite-btn">
+                            <i class="fas fa-heart"></i>
+                        </button>
+                    </div>
+                    <div class="food-desc">厚切牛肉饼，配新鲜蔬菜和特制酱料，附薯条和饮料</div>
+                    <div class="food-meta">
+                        <div class="food-calories">热量: 450 kcal</div>
+                        <div class="food-rating">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="far fa-star"></i>
+                            <span>4.2</span>
+                        </div>
+                    </div>
+                    <div class="food-footer">
+                        <div class="food-price">¥38.0</div>
+                        <button class="add-to-cart-btn">加入点餐</button>
                     </div>
                 </div>
             </div>
@@ -801,7 +806,7 @@
         }
 
         // 为所有按钮添加水波动画
-        const buttons = document.querySelectorAll('.action-btn, .tab, .stat-item');
+        const buttons = document.querySelectorAll('.category-tab, .favorite-btn, .add-to-cart-btn, .browse-btn');
         buttons.forEach(button => {
             button.addEventListener('click', createRipple);
         });
@@ -877,17 +882,60 @@
             });
         });
 
-        // 订单标签点击事件
-        document.querySelectorAll('.order-tabs .tab').forEach(tab => {
+        // 分类标签点击事件
+        document.querySelectorAll('.category-tabs .category-tab').forEach(tab => {
             tab.addEventListener('click', function() {
-                document.querySelectorAll('.order-tabs .tab').forEach(t => {
+                document.querySelectorAll('.category-tabs .category-tab').forEach(t => {
                     t.classList.remove('active');
                 });
                 this.classList.add('active');
 
-                // 在实际应用中，这里可以加载对应状态的订单
-                const status = this.textContent;
-                alert(`加载 ${status} 订单`);
+                // 在实际应用中，这里可以加载对应分类的收藏
+                const category = this.textContent;
+                alert(`加载 ${category} 收藏`);
+            });
+        });
+
+        // 收藏按钮点击事件
+        document.querySelectorAll('.favorite-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const foodCard = this.closest('.favorite-card');
+                const foodName = foodCard.querySelector('.food-name').textContent;
+
+                if(this.innerHTML.includes('fas fa-heart')) {
+                    this.innerHTML = '<i class="far fa-heart"></i>';
+                    this.style.color = '#ccc';
+
+                    // 添加移除动画
+                    foodCard.style.animation = 'fadeOut 0.5s forwards';
+
+                    setTimeout(() => {
+                        alert(`已取消收藏: ${foodName}`);
+                        foodCard.style.display = 'none';
+                    }, 450);
+                } else {
+                    this.innerHTML = '<i class="fas fa-heart"></i>';
+                    this.style.color = '#ff6b6b';
+                    alert(`已收藏: ${foodName}`);
+                }
+            });
+        });
+
+        // 加入点餐按钮点击事件
+        document.querySelectorAll('.add-to-cart-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const foodCard = this.closest('.favorite-card');
+                const foodName = foodCard.querySelector('.food-name').textContent;
+
+                // 添加点击反馈
+                this.textContent = '已加入';
+                this.style.background = '#4caf50';
+
+                setTimeout(() => {
+                    this.textContent = '加入点餐';
+                    this.style.background = 'linear-gradient(135deg, #4b6cb7, #182848)';
+                    alert(`已加入点餐: ${foodName}`);
+                }, 1000);
             });
         });
     </script>

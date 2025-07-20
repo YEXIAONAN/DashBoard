@@ -47,3 +47,9 @@ def MyOrder(request):
     """
     # 在未来，您可以在这里查询数据库，获取该用户的历史订单并传递给模板
     return render(request, 'MyOrder.html')
+
+def Collection(request):
+    return render(request, 'Collection.html')
+
+def NoComment(request):
+    return render(request, 'NoComment.html')

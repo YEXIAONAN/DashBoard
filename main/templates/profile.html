@@ -607,112 +607,87 @@
                 </div>
             </div>
         </div>
-<!-- 功能区 -->
+        <!-- 功能区 -->
 <div class="function-section">
     <h2 class="section-title">
         <i class="fas fa-th-large"></i> 快捷功能
     </h2>
     <div class="function-grid">
-        <a href="#" class="func-item" onclick="navigateTo('MyOrder')">
+        <a href="javascript:void(0)" class="func-item" onclick="navigateTo('MyOrder')">
             <div class="icon-wrapper icon-1">
                 <i class="fas fa-clipboard-list"></i>
             </div>
             <div class="func-label">我的订单</div>
-        </a>
+        </a >
 
-        <a href="#" class="func-item" onclick="navigateTo('Favorites')">
+        <a href="javascript:void(0)" class="func-item" onclick="navigateTo('Favorites')">
             <div class="icon-wrapper icon-2">
                 <i class="fas fa-star"></i>
             </div>
             <div class="func-label">我的收藏</div>
-        </a>
+        </a >
 
         <a href="#" class="func-item" onclick="navigateTo('Coupons')">
             <div class="icon-wrapper icon-3">
                 <i class="fas fa-ticket-alt"></i>
             </div>
             <div class="func-label">优惠券</div>
-        </a>
+        </a >
 
         <a href="#" class="func-item" onclick="navigateTo('Address')">
             <div class="icon-wrapper icon-4">
                 <i class="fas fa-map-marker-alt"></i>
             </div>
             <div class="func-label">收货地址</div>
-        </a>
+        </a >
 
         <a href="#" class="func-item" onclick="navigateTo('Wallet')">
             <div class="icon-wrapper icon-5">
                 <i class="fas fa-wallet"></i>
             </div>
             <div class="func-label">我的钱包</div>
-        </a>
+        </a >
 
         <a href="#" class="func-item" onclick="navigateTo('Security')">
             <div class="icon-wrapper icon-6">
                 <i class="fas fa-shield-alt"></i>
             </div>
             <div class="func-label">安全中心</div>
-        </a>
+        </a >
 
         <a href="#" class="func-item" onclick="navigateTo('HealthReport')">
             <div class="icon-wrapper icon-7">
                 <i class="fas fa-heartbeat"></i>
             </div>
             <div class="func-label">健康报告</div>
-        </a>
+        </a >
 
         <a href="#" class="func-item" onclick="navigateTo('Feedback')">
             <div class="icon-wrapper icon-8">
                 <i class="fas fa-comment-alt"></i>
             </div>
             <div class="func-label">意见反馈</div>
-        </a>
+        </a >
     </div>
 </div>
 
 <script>
-    // 事件绑定函数，处理按钮点击跳转
-    function navigateTo(page) {
-        let url;
-
-        // 根据传入的页面名称确定跳转的链接
-        switch(page) {
-            case 'MyOrder':
-                url = '/MyOrder'; // 假设这是 "我的订单" 页面的路径
-                break;
-            case 'Favorites':
-                url = '/favorites'; // 假设这是 "我的收藏" 页面的路径
-                break;
-            case 'Coupons':
-                url = '/coupons'; // 假设这是 "优惠券" 页面的路径
-                break;
-            case 'Address':
-                url = '/address'; // 假设这是 "收货地址" 页面的路径
-                break;
-            case 'Wallet':
-                url = '/wallet'; // 假设这是 "我的钱包" 页面的路径
-                break;
-            case 'Security':
-                url = '/security'; // 假设这是 "安全中心" 页面的路径
-                break;
-            case 'HealthReport':
-                url = '/health-report'; // 假设这是 "健康报告" 页面的路径
-                break;
-            case 'Feedback':
-                url = '/feedback'; // 假设这是 "意见反馈" 页面的路径
-                break;
-            default:
-                console.error('未定义页面:', page);
-                return;
-        }
-
-        // 跳转到对应的页面
-        window.location.href = url;
+/* 统一给“智能点餐”“历史订单”按钮加跳转 */
+document.querySelectorAll('.func-item').forEach(item => {
+    const label = item.querySelector('.func-label')?.textContent.trim();
+    if (label === '我的订单') {
+        item.addEventListener('click', e => {
+            e.preventDefault();
+            window.location.href = '/MyOrder/';
+        });
+    }else if (label === '我的收藏') {
+        item.addEventListener('click', e => {
+            e.preventDefault();
+            window.location.href = '/Collection/';
+        });
     }
+});
 </script>
-
-
         <!-- 订单状态卡片 -->
         <div class="order-section">
             <div class="order-card">
