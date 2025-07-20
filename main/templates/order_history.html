@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>历史订单 - 智慧食堂</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+  <style>
+    :root{
+      --primary:#007bff;
+      --primary-light:#e6f0ff;
+      --grey-light:#f0f4f9;
+      --text:#222;
+      --text-light:#555;
+      --radius:12px;
+      --shadow:0 2px 8px rgba(0,0,0,.05);
+    }
+    *{margin:0;padding:0;box-sizing:border-box;font-family:'PingFang SC','Helvetica Neue',Arial,sans-serif}
+    body{background:var(--grey-light);color:var(--text)}
+    .container{max-width:480px;margin:0 auto;padding-bottom:80px;background:#fff;min-height:100vh;box-shadow:0 0 20px rgba(0,0,0,.03)}
+    .header{background:linear-gradient(135deg,#1e88e5 0%,#0d47a1 100%);color:#fff;padding:15px;position:sticky;top:0;z-index:100}
+    .top-bar{display:flex;align-items:center;gap:12px}
+    .back-btn,.cart-btn{width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;color:#fff;font-size:1rem;text-decoration:none}
+    .page-title{font-size:1.3rem;font-weight:600;flex:1;text-align:center}
+
+    /* 时间轴 */
+    .time-axis{text-align:center;font-size:1rem;color:var(--text-light);margin:24px 0;font-weight:500}
+
+    /* 订单卡片（同点餐页卡片大小） */
+    .order-card{
+      background:#fff;
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      margin:0 15px 24px;
+      overflow:hidden;
+      border:1px solid #e3f2fd;
+    }
+    .order-header{
+      display:flex;justify-content:space-between;align-items:center;
+      padding:15px 15px 12px;
+      background:var(--primary-light);
+      color:#0d47a1;
+      font-size:1rem;
+      font-weight:600;
+    }
+    .order-status{
+      font-size:.85rem;
+      padding:4px 10px;
+      border-radius:20px;
+      background:#fff;
+      color:#0d47a1;
+      border:1px solid #0d47a1;
+    }
+
+    /* 菜品列表 */
+    .dish-list{padding:15px;display:flex;flex-direction:column;gap:15px}
+    .dish-item{
+      display:flex;gap:12px;align-items:center;
+    }
+    .dish-pic{
+      width:80px;height:80px;border-radius:var(--radius);background:#e3f2fd;flex-shrink:0;
+      display:flex;align-items:center;justify-content:center;font-size:32px;color:#0d47a1
+    }
+    .dish-info{flex:1}
+    .dish-name{font-size:1rem;font-weight:600;color:#0d47a1;margin-bottom:4px}
+    .dish-meta{font-size:.85rem;color:var(--text-light)}
+    .dish-price{font-size:1rem;font-weight:700;color:#0d47a1}
+
+    /* 底部结算条（同点餐页风格） */
+    .order-summary{
+      display:flex;justify-content:space-between;align-items:center;
+      padding:15px;
+      border-top:1px dashed #ccd7e6;
+      font-size:1rem;
+    }
+    .order-summary .total{font-size:1.1rem;font-weight:700;color:#0d47a1}
+    .btn{
+      background:#1e88e5;color:#fff;border:none;
+      padding:8px 16px;border-radius:var(--radius);font-size:.9rem;font-weight:600;cursor:pointer
+    }
+    .header{background:linear-gradient(135deg,#1e88e5 0%,#0d47a1 100%);color:#fff;padding:15px;position:sticky;top:0;z-index:100}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <button class="back-btn" onclick="history.back()">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="#fff"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
+      </button>
+      <div class="page-title">历史订单</div>
+    </header>
+
+    <div class="time-axis">· 近三个月 ·</div>
+
+    <!-- 订单1 -->
+    <div class="order-card">
+      <div class="order-header">
+        <span>#202507195678</span>
+        <span class="order-status">已完成</span>
+      </div>
+      <div class="dish-list">
+        <div class="dish-item">
+          <div class="dish-pic">🐟</div>
+          <div class="dish-info">
+            <div class="dish-name">清蒸鲈鱼</div>
+            <div class="dish-meta">卡路里 229 card · 蛋白 60.2 g</div>
+            <div class="dish-price">￥19.25</div>
+          </div>
+        </div>
+        <div class="dish-item">
+          <div class="dish-pic">🥗</div>
+          <div class="dish-info">
+            <div class="dish-name">宫保鸡丁</div>
+            <div class="dish-meta">卡路里 186 card · 蛋白 67.4 g</div>
+            <div class="dish-price">￥12.25</div>
+          </div>
+        </div>
+      </div>
+      <div class="order-summary">
+        <span>实付 <span class="total">￥31.5</span></span>
+        <button class="btn" onclick="alert('已为您重新加入购物车！')">再来一单</button>
+      </div>
+    </div>
+
+    <!-- 订单2 -->
+    <div class="order-card">
+      <div class="order-header">
+        <span>#202507184321</span>
+        <span class="order-status" style="background:#fff2e8;color:#ff6f00;border-color:#ff6f00">配送中</span>
+      </div>
+      <div class="dish-list">
+        <div class="dish-item">
+          <div class="dish-pic">🍗</div>
+          <div class="dish-info">
+            <div class="dish-name">红烧牛肉</div>
+            <div class="dish-meta">卡路里 664.9 card · 蛋白 67.4 g</div>
+            <div class="dish-price">￥15.75</div>
+          </div>
+        </div>
+        <div class="dish-item">
+          <div class="dish-pic">🥗</div>
+          <div class="dish-info">
+            <div class="dish-name">麻婆豆腐</div>
+            <div class="dish-meta">卡路里 400 card · 蛋白 38.3 g</div>
+            <div class="dish-price">￥8.75</div>
+          </div>
+        </div>
+      </div>
+      <div class="order-summary">
+        <span>实付 <span class="total">￥24.5</span></span>
+        <button class="btn" onclick="alert('已为您重新加入购物车！')">再来一单</button>
+      </div>
+    </div>
+
+    <div class="time-axis">· 2025年6月 ·</div>
+  </div>
+</body>
+</html>
