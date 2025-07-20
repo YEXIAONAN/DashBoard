@@ -1,0 +1,952 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>智慧食堂 - 个人中心</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'PingFang SC', 'Helvetica Neue', Arial, sans-serif;
+        }
+
+        body {
+            background: #f5f7fa;
+            color: #333;
+            font-size: 15px;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 480px;
+            margin: 0 auto;
+            padding-bottom: 80px;
+            background: #f5f7fa;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        /* 顶部用户信息栏 */
+        .user-header {
+            background: linear-gradient(135deg, #1e88e5 0%, #0d47a1 100%);
+            color: white;
+            padding: 25px 15px 30px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .profile-card {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .user-avatar {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .user-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .user-info {
+            flex: 1;
+        }
+
+        .user-name {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .user-level {
+            display: inline-flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.25);
+            padding: 3px 12px;
+            border-radius: 15px;
+            font-size: 0.85rem;
+            gap: 5px;
+        }
+
+        .user-level i {
+            color: #FFD700;
+        }
+
+        .user-stats {
+            display: flex;
+            margin-top: 20px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 15px;
+            padding: 15px;
+            backdrop-filter: blur(5px);
+            position: relative;
+            z-index: 2;
+        }
+
+        .stat-item {
+            flex: 1;
+            text-align: center;
+            position: relative;
+        }
+
+        .stat-item:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 1px;
+            height: 30px;
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .stat-value {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 3px;
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            opacity: 0.9;
+        }
+
+        /* 功能区 */
+        .function-section {
+            padding: 20px 15px 15px;
+        }
+
+        .section-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #0d47a1;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-title i {
+            color: #1e88e5;
+        }
+
+        .function-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px 15px;
+            background: white;
+            border-radius: 16px;
+            padding: 20px 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.04);
+        }
+
+        .func-item {
+            text-align: center;
+            text-decoration: none;
+            color: #546e7a;
+            transition: all 0.3s ease;
+        }
+
+        .func-item:hover {
+            transform: translateY(-5px);
+        }
+
+        .icon-wrapper {
+            width: 50px;
+            height: 50px;
+            border-radius: 15px;
+            margin: 0 auto 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            color: white;
+        }
+
+        .icon-1 { background: linear-gradient(135deg, #1e88e5 0%, #0d47a1 100%); }
+        .icon-2 { background: linear-gradient(135deg, #43a047 0%, #1b5e20 100%); }
+        .icon-3 { background: linear-gradient(135deg, #f57c00 0%, #e65100 100%); }
+        .icon-4 { background: linear-gradient(135deg, #8e24aa 0%, #4a148c 100%); }
+        .icon-5 { background: linear-gradient(135deg, #00acc1 0%, #006064 100%); }
+        .icon-6 { background: linear-gradient(135deg, #ffb300 0%, #f57f17 100%); }
+        .icon-7 { background: linear-gradient(135deg, #5c6bc0 0%, #283593 100%); }
+        .icon-8 { background: linear-gradient(135deg, #7e57c2 0%, #4527a0 100%); }
+
+        .func-label {
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        /* 订单状态卡片 */
+        .order-section {
+            padding: 0 15px 15px;
+        }
+
+        .order-card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.04);
+        }
+
+        .order-status {
+            display: flex;
+            justify-content: space-between;
+            padding-bottom: 15px;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .status-item {
+            text-align: center;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .status-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            margin: 0 auto 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: white;
+        }
+
+        .status-1 { background: linear-gradient(135deg, #1e88e5 0%, #0d47a1 100%); }
+        .status-2 { background: linear-gradient(135deg, #43a047 0%, #1b5e20 100%); }
+        .status-3 { background: linear-gradient(135deg, #f57c00 0%, #e65100 100%); }
+        .status-4 { background: linear-gradient(135deg, #8e24aa 0%, #4a148c 100%); }
+
+        .status-label {
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .order-count {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #ff5252;
+            color: white;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            font-size: 0.7rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+
+        .recent-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #0d47a1;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .recent-order {
+            display: flex;
+            padding: 12px 0;
+            border-bottom: 1px solid #f5f5f5;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .recent-order:last-child {
+            border-bottom: none;
+        }
+
+        .order-img {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            overflow: hidden;
+            background: linear-gradient(to right, #bbdefb, #e3f2fd);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #0d47a1;
+        }
+
+        .order-details {
+            flex: 1;
+        }
+
+        .order-name {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .order-meta {
+            display: flex;
+            font-size: 0.85rem;
+            color: #78909c;
+            justify-content: space-between;
+        }
+
+        .order-price {
+            font-weight: 700;
+            color: #e53935;
+        }
+
+        .order-status-tag {
+            background: #e3f2fd;
+            color: #1e88e5;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        /* 健康数据卡片 */
+        .health-section {
+            padding: 0 15px 15px;
+        }
+
+        .health-card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.04);
+        }
+
+        .health-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .health-item {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .health-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: white;
+        }
+
+        .health-1 { background: linear-gradient(135deg, #1e88e5 0%, #0d47a1 100%); }
+        .health-2 { background: linear-gradient(135deg, #43a047 0%, #1b5e20 100%); }
+        .health-3 { background: linear-gradient(135deg, #f57c00 0%, #e65100 100%); }
+        .health-4 { background: linear-gradient(135deg, #8e24aa 0%, #4a148c 100%); }
+
+        .health-info {
+            flex: 1;
+        }
+
+        .health-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 3px;
+            color: #37474f;
+        }
+
+        .health-value {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #0d47a1;
+        }
+
+        /* 设置项 */
+        .settings-section {
+            padding: 0 15px 15px;
+        }
+
+        .settings-card {
+            background: white;
+            border-radius: 16px;
+            padding: 15px 0;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.04);
+        }
+
+        .setting-item {
+            display: flex;
+            align-items: center;
+            padding: 15px 20px;
+            text-decoration: none;
+            color: #37474f;
+            border-bottom: 1px solid #f0f0f0;
+            transition: all 0.2s ease;
+        }
+
+        .setting-item:last-child {
+            border-bottom: none;
+        }
+
+        .setting-item:hover {
+            background: #f8fafc;
+        }
+
+        .setting-icon {
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            background: #e3f2fd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            color: #1e88e5;
+            margin-right: 15px;
+        }
+
+        .setting-text {
+            flex: 1;
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+
+        .setting-arrow {
+            font-size: 0.9rem;
+            color: #b0bec5;
+        }
+
+        /* 底部导航栏 */
+        .bottom-nav {
+            display: flex;
+            justify-content: space-around;
+            background: white;
+            padding: 12px 0;
+            box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.07);
+            border-top-left-radius: 20px;
+            border-top-right-radius: 20px;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            max-width: 480px;
+            margin: 0 auto;
+            z-index: 90;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #78909c;
+            font-size: 0.8rem;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            padding: 5px 10px;
+            border-radius: 15px;
+        }
+
+        .nav-item.active {
+            color: #1e88e5;
+            background: rgba(227, 242, 253, 0.7);
+        }
+
+        .nav-item i {
+            font-size: 1.3rem;
+            margin-bottom: 4px;
+        }
+
+        /* 特效元素 */
+        .floating-element {
+            position: absolute;
+            opacity: 0.08;
+            z-index: 1;
+        }
+
+        .circle {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            border: 2px solid white;
+        }
+
+        .triangle {
+            width: 0;
+            height: 0;
+            border-left: 60px solid transparent;
+            border-right: 60px solid transparent;
+            border-bottom: 100px solid rgba(255, 255, 255, 0.15);
+        }
+
+        /* 响应式调整 */
+        @media (max-width: 420px) {
+            .function-grid {
+                grid-template-columns: repeat(4, 1fr);
+                gap: 15px 10px;
+                padding: 15px 10px;
+            }
+
+            .icon-wrapper {
+                width: 45px;
+                height: 45px;
+                font-size: 1.2rem;
+            }
+
+            .func-label {
+                font-size: 0.75rem;
+            }
+
+            .health-grid {
+                grid-template-columns: repeat(1, 1fr);
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 顶部用户信息栏 -->
+        <div class="user-header">
+            <!-- 背景特效 -->
+            <div class="floating-element circle" style="top: -50px; right: -50px;"></div>
+            <div class="floating-element triangle" style="bottom: 30px; left: -30px; transform: rotate(45deg);"></div>
+
+            <div class="profile-card">
+                <div class="user-avatar">
+                    <img src="https://randomuser.me/api/portraits/women/32.jpg" alt="用户头像">
+                </div>
+                <div class="user-info">
+                    <div class="user-name">张婷婷</div>
+                    <div class="user-level">
+                        <i class="fas fa-crown"></i> 黄金会员
+                    </div>
+                </div>
+            </div>
+
+            <div class="user-stats">
+                <div class="stat-item">
+                    <div class="stat-value">1,258</div>
+                    <div class="stat-label">积分</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">12</div>
+                    <div class="stat-label">优惠券</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">¥256</div>
+                    <div class="stat-label">余额</div>
+                </div>
+            </div>
+        </div>
+        <!-- 健康数据卡片 -->
+        <div class="health-section">
+            <div class="health-card">
+                <h2 class="section-title">
+                    <i class="fas fa-chart-line"></i> 健康数据
+                </h2>
+
+                <div class="health-grid">
+                    <div class="health-item">
+                        <div class="health-icon health-1">
+                            <i class="fas fa-weight"></i>
+                        </div>
+                        <div class="health-info">
+                            <div class="health-title">体重</div>
+                            <div class="health-value">62.5 kg</div>
+                        </div>
+                    </div>
+
+                    <div class="health-item">
+                        <div class="health-icon health-2">
+                            <i class="fas fa-running"></i>
+                        </div>
+                        <div class="health-info">
+                            <div class="health-title">BMI指数</div>
+                            <div class="health-value">21.5</div>
+                        </div>
+                    </div>
+
+                    <div class="health-item">
+                        <div class="health-icon health-3">
+                            <i class="fas fa-fire-alt"></i>
+                        </div>
+                        <div class="health-info">
+                            <div class="health-title">今日摄入热量</div>
+                            <div class="health-value">1285 kcal</div>
+                        </div>
+                    </div>
+
+                    <div class="health-item">
+                        <div class="health-icon health-4">
+                            <i class="fas fa-apple-alt"></i>
+                        </div>
+                        <div class="health-info">
+                            <div class="health-title">营养均衡指数</div>
+                            <div class="health-value">89%</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- 功能区 -->
+<div class="function-section">
+    <h2 class="section-title">
+        <i class="fas fa-th-large"></i> 快捷功能
+    </h2>
+    <div class="function-grid">
+        <a href="javascript:void(0)" class="func-item" onclick="navigateTo('MyOrder')">
+            <div class="icon-wrapper icon-1">
+                <i class="fas fa-clipboard-list"></i>
+            </div>
+            <div class="func-label">我的订单</div>
+        </a >
+
+        <a href="javascript:void(0)" class="func-item" onclick="navigateTo('Favorites')">
+            <div class="icon-wrapper icon-2">
+                <i class="fas fa-star"></i>
+            </div>
+            <div class="func-label">我的收藏</div>
+        </a >
+
+        <a href="#" class="func-item" onclick="navigateTo('Coupons')">
+            <div class="icon-wrapper icon-3">
+                <i class="fas fa-ticket-alt"></i>
+            </div>
+            <div class="func-label">优惠券</div>
+        </a >
+
+        <a href="#" class="func-item" onclick="navigateTo('Address')">
+            <div class="icon-wrapper icon-4">
+                <i class="fas fa-map-marker-alt"></i>
+            </div>
+            <div class="func-label">收货地址</div>
+        </a >
+
+        <a href="#" class="func-item" onclick="navigateTo('Wallet')">
+            <div class="icon-wrapper icon-5">
+                <i class="fas fa-wallet"></i>
+            </div>
+            <div class="func-label">我的钱包</div>
+        </a >
+
+        <a href="#" class="func-item" onclick="navigateTo('Security')">
+            <div class="icon-wrapper icon-6">
+                <i class="fas fa-shield-alt"></i>
+            </div>
+            <div class="func-label">安全中心</div>
+        </a >
+
+        <a href="#" class="func-item" onclick="navigateTo('HealthReport')">
+            <div class="icon-wrapper icon-7">
+                <i class="fas fa-heartbeat"></i>
+            </div>
+            <div class="func-label">健康报告</div>
+        </a >
+
+        <a href="#" class="func-item" onclick="navigateTo('Feedback')">
+            <div class="icon-wrapper icon-8">
+                <i class="fas fa-comment-alt"></i>
+            </div>
+            <div class="func-label">意见反馈</div>
+        </a >
+    </div>
+</div>
+
+<script>
+/* 统一给“智能点餐”“历史订单”按钮加跳转 */
+document.querySelectorAll('.func-item').forEach(item => {
+    const label = item.querySelector('.func-label')?.textContent.trim();
+    if (label === '我的订单') {
+        item.addEventListener('click', e => {
+            e.preventDefault();
+            window.location.href = '/MyOrder/';
+        });
+    }else if (label === '我的收藏') {
+        item.addEventListener('click', e => {
+            e.preventDefault();
+            window.location.href = '/Collection/';
+        });
+    }
+});
+</script>
+        <!-- 订单状态卡片 -->
+        <div class="order-section">
+            <div class="order-card">
+                <div class="order-status">
+                    <div class="status-item">
+                        <div class="status-icon status-1">
+                            <i class="fas fa-credit-card"></i>
+                        </div>
+                        <div class="status-label">待支付</div>
+                        <div class="order-count">2</div>
+                    </div>
+
+                    <div class="status-item">
+                        <div class="status-icon status-2">
+                            <i class="fas fa-utensils"></i>
+                        </div>
+                        <div class="status-label">待取餐</div>
+                        <div class="order-count">1</div>
+                    </div>
+
+                    <div class="status-item">
+                        <div class="status-icon status-3">
+                            <i class="fas fa-truck"></i>
+                        </div>
+                        <div class="status-label">配送中</div>
+                    </div>
+
+                    <div class="status-item">
+                        <div class="status-icon status-4">
+                            <i class="fas fa-clipboard-check"></i>
+                        </div>
+                        <div class="status-label">待评价</div>
+                        <div class="order-count">3</div>
+                    </div>
+                </div>
+
+                <div class="recent-title">
+                    <i class="fas fa-history"></i> 最近订单
+                </div>
+
+                <div class="recent-order">
+                    <div class="order-img">
+                        <i class="fas fa-bowl-food" style="font-size: 1.8rem;"></i>
+                    </div>
+                    <div class="order-details">
+                        <div class="order-name">健康素食套餐</div>
+                        <div class="order-meta">
+                            <span>2023-06-15 11:30</span>
+                            <span class="order-price">¥32.8</span>
+                        </div>
+                    </div>
+                    <div class="order-status-tag">已完成</div>
+                </div>
+
+                <div class="recent-order">
+                    <div class="order-img">
+                        <i class="fas fa-hamburger" style="font-size: 1.8rem;"></i>
+                    </div>
+                    <div class="order-details">
+                        <div class="order-name">秘制牛肉汉堡套餐</div>
+                        <div class="order-meta">
+                            <span>2023-06-15 18:20</span>
+                            <span class="order-price">¥28.5</span>
+                        </div>
+                    </div>
+                    <div class="order-status-tag">待取餐</div>
+                </div>
+            </div>
+        </div>
+
+
+
+        <!-- 设置项 -->
+        <div class="settings-section">
+            <div class="settings-card">
+                <a href="#" class="setting-item">
+                    <div class="setting-icon">
+                        <i class="fas fa-cog"></i>
+                    </div>
+                    <div class="setting-text">系统设置</div>
+                    <div class="setting-arrow">
+                        <i class="fas fa-chevron-right"></i>
+                    </div>
+                </a>
+
+                <a href="#" class="setting-item">
+                    <div class="setting-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <div class="setting-text">账号与安全</div>
+                    <div class="setting-arrow">
+                        <i class="fas fa-chevron-right"></i>
+                    </div>
+                </a>
+
+                <a href="#" class="setting-item">
+                    <div class="setting-icon">
+                        <i class="fas fa-bell"></i>
+                    </div>
+                    <div class="setting-text">消息通知</div>
+                    <div class="setting-arrow">
+                        <i class="fas fa-chevron-right"></i>
+                    </div>
+                </a>
+
+                <a href="#" class="setting-item">
+                    <div class="setting-icon">
+                        <i class="fas fa-question-circle"></i>
+                    </div>
+                    <div class="setting-text">帮助中心</div>
+                    <div class="setting-arrow">
+                        <i class="fas fa-chevron-right"></i>
+                    </div>
+                </a>
+
+                <a href="#" class="setting-item">
+                    <div class="setting-icon">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </div>
+                    <div class="setting-text">退出登录</div>
+                    <div class="setting-arrow">
+                        <i class="fas fa-chevron-right"></i>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+     <!-- 底部导航栏 -->
+<div class="bottom-nav">
+    <a href="javascript:void(0);" class="nav-item" data-target="index">
+        <i class="fas fa-home"></i>
+        首页
+    </a>
+    <a href="javascript:void(0);" class="nav-item" data-target="orders">
+        <i class="fas fa-utensils"></i>
+        点餐
+    </a>
+    <a href="javascript:void(0);" class="nav-item" data-target="repo">
+        <i class="fas fa-chart-pie"></i>
+        报告
+    </a>
+    <a href="javascript:void(0);" class="nav-item active" data-target="profile">
+        <i class="fas fa-user"></i>
+        我的
+    </a>
+</div>
+
+<script>
+    // 底部导航点击跳转
+    document.querySelectorAll('.nav-item').forEach(item => {
+        item.addEventListener('click', function() {
+            // 获取对应的页面路径（可以改为动态的路径）
+            const target = this.getAttribute('data-target');
+            let targetUrl = '';
+
+            switch(target) {
+                case 'index':
+                    targetUrl = "/index/";  // 首页路径
+                    break;
+                case 'orders':
+                    targetUrl = "/orders/";  // 点餐路径
+                    break;
+                case 'repo':
+                    targetUrl = "/repo/";  // 订单路径
+                    break;
+                case 'profile':
+                    targetUrl = "/profile/";  // 个人中心路径
+                    break;
+                default:
+                    break;
+            }
+
+            // 跳转到相应页面
+            if (targetUrl) {
+                window.location.href = targetUrl;
+            }
+
+            // 激活样式效果
+            document.querySelectorAll('.nav-item').forEach(i => {
+                i.classList.remove('active');
+            });
+            this.classList.add('active');
+        });
+    });
+
+    // 添加卡片悬停效果
+    document.querySelectorAll('.menu-card, .action-btn, .calory-card').forEach(card => {
+        card.addEventListener('mouseenter', () => {
+            card.style.transform = 'translateY(-5px)';
+            card.style.boxShadow = '0 12px 20px rgba(30, 136, 229, 0.2)';
+        });
+
+        card.addEventListener('mouseleave', () => {
+            card.style.transform = 'translateY(0)';
+            card.style.boxShadow = '0 5px 15px rgba(30, 136, 229, 0.1)';
+        });
+    });
+
+    // 添加按钮点击效果
+    document.querySelectorAll('.action-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const originalBg = this.style.backgroundColor;
+            this.style.backgroundColor = '#bbdefb';
+            this.style.transform = 'scale(0.95)';
+
+            setTimeout(() => {
+                this.style.backgroundColor = originalBg || '';
+                this.style.transform = '';
+            }, 300);
+        });
+    });
+
+    // 菜单项点击效果
+    document.querySelectorAll('.menu-card').forEach(card => {
+        card.addEventListener('click', function() {
+            this.style.border = '2px solid #1e88e5';
+            setTimeout(() => {
+                this.style.border = '1px solid #e3f2fd';
+            }, 500);
+        });
+    });
+</script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 模拟健康数据加载效果
+            const healthValues = document.querySelectorAll('.health-value');
+
+            setTimeout(() => {
+                healthValues.forEach(value => {
+                    const originalText = value.textContent;
+                    value.textContent = '--';
+
+                    setTimeout(() => {
+                        value.textContent = originalText;
+                    }, 600);
+                });
+            }, 500);
+
+            // 订单状态点击效果
+            const statusItems = document.querySelectorAll('.status-item');
+
+            statusItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    // 移除所有活动状态
+                    statusItems.forEach(i => i.classList.remove('active'));
+
+                    // 添加当前活动状态
+                    this.classList.add('active');
+
+                    // 这里可以添加加载对应订单列表的逻辑
+                });
+            });
+
+            // 头像点击效果
+            const userAvatar = document.querySelector('.user-avatar');
+            userAvatar.addEventListener('click', function() {
+                alert('修改头像功能');
+            });
+        });
+    </script>
+</body>
+</html>
