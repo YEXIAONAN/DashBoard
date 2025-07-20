@@ -1,0 +1,1337 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智能食堂健康平台 - 深蓝主题</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        :root {
+            --primary: #1a5f9e;     /* 深蓝色 */
+            --primary-dark: #0d3a6b; /* 海军蓝 */
+            --primary-light: #2c72b5; /* 浅蓝色 */
+            --secondary: #2c3e50;
+            --accent: #3498db;      /* 点缀蓝色 */
+            --light: #eef5fc;
+            --gray: #5a768d;
+            --success: #27ae60;
+            --warning: #f39c12;
+            --danger: #e74c3c;
+            --comparison: #ff6b6b;  /* 对比数据使用的颜色 */
+            --shadow: 0 4px 16px rgba(22, 66, 118, 0.2);
+            --card-shadow: 0 8px 24px rgba(26, 95, 158, 0.15);
+        }
+        
+        body {
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(145deg, #dcebf9 0%, #e6f2ff 100%);
+            color: #2c3e50;
+            line-height: 1.6;
+            padding: 0;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 100%;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+        
+        /* 顶部导航 */
+        .app-header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 18px 15px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            border-bottom-left-radius: 20px;
+            border-bottom-right-radius: 20px;
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .header-left {
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo {
+            width: 42px;
+            height: 42px;
+            background: linear-gradient(135deg, #4a8bc5 0%, var(--primary) 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+        }
+        
+        .logo i {
+            font-size: 22px;
+            color: white;
+        }
+        
+        .app-name h1 {
+            font-size: 1.4rem;
+            font-weight: 700;
+            line-height: 1.2;
+            letter-spacing: 0.5px;
+        }
+        
+        .app-name p {
+            font-size: 0.8rem;
+            opacity: 0.85;
+            margin-top: 2px;
+            color: #c5e0ff;
+        }
+        
+        .user-action {
+            display: flex;
+            align-items: center;
+        }
+        
+        .user-icon {
+            width: 38px;
+            height: 38px;
+            background: rgba(255,255,255,0.25);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        /* 报告切换标签 */
+        .report-tabs {
+            display: flex;
+            background: rgba(13, 58, 107, 0.3);
+            border-radius: 50px;
+            padding: 5px;
+            margin: 15px 0;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .tab {
+            flex: 1;
+            text-align: center;
+            padding: 10px 0;
+            border-radius: 50px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            color: rgba(255,255,255,0.8);
+        }
+        
+        .tab.active {
+            background: white;
+            color: var(--primary-dark);
+            box-shadow: var(--shadow);
+            font-weight: 600;
+        }
+        
+        /* 报告内容 */
+        .report-container {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .report-container.active {
+            display: block;
+        }
+        
+        .report-card {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 20px;
+            border: 1px solid rgba(255,255,255,0.7);
+            background-image: linear-gradient(to bottom right, #ffffff, #f5faff);
+        }
+        
+        .report-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #e0edff;
+            padding-bottom: 15px;
+        }
+        
+        .report-title {
+            display: flex;
+            align-items: center;
+        }
+        
+        .report-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(26, 95, 158, 0.1);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            color: var(--primary);
+            font-size: 20px;
+        }
+        
+        .report-title h2 {
+            font-size: 1.4rem;
+            color: var(--primary-dark);
+        }
+        
+        .time-range {
+            font-size: 0.8rem;
+            color: var(--primary);
+            background: rgba(26, 95, 158, 0.1);
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-weight: 500;
+        }
+        
+        .report-section {
+            margin-bottom: 20px;
+        }
+        
+        .section-title {
+            display: flex;
+            align-items: center;
+            font-size: 1.1rem;
+            color: var(--primary-dark);
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+        
+        .section-title i {
+            margin-right: 10px;
+            width: 28px;
+            height: 28px;
+            background: rgba(26, 95, 158, 0.1);
+            border-radius: 8px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+        }
+        
+        .chart-container {
+            height: 220px;
+            margin: 15px 0;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin: 15px 0;
+        }
+        
+        .stat-card {
+            background: linear-gradient(to right, rgba(26, 95, 158, 0.05), rgba(26, 95, 158, 0.02));
+            border-radius: 16px;
+            padding: 15px;
+            border-left: 4px solid var(--primary);
+            box-shadow: 0 2px 8px rgba(26, 95, 158, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .stat-card .value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-dark);
+            line-height: 1.2;
+            display: flex;
+            align-items: center;
+        }
+        
+        .stat-card .label {
+            font-size: 0.85rem;
+            color: var(--gray);
+            margin-top: 5px;
+        }
+        
+        .comparison {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 15px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-left: 8px;
+            background: rgba(255, 107, 107, 0.15);
+            color: #e74949;
+        }
+        
+        .comparison.positive {
+            background: rgba(39, 174, 96, 0.15);
+            color: var(--success);
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            margin-top: 5px;
+        }
+        
+        .badge.good {
+            background: rgba(39, 174, 96, 0.15);
+            color: var(--success);
+        }
+        
+        .badge.warning {
+            background: rgba(243, 156, 18, 0.15);
+            color: var(--warning);
+        }
+        
+        .badge.alert {
+            background: rgba(231, 76, 60, 0.15);
+            color: var(--danger);
+        }
+        
+        .feedback {
+            background: #f0f8ff;
+            border-radius: 16px;
+            padding: 18px;
+            margin: 15px 0;
+            border-left: 4px solid var(--primary);
+            font-size: 0.95rem;
+            box-shadow: 0 2px 8px rgba(26, 95, 158, 0.1);
+            line-height: 1.7;
+        }
+        
+        .recommendation {
+            background: linear-gradient(to right, rgba(52, 152, 219, 0.05), rgba(52, 152, 219, 0.02));
+            border-radius: 16px;
+            padding: 18px;
+            margin: 15px 0;
+            border-left: 4px solid var(--accent);
+            box-shadow: 0 2px 8px rgba(52, 152, 219, 0.1);
+        }
+        
+        .recommendation h4 {
+            color: var(--accent);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            font-size: 1.05rem;
+        }
+        
+        .recommendation h4 i {
+            margin-right: 8px;
+        }
+        
+        ul {
+            padding-left: 20px;
+            margin: 12px 0;
+        }
+        
+        li {
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+        }
+        
+        /* 推荐菜单 */
+        .menu-section {
+            margin: 25px 0;
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .section-header h3 {
+            font-size: 1.3rem;
+            color: var(--primary-dark);
+            display: flex;
+            align-items: center;
+            padding: 10px 15px;
+            background: linear-gradient(to right, rgba(26, 95, 158, 0.1), transparent);
+            border-radius: 12px;
+        }
+        
+        .section-header h3 i {
+            margin-right: 10px;
+            color: var(--primary);
+        }
+        
+        .menu-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+        
+        .menu-item {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: var(--card-shadow);
+            transition: all 0.3s ease;
+            position: relative;
+            border: 1px solid rgba(26, 95, 158, 0.08);
+            background-image: linear-gradient(to bottom, white, #f8fbff);
+        }
+        
+        .menu-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 24px rgba(26, 95, 158, 0.2);
+        }
+        
+        .menu-img {
+            height: 140px;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+        }
+        
+        .calorie-tag {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(13, 58, 107, 0.85);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        
+        .menu-content {
+            padding: 15px;
+        }
+        
+        .menu-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--primary-dark);
+            margin-bottom: 8px;
+        }
+        
+        .menu-desc {
+            font-size: 0.85rem;
+            color: var(--gray);
+            margin-bottom: 10px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        
+        .menu-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+        
+        .menu-tag {
+            background: rgba(26, 95, 158, 0.1);
+            color: var(--primary);
+            font-size: 0.75rem;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-weight: 500;
+        }
+        
+        /* 对比数据卡片 */
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .comparison-card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: var(--card-shadow);
+            background-image: linear-gradient(to bottom right, #ffffff, #f5faff);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .comparison-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary-dark);
+        }
+        
+        .comparison-change {
+            font-size: 1.1rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+        }
+        
+        .change-positive {
+            color: var(--success);
+        }
+        
+        .change-negative {
+            color: var(--danger);
+        }
+        
+        .comparison-label {
+            font-size: 0.9rem;
+            color: var(--gray);
+            margin-top: 5px;
+        }
+        
+        /* 底部导航 */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            border-top: 1px solid rgba(26, 95, 158, 0.1);
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            z-index: 100;
+            box-shadow: 0 -5px 15px rgba(26, 95, 158, 0.1);
+        }
+        
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: var(--gray);
+            font-size: 0.75rem;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-item.active {
+            color: var(--primary);
+            transform: translateY(-5px);
+        }
+        
+        .nav-item i {
+            font-size: 1.4rem;
+            margin-bottom: 4px;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-item.active i {
+            transform: scale(1.2);
+            color: var(--primary);
+        }
+        
+        /* 动画效果 */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.6s ease forwards;
+        }
+        
+        /* 响应式调整 */
+        @media (min-width: 768px) {
+            .container {
+                max-width: 750px;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+            
+            .comparison-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .menu-container {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+        
+        @media (min-width: 992px) {
+            .container {
+                max-width: 970px;
+            }
+            
+            .menu-container {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .menu-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部标题栏 -->
+    <div class="app-header">
+        <div class="container">
+            <div class="header-content">
+                <div class="header-left">
+                    <div class="logo">
+                        <i class="fas fa-utensils"></i>
+                    </div>
+                    <div class="app-name">
+                        <h1>智能食堂健康平台</h1>
+                        <p>AI驱动的精准膳食分析</p>
+                    </div>
+                </div>
+                <div class="user-action">
+                    <i class="fas fa-bell"></i>
+                    <div class="user-icon">
+                        <i class="fas fa-user"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="report-tabs">
+                <div class="tab active" data-report="weekly">健康周报</div>
+                <div class="tab" data-report="monthly">健康月报</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="container">
+        <!-- 周报 -->
+        <div id="weekly-report" class="report-container active">
+            <div class="report-card fade-in">
+                <div class="report-header">
+                    <div class="report-title">
+                        <div class="report-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <h2>本周健康报告</h2>
+                    </div>
+                    <div class="time-range">11月20日 - 11月26日</div>
+                </div>
+                
+                <div class="comparison-grid">
+                    <div class="comparison-card">
+                        <div>
+                            <div class="comparison-value">1,870 kcal</div>
+                            <div class="comparison-label">日均摄入热量</div>
+                        </div>
+                        <div class="comparison-change change-positive">
+                            <i class="fas fa-arrow-down"></i> 5.2%
+                        </div>
+                    </div>
+                    
+                    <div class="comparison-card">
+                        <div>
+                            <div class="comparison-value">78%</div>
+                            <div class="comparison-label">热量目标达成</div>
+                        </div>
+                        <div class="comparison-change change-positive">
+                            <i class="fas fa-arrow-up"></i> 7.8%
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="report-section">
+                    <div class="section-title">
+                        <i class="fas fa-fire"></i> 热量摄入分析
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="weeklyCalorieChart"></canvas>
+                    </div>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="value">1,870 kcal</div>
+                            <div class="label">日均摄入热量</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="value">78%</div>
+                            <div class="label">热量目标达成</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="value">2.1 kg</div>
+                            <div class="label">热量缺口累积</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="value">22.8%</div>
+                            <div class="label">运动消耗占比</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="report-section">
+                    <div class="section-title">
+                        <i class="fas fa-balance-scale"></i> 营养素分析
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="weeklyNutrientChart"></canvas>
+                    </div>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="value">48% <span class="comparison positive">+3%</span></div>
+                            <div class="label">碳水占比</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="value">22% <span class="comparison">-2%</span></div>
+                            <div class="label">蛋白质占比</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="value">30% <span class="comparison">-1%</span></div>
+                            <div class="label">脂肪占比</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="value">56g <span class="comparison positive">-8%</span></div>
+                            <div class="label">日均添加糖</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="report-section">
+                    <div class="section-title">
+                        <i class="fas fa-lightbulb"></i> AI分析反馈
+                    </div>
+                    <div class="feedback">
+                        <p>本周您的饮食结构整体良好，热量控制有明显进步！蛋白质摄入量略低于推荐值，建议增加豆制品和瘦肉摄入。周三晚餐摄入的油炸食品比例较高，导致当日饱和脂肪摄入超标。周末的蔬菜摄入量显著提升，继续保持！</p>
+                        
+                        <div class="stats-grid" style="margin-top: 15px;">
+                            <div class="stat-card">
+                                <div class="value">85分 <span class="comparison positive">+8分</span></div>
+                                <div class="label">健康评分</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="value">12种 <span class="comparison positive">+3种</span></div>
+                                <div class="label">食物多样性</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="report-section">
+                    <div class="section-title">
+                        <i class="fas fa-clipboard-list"></i> 优化建议
+                    </div>
+                    <div class="recommendation">
+                        <h4><i class="fas fa-check-circle"></i> 下周饮食优化建议</h4>
+                        <ul>
+                            <li>增加优质蛋白质摄入：午餐添加鸡胸肉或豆腐类菜品</li>
+                            <li>控制添加糖摄入：每日含糖饮料控制在200ml以内</li>
+                            <li>增加膳食纤维：每日确保摄入3种以上不同颜色蔬菜</li>
+                            <li>尝试新菜品：推荐尝试"藜麦鸡胸沙拉"和"番茄鱼片"</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 推荐菜单 -->
+            <div class="menu-section">
+                <div class="section-header">
+                    <h3><i class="fas fa-utensils"></i> 个性化推荐菜单</h3>
+                </div>
+                
+                <div class="menu-container">
+                    <div class="menu-item">
+                        <div class="menu-img" style="background-image: linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.1)), url('https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600')">
+                            <div class="calorie-tag">320 kcal</div>
+                        </div>
+                        <div class="menu-content">
+                            <div class="menu-title">藜麦鸡胸沙拉</div>
+                            <div class="menu-desc">鸡胸肉搭配新鲜蔬菜、藜麦和柠檬油醋汁</div>
+                            <div class="menu-tags">
+                                <span class="menu-tag">高蛋白</span>
+                                <span class="menu-tag">低脂</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="menu-item">
+                        <div class="menu-img" style="background-image: linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.1)), url('https://images.unsplash.com/photo-1617695748602-b6a341a5a56a?auto=format&fit=crop&w=600')">
+                            <div class="calorie-tag">280 kcal</div>
+                        </div>
+                        <div class="menu-content">
+                            <div class="menu-title">鲜蔬豆腐煲</div>
+                            <div class="menu-desc">嫩豆腐与多种时令蔬菜慢炖，鲜香入味</div>
+                            <div class="menu-tags">
+                                <span class="menu-tag">植物蛋白</span>
+                                <span class="menu-tag">高纤维</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="menu-item">
+                        <div class="menu-img" style="background-image: linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.1)), url('https://images.unsplash.com/photo-1612929633738-8fe44f7ea841?auto=format&fit=crop&w=600')">
+                            <div class="calorie-tag">350 kcal</div>
+                        </div>
+                        <div class="menu-content">
+                            <div class="menu-title">三文鱼牛油果拌饭</div>
+                            <div class="menu-desc">优质三文鱼配牛油果和杂粮饭，Omega-3丰富</div>
+                            <div class="menu-tags">
+                                <span class="menu-tag">健康脂肪</span>
+                                <span class="menu-tag">高蛋白</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="menu-item">
+                        <div class="menu-img" style="background-image: linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.1)), url('https://images.unsplash.com/photo-1606491956689-2ea866880c84?auto=format&fit=crop&w=600')">
+                            <div class="calorie-tag">260 kcal</div>
+                        </div>
+                        <div class="menu-content">
+                            <div class="menu-title">菌菇芦笋炒虾仁</div>
+                            <div class="menu-desc">新鲜虾仁搭配芦笋和多种菌菇，低卡高营养</div>
+                            <div class="menu-tags">
+                                <span class="menu-tag">低热量</span>
+                                <span class="menu-tag">高蛋白</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 月报 -->
+        <div id="monthly-report" class="report-container">
+            <div class="report-card fade-in">
+                <div class="report-header">
+                    <div class="report-title">
+                        <div class="report-icon">
+                            <i class="fas fa-chart-bar"></i>
+                        </div>
+                        <h2>本月健康报告</h2>
+                    </div>
+                    <div class="time-range">11月1日 - 11月30日</div>
+                </div>
+                
+                <div class="comparison-grid">
+                    <div class="comparison-card">
+                        <div>
+                            <div class="comparison-value">1,920 kcal</div>
+                            <div class="comparison-label">月均摄入热量</div>
+                        </div>
+                        <div class="comparison-change change-positive">
+                            <i class="fas fa-arrow-down"></i> 3.2%
+                        </div>
+                    </div>
+                    
+                    <div class="comparison-card">
+                        <div>
+                            <div class="comparison-value">76%</div>
+                            <div class="comparison-label">热量目标达成</div>
+                        </div>
+                        <div class="comparison-change change-positive">
+                            <i class="fas fa-arrow-up"></i> 6.5%
+                        </div>
+                    </div>
+                    
+                    <div class="comparison-card">
+                        <div>
+                            <div class="comparison-value">82分</div>
+                            <div class="comparison-label">健康指数</div>
+                        </div>
+                        <div class="comparison-change change-positive">
+                            <i class="fas fa-arrow-up"></i> 6.0%
+                        </div>
+                    </div>
+                    
+                    <div class="comparison-card">
+                        <div>
+                            <div class="comparison-value">12种</div>
+                            <div class="comparison-label">新尝试菜品</div>
+                        </div>
+                        <div class="comparison-change change-positive">
+                            <i class="fas fa-arrow-up"></i> 20%
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="report-section">
+                    <div class="section-title">
+                        <i class="fas fa-fire"></i> 月度热量趋势
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="monthlyCalorieChart"></canvas>
+                    </div>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="value">1,920 kcal <span class="comparison positive">-3.2%</span></div>
+                            <div class="label">月均摄入热量</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="value">8,400 kcal <span class="comparison positive">+18%</span></div>
+                            <div class="label">月度热量缺口</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="value">76% <span class="comparison positive">+6.5%</span></div>
+                            <div class="label">热量目标达成</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="value">27天 <span class="comparison positive">+4天</span></div>
+                            <div class="label">目标达成天数</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="report-section">
+                    <div class="section-title">
+                        <i class="fas fa-balance-scale"></i> 营养结构变化
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="monthlyNutrientChart"></canvas>
+                    </div>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="value">+12% <span class="comparison positive">↑</span></div>
+                            <div class="label">膳食纤维摄入</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="value">-18% <span class="comparison positive">↓</span></div>
+                            <div class="label">饱和脂肪摄入</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="value">65% <span class="comparison">-5%</span></div>
+                            <div class="label">钙摄入达标率</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="value">92% <span class="comparison positive">+8%</span></div>
+                            <div class="label">维生素C摄入</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="report-section">
+                    <div class="section-title">
+                        <i class="fas fa-lightbulb"></i> 月度健康洞察
+                    </div>
+                    <div class="feedback">
+                        <p>本月您的饮食健康指数评分为82分（满分100），较上月提升6分！最大的进步是饱和脂肪摄入量明显降低，这得益于您减少了油炸食品的选择。蛋白质摄入稳定性仍需关注，特别是工作日午餐的蛋白质摄入波动较大。值得表扬的是，您本月尝试了12种新菜品，饮食多样性得分提升了15%。</p>
+                        
+                        <div class="stats-grid" style="margin-top: 15px;">
+                            <div class="stat-card">
+                                <div class="value">82分 <span class="comparison positive">+6分</span></div>
+                                <div class="label">健康指数评分</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="value">77% <span class="comparison positive">+12%</span></div>
+                                <div class="label">饮食多样性</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="report-section">
+                    <div class="section-title">
+                        <i class="fas fa-clipboard-list"></i> 长期健康建议
+                    </div>
+                    <div class="recommendation">
+                        <h4><i class="fas fa-check-circle"></i> 长期膳食优化方案</h4>
+                        <ul>
+                            <li>蛋白质摄入计划：每日蛋白质摄入目标为75g</li>
+                            <li>钙质补充策略：每周至少3次乳制品和深绿色蔬菜</li>
+                            <li>饮食多样性：每月尝试15种以上不同菜品</li>
+                            <li>健康习惯养成：固定午餐时间，避免过晚进食</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="recommendation">
+                        <h4><i class="fas fa-trophy"></i> 本月健康成就</h4>
+                        <ul>
+                            <li>连续15天控制添加糖摄入在标准范围内</li>
+                            <li>膳食纤维摄入量达到推荐标准的92%</li>
+                            <li>钠摄入量控制在安全范围内</li>
+                            <li>每周进行3次以上"彩虹饮食"</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 推荐菜单 -->
+            <div class="menu-section">
+                <div class="section-header">
+                    <h3><i class="fas fa-utensils"></i> 个性化推荐菜单</h3>
+                </div>
+                
+                <div class="menu-container">
+                    <div class="menu-item">
+                        <div class="menu-img" style="background-image: linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.1)), url('https://images.unsplash.com/photo-1606755962773-d324e0a13086?auto=format&fit=crop&w=600')">
+                            <div class="calorie-tag">380 kcal</div>
+                        </div>
+                        <div class="menu-content">
+                            <div class="menu-title">黑椒牛排糙米饭</div>
+                            <div class="menu-desc">优质牛排搭配糙米饭和烤蔬菜，高蛋白高纤维</div>
+                            <div class="menu-tags">
+                                <span class="menu-tag">高铁</span>
+                                <span class="menu-tag">高蛋白</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="menu-item">
+                        <div class="menu-img" style="background-image: linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.1)), url('https://images.unsplash.com/photo-1574926054530-540288c8e4f8?auto=format&fit=crop&w=600')">
+                            <div class="calorie-tag">300 kcal</div>
+                        </div>
+                        <div class="menu-content">
+                            <div class="menu-title">地中海烤蔬菜</div>
+                            <div class="menu-desc">多种蔬菜搭配橄榄油和香草烤制</div>
+                            <div class="menu-tags">
+                                <span class="menu-tag">高纤维</span>
+                                <span class="menu-tag">维生素</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="menu-item">
+                        <div class="menu-img" style="background-image: linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.1)), url('https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?auto=format&fit=crop&w=600')">
+                            <div class="calorie-tag">340 kcal</div>
+                        </div>
+                        <div class="menu-content">
+                            <div class="menu-title">海鲜豆腐汤</div>
+                            <div class="menu-desc">鲜虾、贝类搭配嫩豆腐和蔬菜，富含钙质</div>
+                            <div class="menu-tags">
+                                <span class="menu-tag">高钙</span>
+                                <span class="menu-tag">低脂</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="menu-item">
+                        <div class="menu-img" style="background-image: linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.1)), url('https://images.unsplash.com/photo-1606491956689-2ea866880c84?auto=format&fit=crop&w=600')">
+                            <div class="calorie-tag">290 kcal</div>
+                        </div>
+                        <div class="menu-content">
+                            <div class="menu-title">西兰花鸡胸藜麦</div>
+                            <div class="menu-desc">烤鸡胸肉配西兰花和藜麦，高蛋白营养餐</div>
+                            <div class="menu-tags">
+                                <span class="menu-tag">高蛋白</span>
+                                <span class="menu-tag">低GI</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 底部导航 -->
+     <!-- 底部导航栏 -->
+<div class="bottom-nav">
+    <a href="javascript:void(0);" class="nav-item" data-target="index">
+        <i class="fas fa-home"></i>
+        首页
+    </a>
+    <a href="javascript:void(0);" class="nav-item" data-target="orders">
+        <i class="fas fa-utensils"></i>
+        点餐
+    </a>
+    <a href="javascript:void(0);" class="nav-item active" data-target="repo">
+        <i class="fas fa-chart-pie"></i>
+        报告
+    </a>
+    <a href="javascript:void(0);" class="nav-item" data-target="profile">
+        <i class="fas fa-user"></i>
+        我的
+    </a>
+</div>
+
+<script>
+    // 底部导航点击跳转
+    document.querySelectorAll('.nav-item').forEach(item => {
+        item.addEventListener('click', function() {
+            // 获取对应的页面路径（可以改为动态的路径）
+            const target = this.getAttribute('data-target');
+            let targetUrl = '';
+
+            switch(target) {
+                case 'index':
+                    targetUrl = "/index/";  // 首页路径
+                    break;
+                case 'orders':
+                    targetUrl = "/orders/";  // 点餐路径
+                    break;
+                case 'repo':
+                    targetUrl = "/repo/";  // 订单路径
+                    break;
+                case 'profile':
+                    targetUrl = "/profile/";  // 个人中心路径
+                    break;
+                default:
+                    break;
+            }
+
+            // 跳转到相应页面
+            if (targetUrl) {
+                window.location.href = targetUrl;
+            }
+
+            // 激活样式效果
+            document.querySelectorAll('.nav-item').forEach(i => {
+                i.classList.remove('active');
+            });
+            this.classList.add('active');
+        });
+    });
+
+    // 添加卡片悬停效果
+    document.querySelectorAll('.menu-card, .action-btn, .calory-card').forEach(card => {
+        card.addEventListener('mouseenter', () => {
+            card.style.transform = 'translateY(-5px)';
+            card.style.boxShadow = '0 12px 20px rgba(30, 136, 229, 0.2)';
+        });
+
+        card.addEventListener('mouseleave', () => {
+            card.style.transform = 'translateY(0)';
+            card.style.boxShadow = '0 5px 15px rgba(30, 136, 229, 0.1)';
+        });
+    });
+
+    // 添加按钮点击效果
+    document.querySelectorAll('.action-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const originalBg = this.style.backgroundColor;
+            this.style.backgroundColor = '#bbdefb';
+            this.style.transform = 'scale(0.95)';
+
+            setTimeout(() => {
+                this.style.backgroundColor = originalBg || '';
+                this.style.transform = '';
+            }, 300);
+        });
+    });
+
+    // 菜单项点击效果
+    document.querySelectorAll('.menu-card').forEach(card => {
+        card.addEventListener('click', function() {
+            this.style.border = '2px solid #1e88e5';
+            setTimeout(() => {
+                this.style.border = '1px solid #e3f2fd';
+            }, 500);
+        });
+    });
+</script>
+
+    <script>
+        // 标签切换功能
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                // 移除所有标签的active类
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                // 添加当前标签的active类
+                this.classList.add('active');
+                
+                // 隐藏所有报告容器
+                document.querySelectorAll('.report-container').forEach(container => {
+                    container.classList.remove('active');
+                });
+                
+                // 显示选中的报告
+                const reportId = this.getAttribute('data-report') + '-report';
+                document.getElementById(reportId).classList.add('active');
+            });
+        });
+        
+        // 周报热量图表
+        const weeklyCalorieCtx = document.getElementById('weeklyCalorieChart').getContext('2d');
+        const weeklyCalorieChart = new Chart(weeklyCalorieCtx, {
+            type: 'line',
+            data: {
+                labels: ['一', '二', '三', '四', '五', '六', '日'],
+                datasets: [{
+                    label: '本周',
+                    data: [1850, 1750, 2100, 1820, 1900, 1950, 1800],
+                    borderColor: '#1a5f9e',
+                    backgroundColor: 'rgba(26, 95, 158, 0.1)',
+                    borderWidth: 3,
+                    tension: 0.3,
+                    fill: true
+                }, {
+                    label: '上周',
+                    data: [1950, 1900, 2200, 1850, 1950, 2000, 1950],
+                    borderColor: '#ff6b6b',
+                    backgroundColor: 'rgba(255, 107, 107, 0.1)',
+                    borderWidth: 2,
+                    borderDash: [5, 5],
+                    tension: 0.3,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: false,
+                        min: 1600,
+                        title: {
+                            display: true,
+                            text: '热量 (kcal)'
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    }
+                }
+            }
+        });
+
+        // 周报营养图表
+        const weeklyNutrientCtx = document.getElementById('weeklyNutrientChart').getContext('2d');
+        const weeklyNutrientChart = new Chart(weeklyNutrientCtx, {
+            type: 'bar',
+            data: {
+                labels: ['碳水', '蛋白质', '脂肪', '膳食纤维', '添加糖'],
+                datasets: [{
+                    label: '本周',
+                    data: [48, 22, 30, 75, 56],
+                    backgroundColor: 'rgba(26, 95, 158, 0.8)',
+                    borderColor: 'rgba(26, 95, 158, 1)',
+                    borderWidth: 1
+                }, {
+                    label: '上周',
+                    data: [45, 24, 31, 70, 61],
+                    backgroundColor: 'rgba(255, 107, 107, 0.7)',
+                    borderColor: 'rgba(255, 107, 107, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100,
+                        title: {
+                            display: true,
+                            text: '百分比(%) / 克(g)'
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    }
+                }
+            }
+        });
+
+        // 月报热量图表
+        const monthlyCalorieCtx = document.getElementById('monthlyCalorieChart').getContext('2d');
+        const monthlyCalorieChart = new Chart(monthlyCalorieCtx, {
+            type: 'line',
+            data: {
+                labels: ['第1周', '第2周', '第3周', '第4周'],
+                datasets: [{
+                    label: '本月',
+                    data: [1980, 2010, 1890, 1870],
+                    borderColor: '#1a5f9e',
+                    backgroundColor: 'rgba(26, 95, 158, 0.1)',
+                    borderWidth: 3,
+                    tension: 0.3,
+                    fill: true
+                }, {
+                    label: '上月',
+                    data: [2050, 2080, 1950, 1900],
+                    borderColor: '#ff6b6b',
+                    backgroundColor: 'rgba(255, 107, 107, 0.1)',
+                    borderWidth: 2,
+                    borderDash: [5, 5],
+                    tension: 0.3,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: false,
+                        min: 1800,
+                        title: {
+                            display: true,
+                            text: '热量 (kcal)'
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    }
+                }
+            }
+        });
+
+        // 月报营养图表
+        const monthlyNutrientCtx = document.getElementById('monthlyNutrientChart').getContext('2d');
+        const monthlyNutrientChart = new Chart(monthlyNutrientCtx, {
+            type: 'radar',
+            data: {
+                labels: ['蛋白质', '膳食纤维', '钙', '维生素C', '铁', '健康脂肪'],
+                datasets: [{
+                    label: '本月',
+                    data: [82, 76, 65, 92, 78, 85],
+                    fill: true,
+                    backgroundColor: 'rgba(26, 95, 158, 0.2)',
+                    borderColor: 'rgba(26, 95, 158, 1)',
+                    pointBackgroundColor: 'rgba(26, 95, 158, 1)',
+                    pointBorderColor: '#fff',
+                    pointHoverBackgroundColor: '#fff',
+                    pointHoverBorderColor: 'rgba(26, 95, 158, 1)'
+                }, {
+                    label: '上月',
+                    data: [75, 64, 60, 85, 75, 70],
+                    fill: true,
+                    backgroundColor: 'rgba(255, 107, 107, 0.2)',
+                    borderColor: 'rgba(255, 107, 107, 1)',
+                    pointBackgroundColor: 'rgba(255, 107, 107, 1)',
+                    pointBorderColor: '#fff',
+                    pointHoverBackgroundColor: '#fff',
+                    pointHoverBorderColor: 'rgba(255, 107, 107, 1)'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    r: {
+                        min: 0,
+                        max: 100,
+                        ticks: {
+                            stepSize: 20
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
