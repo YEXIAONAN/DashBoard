@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
+import os # 确保导入os模块
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -73,18 +74,23 @@ WSGI_APPLICATION = 'DashBoard.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
+# --- 这是结合后的新配置 ---
+# 我们将默认数据库指向为点餐系统新设计的数据库
 DATABASES = {
     'default': {
-        # 'ENGINE': 'django.db.backends.sqlite3', # Django默认数据库引擎
-        # 'NAME': BASE_DIR / 'db.sqlite3',        # 数据库名称
-        'ENGINE': 'django.db.backends.mysql',     # 修改为MySQL数据库引擎
-        'NAME': 'ds',                     # 数据库名称
-        'USER': 'root',                           # 数据库用户名
-        'PASSWORD': 'BigData#123..',                     # 数据库密码
-        'HOST': '172.16.7.79',                      # 数据库主机
-        'PORT': 3306,                             # 数据库端口号
+        'ENGINE': 'django.db.backends.mysql',     # 数据库引擎
+        'NAME': 'ds',               # 数据库名称，我们使用新设计的库
+        'USER': 'root',                           # 您的 MySQL 用户名
+        'PASSWORD': 'BigData#123..',              # 您的 MySQL 密码
+        'HOST': '172.16.7.79',                      # 您的 MySQL 主机地址
+        'PORT': 3306,                             # 您的 MySQL 端口号
+        'OPTIONS': {
+            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+        }
     }
 }
+# 如果您在其他地方仍需访问 'ds' 数据库，可以添加一个额外的连接
+# DATABASES['ds_db'] = { ... ds 数据库的配置 ... }
 
 
 
@@ -119,7 +125,7 @@ USE_I18N = True
 USE_TZ = True
 
 
-# Static files (CSS, JavaScript, Images)
+# Static files (css, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = '/static/'
@@ -130,5 +136,6 @@ STATIC_URL = '/static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "main/static"),
     BASE_DIR / "main" / "static",
 ]
