@@ -2,7 +2,7 @@
 
 # 1. 将所有需要的模块一次性导入在文件顶部
 from django.shortcuts import render
-
+from .models import DishOrderTable
 
 
 # 2. 定义所有页面的渲染视图
@@ -15,11 +15,10 @@ def index(request):
 
 
 def orders(request):
-    """
-    渲染点餐页面，并从数据库获取所有菜品传递给前端
-    这是正确的 orders 视图函数
-    """
-    return render(request, 'orders.html')
+    # 查询所有菜品，传给模板
+    dishes = DishOrderTable.objects.all()
+    print(f"--- 调试信息: 正在渲染菜品 '{dishes[0].name}'，其蛋白质为: {dishes[0].total_protein} ---")
+    return render(request, 'orders.html', {'dishes': dishes})
 
 
 def profile(request):
@@ -56,3 +55,8 @@ def NoComment(request):
 
 def profile_view(request):
     return render(request, 'profile.html')  # 渲染 profile.html 模板
+
+def menu_view(request):
+    dishes = DishOrderTable.objects.all()  # 查询所有菜品
+    return render(request, 'main/menu.html', {'dishes': dishes})
+
