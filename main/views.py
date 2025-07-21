@@ -62,3 +62,33 @@ def menu_view(request):
     dishes = DishOrderTable.objects.all()  # 查询所有菜品
     return render(request, 'main/menu.html', {'dishes': dishes})
 
+
+
+# 放在文件最底部，不影响原有代码
+import pymysql
+from django.http import JsonResponse
+
+def api_orders(request):
+    """
+    提供 JSON 接口，供前端 AJAX 获取订单数据
+    """
+    conn = pymysql.connect(
+        host='172.16.7.79',
+        port=3306,
+        user='root',
+        password='BigData#123..',
+        database='ds',
+        charset='utf8mb4',
+        cursorclass=pymysql.cursors.DictCursor
+    )
+    with conn.cursor() as cursor:
+        sql = """
+            SELECT id, name AS username, dishname, price, calorie,
+                   carbon_emission, protein, fat, carbohydrate, created_at
+            FROM main_userinputdishtable
+            ORDER BY created_at DESC
+        """
+        cursor.execute(sql)
+        rows = cursor.fetchall()
+    conn.close()
+    return JsonResponse(rows, safe=False)
