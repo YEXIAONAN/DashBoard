@@ -17,7 +17,9 @@ def index(request):
 def orders(request):
     # 查询所有菜品，传给模板
     dishes = DishOrderTable.objects.all()
-    print(f"--- 调试信息: 正在渲染菜品 '{dishes[0].name}'，其蛋白质为: {dishes[0].total_protein} ---")
+
+    # 叶小楠Bug记录 ： 购物车无法显示总蛋白质问题
+    # print(f"--- 调试信息: 正在渲染菜品 '{dishes[0].name}'，其蛋白质为: {dishes[0].total_protein} ---")
     return render(request, 'orders.html', {'dishes': dishes})
 
 
