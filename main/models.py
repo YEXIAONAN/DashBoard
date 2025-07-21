@@ -42,3 +42,4 @@ class UserInputDishTable(models.Model):
         if self.created_at:
             return f"{self.name} 在 {self.created_at.strftime('%Y-%m-%d %H:%M')} 点了 {self.dishname}"
         return self.name
+

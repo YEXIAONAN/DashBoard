@@ -6,12 +6,41 @@ from .models import DishOrderTable
 
 
 # 2. 定义所有页面的渲染视图
+from django.utils import timezone
+from django.db.models import Sum
+from .models import DishOrderTable, UserInputDishTable
 
 def index(request):
-    """
-    渲染首页
-    """
-    return render(request, 'index.html')
+    # 1. 推荐菜品（最多 4 条）
+    dishes = DishOrderTable.objects.all()[:4]
+
+    # 2. 今日营养汇总
+    today = timezone.localdate()
+    totals = (
+        UserInputDishTable.objects
+        .filter(created_at__date=today)
+        .aggregate(
+            calorie=Sum('calorie') or 0,
+            protein=Sum('protein') or 0,
+            fat=Sum('fat') or 0,
+            carbohydrate=Sum('carbohydrate') or 0,
+        )
+    )
+
+    return render(request, 'index.html', {
+        'dishes': dishes,
+        'today': today,
+        'today_total': totals,
+    })
+
+# 2. 定义所有页面的渲染视图
+
+# def index(request):
+#     """
+#     渲染首页
+#     """
+#     dishes = Dish.objects.all()
+#     return render(request, 'index.html', {'dishes': dishes})
 
 
 def orders(request):
@@ -92,3 +121,4 @@ def api_orders(request):
         rows = cursor.fetchall()
     conn.close()
     return JsonResponse(rows, safe=False)
+
