@@ -33,7 +33,7 @@
         .protein-progress .progress-bar{background:linear-gradient(90deg,#4fc3f7,#29b6f6);width:45%}
         .fat-progress .progress-bar{background:linear-gradient(90deg,#ffca28,#ffb300);width:35%}
         .carbs-progress .progress-bar{background:linear-gradient(90deg,#66bb6a,#43a047);width:55%}
-        .progress-value{position:absolute;right:10px;top:50%;transform:translateY(-50%);color:#fff;font-weight:600;font-size:.85rem;text-shadow:0 1px 2px rgba(0,0,0,.3)}
+        position:absolute; right:6px; top:50%; transform:translateY(-50%);
         .progress-label{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#fff;font-weight:600;font-size:.85rem;text-shadow:0 1px 2px rgba(0,0,0,.3)}
         .nutrient-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:15px;margin-top:25px}
         .nutrient-progress{margin-bottom:15px}
@@ -78,6 +78,7 @@
         /* 首页 */
         .view-more-btn {background: none;border: none;padding: 0;font: inherit;color: inherit;cursor: pointer;display: inline-flex;align-items: center;gap: 4px;}
         .view-more-btn:hover {opacity: 0.8;}
+        .progress-bar {position: relative;}
     </style>
 </head>
 <body>
@@ -97,89 +98,104 @@
             </div>
         </div>
 
-<!-- 营养摄入进度条卡片 -->
-<div class="nutrition-card">
-    <div class="nutrition-header">
-        <h2 class="nutrition-title">
-            <i class="fas fa-chart-line"></i> 今日营养摄入
-        </h2>
-        <div class="date-selector">
-            <i class="fas fa-calendar-alt"></i>
-            <span>{{ today|date:"Y-m-d" }}</span>
-        </div>
-    </div>
+        <!-- 营养摄入进度条卡片 -->
+        <div class="nutrition-card">
+            <div class="nutrition-header">
+                <h2 class="nutrition-title">
+                    <i class="fas fa-chart-line"></i> 今日营养摄入
+                </h2>
+                <div class="date-selector">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>{{ today|date:"Y-m-d" }}</span>
+                </div>
+            </div>
 
-    {% with totals=today_total %}
-    <!-- 热量 -->
-    <div class="calories-progress">
-        <div class="progress-header">
-            <span>热量</span>
-            <span>{{ totals.calorie|floatformat:0 }} / 3000 kcal</span>
-        </div>
-        <div class="progress-container">
-            <div class="progress-bar" style="background:linear-gradient(90deg,#ff5252,#ff6e40); width:{% widthratio totals.calorie 3000 100 %}%;">
-                <span class="progress-label">{{ totals.calorie|floatformat:0 }}</span>
-                <span class="progress-value">{% widthratio totals.calorie 3000 100 %}%</span>
+            {% with totals=today_total %}
+            <!-- 热量 -->
+            <div class="calories-progress">
+                <div class="progress-header">
+                    <span>热量</span>
+                    <span>{{ totals.calorie|floatformat:0 }} / 7500 kcal</span>
+                </div>
+                <div class="progress-container">
+                    <div class="progress-bar"
+                         style="background:linear-gradient(90deg,#ff5252,#ff6e40);
+                                width:{% widthratio totals.calorie 7500 100 %}%;">
+                        <span class="progress-value"
+                              style="position:absolute;right:-32px;top:50%;transform:translateY(-50%);">
+                            {% widthratio totals.calorie 7500 100 %}%
+                        </span>
+                    </div>
+                </div>
             </div>
-        </div>
-    </div>
 
-    <!-- 横向柱形图 -->
-    <div class="nutrient-grid">
-        <!-- 蛋白质 -->
-        <div class="nutrient-progress">
-            <div class="progress-header">
-                <div class="nutrient-name">
-                    <i class="fas fa-dumbbell"></i>
-                    <span>蛋白质</span>
+            <!-- 横向柱形图 -->
+            <div class="nutrient-grid">
+                <!-- 蛋白质 -->
+                <div class="nutrient-progress">
+                    <div class="progress-header">
+                        <div class="nutrient-name">
+                            <i class="fas fa-dumbbell"></i>
+                            <span>蛋白质</span>
+                        </div>
+                        <div class="nutrient-value">{{ totals.protein|floatformat:1 }} / 750 g</div>
+                    </div>
+                    <div class="progress-container">
+                        <div class="progress-bar"
+                             style="background:linear-gradient(90deg,#4fc3f7,#29b6f6);
+                                    width:{% widthratio totals.protein 750 100 %}%;">
+                            <span class="progress-value"
+                                  style="position:absolute;right:-32px;top:50%;transform:translateY(-50%);">
+                                {% widthratio totals.protein 750 100 %}%
+                            </span>
+                        </div>
+                    </div>
                 </div>
-                <div class="nutrient-value">{{ totals.protein|floatformat:1 }} / 100 g</div>
-            </div>
-            <div class="progress-container">
-                <div class="progress-bar" style="background:linear-gradient(90deg,#4fc3f7,#29b6f6); width:{% widthratio totals.protein 100 100 %}%;">
-                    <span class="progress-label">{{ totals.protein|floatformat:1 }}</span>
-                    <span class="progress-value">{% widthratio totals.protein 100 100 %}%</span>
-                </div>
-            </div>
-        </div>
 
-        <!-- 脂肪 -->
-        <div class="nutrient-progress">
-            <div class="progress-header">
-                <div class="nutrient-name">
-                    <i class="fas fa-bacon"></i>
-                    <span>脂肪</span>
+                <!-- 脂肪 -->
+                <div class="nutrient-progress">
+                    <div class="progress-header">
+                        <div class="nutrient-name">
+                            <i class="fas fa-bacon"></i>
+                            <span>脂肪</span>
+                        </div>
+                        <div class="nutrient-value">{{ totals.fat|floatformat:1 }} / 750 g</div>
+                    </div>
+                    <div class="progress-container">
+                        <div class="progress-bar"
+                             style="background:linear-gradient(90deg,#ffca28,#ffb300);
+                                    width:{% widthratio totals.fat 750 100 %}%;">
+                            <span class="progress-value"
+                                  style="position:absolute;right:-32px;top:50%;transform:translateY(-50%);">
+                                {% widthratio totals.fat 750 100 %}%
+                            </span>
+                        </div>
+                    </div>
                 </div>
-                <div class="nutrient-value">{{ totals.fat|floatformat:1 }} / 75 g</div>
-            </div>
-            <div class="progress-container">
-                <div class="progress-bar" style="background:linear-gradient(90deg,#ffca28,#ffb300); width:{% widthratio totals.fat 75 100 %}%;">
-                    <span class="progress-label">{{ totals.fat|floatformat:1 }}</span>
-                    <span class="progress-value">{% widthratio totals.fat 75 100 %}%</span>
-                </div>
-            </div>
-        </div>
 
-        <!-- 碳水 -->
-        <div class="nutrient-progress">
-            <div class="progress-header">
-                <div class="nutrient-name">
-                    <i class="fas fa-bread-slice"></i>
-                    <span>碳水</span>
+                <!-- 碳水 -->
+                <div class="nutrient-progress">
+                    <div class="progress-header">
+                        <div class="nutrient-name">
+                            <i class="fas fa-bread-slice"></i>
+                            <span>碳水</span>
+                        </div>
+                        <div class="nutrient-value">{{ totals.carbohydrate|floatformat:1 }} / 100 g</div>
+                    </div>
+                    <div class="progress-container">
+                        <div class="progress-bar"
+                             style="background:linear-gradient(90deg,#66bb6a,#43a047);
+                                    width:{% widthratio totals.carbohydrate 100 100 %}%;">
+                            <span class="progress-value"
+                                  style="position:absolute;right:-32px;top:50%;transform:translateY(-50%);">
+                                {% widthratio totals.carbohydrate 100 100 %}%
+                            </span>
+                        </div>
+                    </div>
                 </div>
-                <div class="nutrient-value">{{ totals.carbohydrate|floatformat:1 }} / 200 g</div>
             </div>
-            <div class="progress-container">
-                <div class="progress-bar" style="background:linear-gradient(90deg,#66bb6a,#43a047); width:{% widthratio totals.carbohydrate 200 100 %}%;">
-                    <span class="progress-label">{{ totals.carbohydrate|floatformat:1 }}</span>
-                    <span class="progress-value">{% widthratio totals.carbohydrate 200 100 %}%</span>
-                </div>
-            </div>
+            {% endwith %}
         </div>
-    </div>
-    {% endwith %}
-</div>
-
         <!-- 功能区 -->
         <div class="function-section">
             <h2 class="section-title">
