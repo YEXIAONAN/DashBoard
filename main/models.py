@@ -3,7 +3,7 @@
 from django.db import models
 
 
-# 对应菜品数据表 (保持原名不变)
+# 对应菜品数据表
 class DishOrderTable(models.Model):
     name = models.CharField(max_length=100)
     price = models.DecimalField(max_digits=20, decimal_places=2)
@@ -20,7 +20,7 @@ class DishOrderTable(models.Model):
         return self.name
 
 
-# 用户下单记录表 (保持原名不变)
+# 用户下单记录表
 class UserInputDishTable(models.Model):
     name = models.CharField(max_length=100)
     dishname = models.CharField(max_length=100)
@@ -38,7 +38,7 @@ class UserInputDishTable(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="下单时间")
 
     def __str__(self):
-        # 您可以保留原来的 __str__ 方法，或者使用下面这个更详细的
         if self.created_at:
             return f"{self.name} 在 {self.created_at.strftime('%Y-%m-%d %H:%M')} 点了 {self.dishname}"
         return self.name
+
