@@ -247,6 +247,7 @@
         }
     </style>
 </head>
+{% load static %}
 <body>
 <div class="container">
     <!-- 顶部栏 -->
@@ -275,111 +276,33 @@
     <!-- 今日菜单 -->
     <section>
         <h2 class="section-title"><i class="fas fa-utensils"></i> 精品菜单</h2>
-        <div class="menu-grid">
-            <!-- 菜品1 -->
-            <div class="food-card" data-name="宫保鸡丁" data-price="12.25" data-cal="769.5" data-protein="67.4" data-carb="10">
-                <div class="food-image">
-                    {% load static %}
-                    <img src="{% static 'main/Images/宫保鸡丁.jpg' %}" alt="宫保鸡丁" style="width:100%; height:100%; object-fit:cover;">
-                </div>
-                <div class="food-info">
-                    <div class="food-name">宫保鸡丁</div>
-                    <div class="food-desc">经典川菜，辣味十足，口感鲜香。</div>
-                    <div class="food-nutrition">卡路里：<span class="nutrition-value">769.5 card</span> 蛋白：<span class="nutrition-value">67.4 g</span></div>
-                    <div class="food-footer">
-                        <div class="food-price">￥12.25</div>
-                        <button class="add-to-cart"><i class="fas fa-plus"></i></button>
+            <div class="menu-grid">
+                {% for dish in dishes %}
+                <div class="food-card"
+                     data-name="{{ dish.name }}"
+                     data-price="{{ dish.price }}"
+                     data-cal="{{ dish.total_calorie }}"
+                     data-protein="{{ dish.total_protein }}"
+                     data-carb="{{ dish.total_carbohydrate }}">
+                    <div class="food-image">
+                        <img src="{% static dish.image_url %}" alt="{{ dish.name }}" style="width:100%; height:100%; object-fit:cover;">
+                    </div>
+                    <div class="food-info">
+                        <div class="food-name">{{ dish.name }}</div>
+                        <div class="food-desc">{{ dish.description }}</div>
+                        <div class="food-nutrition">
+                            卡路里：<span class="nutrition-value">{{ dish.total_calorie }} kcal</span>
+                            蛋白：<span class="nutrition-value">{{ dish.total_protein }}g</span>
+                            碳水：<span class="nutrition-value">{{ dish.total_carbohydrate }}g</span>
+                        </div>
+                        <div class="food-footer">
+                            <div class="food-price">¥{{ dish.price }}</div>
+                            <button class="add-to-cart"><i class="fas fa-plus"></i></button>
+                        </div>
                     </div>
                 </div>
+                {% endfor %}
             </div>
-
-            <!-- 菜品2 -->
-            <div class="food-card" data-name="红烧牛肉" data-price="15.75" data-cal="664.9" data-protein="67.4" data-carb="2.1">
-                <div class="food-image">
-                    {% load static %}
-                    <img src="{% static 'main/Images/红烧牛肉.jpg' %}" alt="红烧牛肉" style="width:100%; height:100%; object-fit:cover;">
-                </div>
-                <div class="food-info">
-                    <div class="food-name">红烧牛肉</div>
-                    <div class="food-desc">浓郁酱香，肉质鲜嫩，入口即化。</div>
-                    <div class="food-nutrition">卡路里：<span class="nutrition-value">664.9 card</span> 蛋白：<span class="nutrition-value">67.4 g</span></div>
-                    <div class="food-footer">
-                        <div class="food-price">￥15.75</div>
-                        <button class="add-to-cart"><i class="fas fa-plus"></i></button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 菜品3 -->
-            <div class="food-card" data-name="麻婆豆腐" data-price="8.75" data-cal="400" data-protein="38.3" data-carb="5.5">
-                <div class="food-image">
-                    {% load static %}
-                    <img src="{% static 'main/Images/麻婆豆腐.jpeg' %}" alt="麻婆豆腐" style="width:100%; height:100%; object-fit:cover;">
-                </div>
-                <div class="food-info">
-                    <div class="food-name">麻婆豆腐</div>
-                    <div class="food-desc">麻辣鲜香，豆腐嫩滑，口感丰富。</div>
-                    <div class="food-nutrition">卡路里：<span class="nutrition-value">400 card</span> 蛋白：<span class="nutrition-value">38.3 g</span></div>
-                    <div class="food-footer">
-                        <div class="food-price">￥8.75</div>
-                        <button class="add-to-cart"><i class="fas fa-plus"></i></button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 菜品4 -->
-            <div class="food-card" data-name="清蒸鲈鱼" data-price="19.25" data-cal="229" data-protein="60.2" data-carb="1.8">
-                <div class="food-image">
-                    {% load static %}
-                    <img src="{% static 'main/Images/清蒸鲈鱼.jpg' %}" alt="清蒸鲈鱼" style="width:100%; height:100%; object-fit:cover;">
-                </div>
-                <div class="food-info">
-                    <div class="food-name">清蒸鲈鱼</div>
-                    <div class="food-desc">清淡鲜美，保留鱼的原汁原味。</div>
-                    <div class="food-nutrition">卡路里：<span class="nutrition-value">229 card</span> 蛋白：<span class="nutrition-value">60.2 g</span></div>
-                    <div class="food-footer">
-                        <div class="food-price">￥19.25</div>
-                        <button class="add-to-cart"><i class="fas fa-plus"></i></button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 菜品5 -->
-            <div class="food-card" data-name="糖醋里脊" data-price="10.5" data-cal="536.45" data-protein="45.6" data-carb="11.15">
-                <div class="food-image">
-                    {% load static %}
-                    <img src="{% static 'main/Images/糖醋里脊.jpg' %}" alt="糖醋里脊" style="width:100%; height:100%; object-fit:cover;">
-                </div>
-                <div class="food-info">
-                    <div class="food-name">糖醋里脊</div>
-                    <div class="food-desc">酸甜可口，外酥里嫩，深受喜爱。</div>
-                    <div class="food-nutrition">卡路里：<span class="nutrition-value">536.45 card</span> 蛋白：<span class="nutrition-value">45.6 g</span></div>
-                    <div class="food-footer">
-                        <div class="food-price">￥10.5</div>
-                        <button class="add-to-cart"><i class="fas fa-plus"></i></button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 菜品6 -->
-            <div class="food-card" data-name="鱼香茄子" data-price="9.8" data-cal="328.95" data-protein="26.4" data-carb="19.75">
-                <div class="food-image">
-                    {% load static %}
-                    <img src="{% static 'main/Images/鱼香茄子.jpg' %}" alt="鱼香茄子" style="width:100%; height:100%; object-fit:cover;">
-                </div>
-                <div class="food-info">
-                    <div class="food-name">鱼香茄子</div>
-                    <div class="food-desc">酸辣甜香，茄子软糯，风味独特。</div>
-                    <div class="food-nutrition">卡路里：<span class="nutrition-value">328.95 card</span> 蛋白：<span class="nutrition-value">26.4 g</span></div>
-                    <div class="food-footer">
-                        <div class="food-price">￥9.8</div>
-                        <button class="add-to-cart"><i class="fas fa-plus"></i></button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-</div>
 
 <!-- 购物车悬浮按钮 -->
 <div class="cart-indicator" id="openCart2">
@@ -545,23 +468,54 @@
         }
     });
 
-    document.getElementById('checkoutBtn').addEventListener('click', () => {
-        if (cart.length === 0) {
-            alert('购物车是空的！');
-            return;
-        }
-        const btn = document.getElementById('checkoutBtn');
-        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 处理中...';
-        setTimeout(() => {
-            alert('订单提交成功！将在15分钟内为您准备好餐食');
-            cart = [];
-            renderCart();
-            cartOverlay.classList.remove('active');
-            btn.innerHTML = '<i class="fas fa-check"></i> 去结算';
-        }, 1500);
-    });
+        document.getElementById('checkoutBtn').addEventListener('click', () => {
+            if (cart.length === 0) {
+                alert('购物车是空的！');
+                return;
+            }
+
+            const cartData = {
+                items: cart.map(item => ({
+                    id: item.name, // 你可以用 dish.id 如果传了
+                    name: item.name,
+                    quantity: item.qty,
+                    price: item.price,
+                    calorie: item.cal,
+                    protein: item.protein,
+                    carbohydrate: item.carb
+                }))
+            };
+
+            const btn = document.getElementById('checkoutBtn');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 处理中...';
+
+            fetch('/submit-order/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken') // 防止 CSRF
+                },
+                body: JSON.stringify(cartData)
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    alert('订单提交成功！订单号：' + data.order_id);
+                    cart = [];
+                    renderCart();
+                    cartOverlay.classList.remove('active');
+                } else {
+                    alert('提交失败：' + data.message);
+                }
+            })
+            .finally(() => {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-check"></i> 去结算';
+            });
+        });
 
     renderCart();
 </script>
-</body>
+    </body>
 </html>

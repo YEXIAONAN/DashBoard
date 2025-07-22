@@ -552,6 +552,7 @@
         @keyframes fadeOut {
             to { opacity: 0; visibility: hidden; }
         }
+
     </style>
 </head>
 <body>
@@ -634,12 +635,18 @@
                         <div class="order-time">
                             <i class="far fa-clock"></i> ${order.created_at}
                         </div>
-                        <div class="order-items">
-                            <div class="order-item">
-                                <div class="item-name">${order.dishname}</div>
-                                <div class="item-price">¥${parseFloat(order.price).toFixed(2)}</div>
-                            </div>
-                        </div>
+<div class="order-items">
+    <div class="order-item" style="display:flex;align-items:center;margin-bottom:10px;">
+        <img src="{% static 'Images/' %}{{ order.dishname }}.jpg"
+             alt="{{ order.dishname }}"
+             onerror="this.src='{% static 'Images/default.jpg' %}'"
+             style="width:70px;height:70px;border-radius:12px;margin-right:12px;object-fit:cover;box-shadow:0 2px 6px rgba(0,0,0,.1);">
+        <div>
+            <div class="item-name" style="font-weight:600;color:#333;">{{ order.dishname }}</div>
+            <div class="item-price" style="color:#e74c3c;font-weight:700;">￥{{ order.price|floatformat:2 }}</div>
+        </div>
+    </div>
+</div>
                         <div class="order-footer">
                             <div class="total-price">总计: ¥${parseFloat(order.price).toFixed(2)}</div>
                             <div class="order-actions">
