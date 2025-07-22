@@ -1,6 +1,15 @@
+
+# 1. 将所有需要的模块一次性导入在文件顶部
 # D:\21089\下载\Dashboard\DashBoard\main\views.py
 
 from django.shortcuts import render
+from datetime import datetime, timedelta
+
+# 2. 定义所有页面的渲染视图
+from django.utils import timezone
+from django.db.models import Sum
+from .models import DishOrderTable, UserInputDishTable
+from collections import defaultdict
 from django.http import JsonResponse
 from django.db.models import Sum, F
 from django.utils.timezone import now
@@ -11,17 +20,144 @@ from .models import NutritionRecord # 确保这个导入是正确的
 
 # --- 基本页面视图 ---
 def index(request):
+    # 1. 推荐菜品（最多 4 条）
+    dishes = DishOrderTable.objects.all()[:4]
+
+    # 2. 今日营养汇总
+    today = timezone.localdate()
+    totals = (
+        UserInputDishTable.objects
+        .filter(created_at__date=today)
+        .aggregate(
+            calorie=Sum('calorie') or 0,
+            protein=Sum('protein') or 0,
+            fat=Sum('fat') or 0,
+            carbohydrate=Sum('carbohydrate') or 0,
+        )
+    )
+
+    return render(request, 'index.html', {
+        'dishes': dishes,
+        'today': today,
+        'today_total': totals,
+    })
     return render(request, 'index.html')
 
 def orders(request):
+    # 查询所有菜品，传给模板
+    dishes = DishOrderTable.objects.all()
+
+    # 叶小楠Bug记录 ： 购物车无法显示总蛋白质问题
+    # print(f"--- 调试信息: 正在渲染菜品 '{dishes[0].name}'，其蛋白质为: {dishes[0].total_protein} ---")
+    return render(request, 'orders.html', {'dishes': dishes})
+
     return render(request, 'orders.html')
 
 def profile(request):
+    """
+    渲染个人中心页面
+    """
     return render(request, 'profile.html')
 
+def order_history(request):
+    cutoff = timezone.now() - timedelta(days=3)
+
+    # ① 最近 3 天的订单记录
+    dishes = UserInputDishTable.objects.filter(created_at__gte=cutoff)
+
+    # ② 菜品名 → 图片 URL 映射
+    img_map = {d.name: d.image_url for d in DishOrderTable.objects.all()}
+
+    # ③ 按日期+菜品名聚合
+    grouped = defaultdict(lambda: defaultdict(int))
+    price_map, calorie_map, protein_map = {}, {}, {}
+    for d in dishes:
+        day = d.created_at.date()
+        grouped[day][d.dishname] += 1
+        price_map[d.dishname] = float(d.price)
+        calorie_map[d.dishname] = float(d.calorie)
+        protein_map[d.dishname] = float(d.protein)
+
+    # ④ 整理模板数据
+    history = []
+    for day in sorted(grouped.keys(), reverse=True):
+        dish_list = []
+        for name, cnt in grouped[day].items():
+            dish_list.append({
+                'dishname': name,
+                'count': cnt,
+                'price': price_map[name],
+                'calorie': calorie_map[name],
+                'protein': protein_map[name],
+                'subtotal': round(price_map[name] * cnt, 2),
+                'image_url': img_map.get(name, 'Images/default.jpg'),
+            })
+        total = round(sum(d['subtotal'] for d in dish_list), 2)
+        history.append({'day': day, 'dishes': dish_list, 'total': total})
+
+    return render(request, 'order_history.html', {'history': history})
+
+def nutrition_recipes(request):
+    dishes = DishOrderTable.objects.all()  # 或者你用过滤条件
+    return render(request, 'nutrition_recipes.html', {'dishes': dishes})
+
 def repo(request):
+    """
+    渲染报告页面
+    """
     return render(request, 'repo.html')
 
+
+def MyOrder(request):
+    cutoff = timezone.now() - timedelta(days=3)
+    dishes = UserInputDishTable.objects.filter(created_at__gte=cutoff)
+
+    img_map = {d.name: d.image_url for d in DishOrderTable.objects.all()}
+    grouped = defaultdict(lambda: defaultdict(int))
+    price_map, calorie_map, protein_map = {}, {}, {}
+    for d in dishes:
+        day = d.created_at.date()
+        grouped[day][d.dishname] += 1
+        price_map[d.dishname] = float(d.price)
+        calorie_map[d.dishname] = float(d.calorie)
+        protein_map[d.dishname] = float(d.protein)
+
+    history = []
+    for day in sorted(grouped.keys(), reverse=True):
+        dish_list = []
+        for name, cnt in grouped[day].items():
+            dish_list.append({
+                'dishname': name,
+                'count': cnt,
+                'price': price_map[name],
+                'calorie': calorie_map[name],
+                'protein': protein_map[name],
+                'subtotal': round(price_map[name] * cnt, 2),
+                'image_url': img_map.get(name, 'Images/default.jpg'),
+            })
+        total = round(sum(d['subtotal'] for d in dish_list), 2)
+        history.append({'day': day, 'dishes': dish_list, 'total': total})
+
+    # 假设模板中用到order，传递history或orders，模板变量保持一致
+    return render(request, 'MyOrder.html', {'history': history})
+
+def Collection(request):
+    return render(request, 'Collection.html')
+
+def NoComment(request):
+    return render(request, 'NoComment.html')
+
+def profile_view(request):
+    return render(request, 'profile.html')  # 渲染 profile.html 模板
+
+def menu_view(request):
+    dishes = DishOrderTable.objects.all()  # 查询所有菜品
+    return render(request, 'main/menu.html', {'dishes': dishes})
+
+
+
+# 放在文件最底部，不影响原有代码
+import pymysql
 from django.http import JsonResponse
 from django.db.models import Sum
 from django.utils.timezone import now, timedelta
@@ -68,7 +204,7 @@ def daily_summary_data(request):
     current_day_goal_achievement_percentage = 0
     if DAILY_CALORIE_GOAL > 0:
         current_day_goal_achievement_percentage = (total_calories_consumed_today / DAILY_CALORIE_GOAL) * 100
-    
+
     # 计算昨日热量目标达成百分比
     previous_day_goal_achievement_percentage = 0
     if DAILY_CALORIE_GOAL > 0:
@@ -106,7 +242,7 @@ def calorie_trend_data(request):
     # current_weekday = today.weekday() # 0=Monday, 6=Sunday
     # current_week_start = today - timedelta(days=current_weekday)
     # current_week_end = current_week_start + timedelta(days=6)
-    
+
     # 为了简化，我们直接获取最近7天作为“本周”，和再前7天作为“上周”
     # 这样可以避免复杂的周一到周日计算，更符合“最近一周”和“上一周”的直观理解
     # 如果严格需要周一到周日，请保留您原来的 current_weekday 计算逻辑
@@ -155,7 +291,7 @@ def calorie_trend_data(request):
         current_date_for_this_week = this_week_start + timedelta(days=i)
         date_str_this_week = current_date_for_this_week.strftime('%Y-%m-%d')
         x_data.append(date_str_this_week)
-        
+
         # 获取本周数据，如果当天没有记录则为0
         calories_this_week = this_week_calorie_map.get(date_str_this_week, 0)
         this_week_data.append(round(calories_this_week, 2))
@@ -174,11 +310,56 @@ def calorie_trend_data(request):
         'last_week_data': last_week_data, # 新增上周数据
     })
 
-# --- 周报营养对比图数据视图 ---
+def api_orders(request):
+    """
+    提供 JSON 接口，供前端 AJAX 获取订单数据
+    """
+    conn = pymysql.connect(
+        host='172.16.7.79',
+        port=3306,
+        user='root',
+        password='BigData#123..',
+        database='ds',
+        charset='utf8mb4',
+        cursorclass=pymysql.cursors.DictCursor
+    )
+    with conn.cursor() as cursor:
+        sql = """
+            SELECT id, name AS username, dishname, price, calorie,
+                   carbon_emission, protein, fat, carbohydrate, created_at
+            FROM main_userinputdishtable
+            ORDER BY created_at DESC
+        """
+        cursor.execute(sql)
+        rows = cursor.fetchall()
+    conn.close()
+    return JsonResponse(rows, safe=False)
+
 def nutrient_comparison_data(request):
     """
+    提供 JSON 接口，供前端 AJAX 获取订单数据
     获取本周和上周的营养素（碳水、蛋白质、脂肪、膳食纤维、添加糖）总和数据。
     """
+    conn = pymysql.connect(
+        host='172.16.7.79',
+        port=3306,
+        user='root',
+        password='BigData#123..',
+        database='ds',
+        charset='utf8mb4',
+        cursorclass=pymysql.cursors.DictCursor
+    )
+    with conn.cursor() as cursor:
+        sql = """
+            SELECT id, name AS username, dishname, price, calorie,
+                   carbon_emission, protein, fat, carbohydrate, created_at
+            FROM main_userinputdishtable
+            ORDER BY created_at DESC
+        """
+        cursor.execute(sql)
+        rows = cursor.fetchall()
+    conn.close()
+    return JsonResponse(rows, safe=False)
     today = now().date()
 
     current_weekday = today.weekday() # 0=Monday, 6=Sunday
@@ -257,6 +438,36 @@ def monthly_calorie_data(request):
     """
     current_date = now().date()
 
+# import json
+# from django.http import JsonResponse
+# from django.views.decorators.csrf import csrf_exempt
+# from .models import Order, OrderItem, Dish
+#
+# @csrf_exempt
+# def submit_order(request):
+#     if request.method == 'POST':
+#         data = json.loads(request.body)
+#         items = data.get('items', [])
+#         if not items:
+#             return JsonResponse({'status': 'error', 'message': '购物车为空'})
+#
+#         order = Order.objects.create(user=request.user if request.user.is_authenticated else None)
+#         total_price = 0
+#         for item in items:
+#             dish = Dish.objects.filter(name=item['name']).first()
+#             if not dish:
+#                 return JsonResponse({'status': 'error', 'message': f'菜品不存在：{item["name"]}'})
+#             OrderItem.objects.create(
+#                 order=order,
+#                 dish=dish,
+#                 quantity=item['quantity'],
+#                 price=item['price']
+#             )
+#             total_price += item['price'] * item['quantity']
+#         order.total_price = total_price
+#         order.save()
+#
+#         return JsonResponse({'status': 'success', 'order_id': order.id})
     this_month_year = current_date.year
     this_month_month = current_date.month
 
@@ -334,7 +545,7 @@ def monthly_summary_data(request):
             包含各类营养指标聚合结果的字典
         """
         query_end_date = min(end_date, current_date) if current_month_flag else end_date
-        
+
         records = NutritionRecord.objects.filter(
             created_at__date__range=[start_date, query_end_date]
         ).aggregate(
@@ -366,14 +577,14 @@ def monthly_summary_data(request):
         total_vitamin_c = 0
         total_fat = 0
         total_sugar_added = 0
-        
+
         days_with_records = 0
         days_goal_achieved = 0
         accumulated_deficit_kcal = 0
 
         for entry in daily_records:
             days_with_records += 1
-            
+
             day_cal = float(entry['day_calories'] or 0)
             day_protein = float(entry['day_protein'] or 0)
             day_fiber = float(entry['day_fiber'] or 0)
@@ -395,10 +606,10 @@ def monthly_summary_data(request):
             if daily_deficit < 0:
                 daily_deficit = 0
             accumulated_deficit_kcal += daily_deficit
-            
+
             if day_cal <= daily_calorie_goal:
                 days_goal_achieved += 1
-        
+
         if current_month_flag:
             total_days_in_period = (query_end_date - start_date).days + 1
         else:
@@ -421,7 +632,7 @@ def monthly_summary_data(request):
 
             sugar_score = max(0, 1 - (avg_sugar_added / daily_sugar_added_limit)) * 20
             fat_score = max(0, 1 - (avg_fat / daily_fat_limit)) * 20
-            
+
             health_score = round(protein_score + fiber_score + sugar_score + fat_score, 2)
             health_score = min(max(health_score, 0), 100)
 
@@ -557,7 +768,7 @@ def weekly_nutrient_analysis_data(request):
         total_carb_cal = data['total_carbohydrate'] * 4
         total_protein_cal = data['total_protein'] * 4
         total_fat_cal = data['total_fat'] * 9
-        
+
         # 使用数据库中的总热量，如果为0则使用宏量营养素计算的总热量
         total_calories_for_percent = data['total_calories']
         if total_calories_for_percent == 0:
@@ -568,7 +779,7 @@ def weekly_nutrient_analysis_data(request):
         carb_percent = round((total_carb_cal / total_calories_for_percent) * 100, 2)
         protein_percent = round((total_protein_cal / total_calories_for_percent) * 100, 2)
         fat_percent = round((total_fat_cal / total_calories_for_percent) * 100, 2)
-        
+
         return {
             'carb_percent': carb_percent,
             'protein_percent': protein_percent,
