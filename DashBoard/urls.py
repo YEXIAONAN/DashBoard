@@ -1,3 +1,6 @@
+from django.views.static import serve
+from django.conf import settings
+from django.urls import re_path
 from django.contrib import admin
 from main import views,dishdb,api
 # 1. 导入必要的模块
@@ -23,7 +26,17 @@ urlpatterns = [
     path('api/orders/', views.api_orders, name='api_orders'),
 ]
 
-# 2. 在文件末尾添加以下关键代码
+
 if settings.DEBUG:
-    # 这行代码让Django开发服务器能够找到并提供静态文件
+
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATICFILES_DIRS[0])
+
+from django.views.static import serve
+from django.conf import settings
+import os
+
+urlpatterns += [
+    path('img/<str:dish>.jpg', serve, {
+        'document_root': os.path.join(settings.BASE_DIR, 'main', 'static', 'Images'),
+    }, name='dish_img'),
+]
