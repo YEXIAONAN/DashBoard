@@ -13,6 +13,7 @@ from collections import defaultdict
 def index(request):
     # 1. 推荐菜品（最多 4 条）
     dishes = DishOrderTable.objects.all()[:4]
+    dishes.getnamelen()
 
     # 2. 今日营养汇总
     today = timezone.localdate()
