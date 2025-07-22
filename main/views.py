@@ -98,10 +98,37 @@ def repo(request):
 
 
 def MyOrder(request):
-    """
-    渲染“我的订单”页面
-    """
-    return render(request, 'MyOrder.html')
+    cutoff = timezone.now() - timedelta(days=3)
+    dishes = UserInputDishTable.objects.filter(created_at__gte=cutoff)
+
+    img_map = {d.name: d.image_url for d in DishOrderTable.objects.all()}
+    grouped = defaultdict(lambda: defaultdict(int))
+    price_map, calorie_map, protein_map = {}, {}, {}
+    for d in dishes:
+        day = d.created_at.date()
+        grouped[day][d.dishname] += 1
+        price_map[d.dishname] = float(d.price)
+        calorie_map[d.dishname] = float(d.calorie)
+        protein_map[d.dishname] = float(d.protein)
+
+    history = []
+    for day in sorted(grouped.keys(), reverse=True):
+        dish_list = []
+        for name, cnt in grouped[day].items():
+            dish_list.append({
+                'dishname': name,
+                'count': cnt,
+                'price': price_map[name],
+                'calorie': calorie_map[name],
+                'protein': protein_map[name],
+                'subtotal': round(price_map[name] * cnt, 2),
+                'image_url': img_map.get(name, 'Images/default.jpg'),
+            })
+        total = round(sum(d['subtotal'] for d in dish_list), 2)
+        history.append({'day': day, 'dishes': dish_list, 'total': total})
+
+    # 假设模板中用到order，传递history或orders，模板变量保持一致
+    return render(request, 'MyOrder.html', {'history': history})
 
 def Collection(request):
     return render(request, 'Collection.html')
