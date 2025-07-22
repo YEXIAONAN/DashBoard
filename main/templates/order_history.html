@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+{% load static %}
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
@@ -80,78 +81,60 @@
     .header{background:linear-gradient(135deg,#1e88e5 0%,#0d47a1 100%);color:#fff;padding:15px;position:sticky;top:0;z-index:100}
   </style>
 </head>
-<body>
-  <div class="container">
-    <header class="header">
-      <button class="back-btn" onclick="history.back()">
-        <svg viewBox="0 0 24 24" width="24" height="24" fill="#fff"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
-      </button>
-      <div class="page-title">历史订单</div>
-    </header>
+<div class="container">
+  <header class="header">
+    <button class="back-btn" onclick="history.back()">
+      <svg viewBox="0 0 24 24" width="24" height="24" fill="#fff">
+        <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
+      </svg>
+    </button>
+    <div class="page-title">历史订单</div>
+  </header>
 
-    <div class="time-axis">· 近三个月 ·</div>
+{% for h in history %}
+  <div class="time-axis">· {{ h.day|date:"Y年m月d日" }} ·</div>
 
-    <!-- 订单1 -->
-    <div class="order-card">
-      <div class="order-header">
-        <span>#202507195678</span>
-        <span class="order-status">已完成</span>
-      </div>
-      <div class="dish-list">
-        <div class="dish-item">
-          <div class="dish-pic">🐟</div>
-          <div class="dish-info">
-            <div class="dish-name">清蒸鲈鱼</div>
-            <div class="dish-meta">卡路里 229 card · 蛋白 60.2 g</div>
-            <div class="dish-price">￥19.25</div>
-          </div>
-        </div>
-        <div class="dish-item">
-          <div class="dish-pic">🥗</div>
-          <div class="dish-info">
-            <div class="dish-name">宫保鸡丁</div>
-            <div class="dish-meta">卡路里 186 card · 蛋白 67.4 g</div>
-            <div class="dish-price">￥12.25</div>
-          </div>
-        </div>
-      </div>
-      <div class="order-summary">
-        <span>实付 <span class="total">￥31.5</span></span>
-        <button class="btn" onclick="alert('已为您重新加入购物车！')">再来一单</button>
-      </div>
+  <div class="order-card">
+    <div class="order-header">
+      <span>#{{ h.day|date:"Ymd" }}0001</span>
+      <span class="order-status">已完成</span>
     </div>
 
-    <!-- 订单2 -->
-    <div class="order-card">
-      <div class="order-header">
-        <span>#202507184321</span>
-        <span class="order-status" style="background:#fff2e8;color:#ff6f00;border-color:#ff6f00">配送中</span>
-      </div>
-      <div class="dish-list">
+    <div class="dish-list">
+      {% for dish in h.dishes %}
         <div class="dish-item">
-          <div class="dish-pic">🍗</div>
+          <div class="dish-pic">
+            <img src="
+              {% if dish.image_url %}
+                {% if dish.image_url|slice:':4' == 'http' %}{{ dish.image_url }}
+                {% else %}{% static dish.image_url %}
+                {% endif %}
+              {% else %}
+                {% static 'Images/default.jpg' %}
+              {% endif %}"
+              alt="{{ dish.dishname }}"
+              style="width:100%;height:100%;object-fit:cover;border-radius:var(--radius);"
+            >
+          </div>
           <div class="dish-info">
-            <div class="dish-name">红烧牛肉</div>
-            <div class="dish-meta">卡路里 664.9 card · 蛋白 67.4 g</div>
-            <div class="dish-price">￥15.75</div>
+            <div class="dish-name">
+              {{ dish.dishname }}{% if dish.count > 1 %} ×{{ dish.count }}{% endif %}
+            </div>
+            <div class="dish-meta">
+              卡路里 {{ dish.calorie|floatformat:1 }} kcal · 蛋白 {{ dish.protein|floatformat:1 }} g
+            </div>
+            <div class="dish-price">￥{{ dish.subtotal|floatformat:2 }}</div>
           </div>
         </div>
-        <div class="dish-item">
-          <div class="dish-pic">🥗</div>
-          <div class="dish-info">
-            <div class="dish-name">麻婆豆腐</div>
-            <div class="dish-meta">卡路里 400 card · 蛋白 38.3 g</div>
-            <div class="dish-price">￥8.75</div>
-          </div>
-        </div>
-      </div>
-      <div class="order-summary">
-        <span>实付 <span class="total">￥24.5</span></span>
-        <button class="btn" onclick="alert('已为您重新加入购物车！')">再来一单</button>
-      </div>
+      {% endfor %}
     </div>
 
-    <div class="time-axis">· 2025年6月 ·</div>
+    <div class="order-summary">
+      <span>实付 <span class="total">￥{{ h.total|floatformat:2 }}</span></span>
+      <button class="btn" onclick="alert('已为您重新加入购物车！')">再来一单</button>
+    </div>
   </div>
-</body>
-</html>
+{% empty %}
+  <div style="text-align:center;padding:40px;color:#888;">暂无订单</div>
+{% endfor %}
+</div>

@@ -10,8 +10,6 @@ from django.urls import path,include
 
 from django.urls import path
 
-from main import views
-
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('index/', views.index,name='index'),

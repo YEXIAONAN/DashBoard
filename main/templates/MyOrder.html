@@ -6,9 +6,8 @@
     <title>我的订单 - 智慧食堂</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{% static 'css/all.min.css' %}">
-    <style>
-
-                * {
+  <style>
+        * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
@@ -604,6 +603,12 @@
     </div>
 
     <script>
+
+        document.getElementById('backButton').addEventListener('click', () => {
+    window.location.href = '/profile';
+});
+
+
         // 页面加载完成后隐藏加载动画
         window.addEventListener('load', function () {
             setTimeout(() => {
@@ -624,43 +629,41 @@
 
         // 渲染订单卡片
         function renderOrders(data) {
-    const container = document.getElementById('orderList');
-    container.innerHTML = '';
-    data.forEach(order => {
-        const imgSrc = `/static/Images/${order.dishname}.jpg`;
-        const card = `
-            <div class="order-card">
-                <div class="order-header">
-                    <div class="order-id">#${order.id}</div>
-                    <div class="order-status status-completed">已完成</div>
-                </div>
-                <div class="order-time">
-                    <i class="far fa-clock"></i> ${order.created_at}
-                </div>
-                <div class="order-items">
-                    <div class="order-item" style="display:flex;align-items:center;">
-                        <img src="${imgSrc}"
-                             alt="${order.dishname}"
-                             onerror="this.src='/static/Images/default.jpg'"
-                             style="width:70px;height:70px;border-radius:12px;margin-right:12px;object-fit:cover;">
-                        <div style="flex:1;">
-                            <div class="item-name">${order.dishname}</div>
-                            <div class="item-price">¥${parseFloat(order.price).toFixed(2)}</div>
+            const container = document.getElementById('orderList');
+            container.innerHTML = '';
+            data.forEach(order => {
+                const card = `
+                    <div class="order-card">
+                        <div class="order-header">
+                            <div class="order-id">#${order.id}</div>
+                            <div class="order-status status-completed">已完成</div>
+                        </div>
+                        <div class="order-time">
+                            <i class="far fa-clock"></i> ${order.created_at}
+                        </div>
+<div class="order-item" style="display:flex;align-items:center;margin-bottom:10px;">
+    <img src="/static/Images/${order.dishname}.jpg"
+         alt="${order.dishname}"
+         onerror="this.src='/static/Images/default.jpg'"
+         style="width:70px;height:70px;border-radius:12px;margin-right:12px;object-fit:cover;box-shadow:0 2px 6px rgba(0,0,0,.1);">
+    <div>
+        <div class="item-name" style="font-weight:600;color:#333;">${order.dishname}</div>
+        <div class="item-price" style="color:#e74c3c;font-weight:700;">￥${parseFloat(order.price).toFixed(2)}</div>
+    </div>
+</div>
+
+                        <div class="order-footer">
+                            <div class="total-price">总计: ¥${parseFloat(order.price).toFixed(2)}</div>
+                            <div class="order-actions">
+                                <button class="action-btn btn-outline">再来一单</button>
+                                <button class="action-btn btn-primary">评价</button>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="order-footer">
-                    <div class="total-price">总计: ¥${parseFloat(order.price).toFixed(2)}</div>
-                    <div class="order-actions">
-                        <button class="action-btn btn-outline">再来一单</button>
-                        <button class="action-btn btn-primary">评价</button>
-                    </div>
-                </div>
-            </div>
-        `;
-        container.innerHTML += card;
-    });
-}
+                `;
+                container.innerHTML += card;
+            });
+        }
 
         // 更新统计信息
         function updateStats(data) {
@@ -670,10 +673,6 @@
             document.getElementById('totalSpent').textContent = `¥${totalSpent.toFixed(1)}`;
         }
 
-        // 返回按钮
-        document.getElementById('backButton').addEventListener('click', () => {
-            alert('返回上一页');
-        });
 
         // 搜索按钮
         document.getElementById('searchButton').addEventListener('click', () => {
