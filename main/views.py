@@ -2,6 +2,10 @@
 
 # 1. 将所有需要的模块一次性导入在文件顶部
 from django.shortcuts import render
+from .models import DishOrderTable
+
+
+# 2. 定义所有页面的渲染视图
 from django.utils import timezone
 from django.db.models import Sum
 from .models import DishOrderTable, UserInputDishTable
@@ -40,11 +44,12 @@ def index(request):
 
 
 def orders(request):
-    """
-    渲染点餐页面，并从数据库获取所有菜品传递给前端
-    这是正确的 orders 视图函数
-    """
-    return render(request, 'orders.html')
+    # 查询所有菜品，传给模板
+    dishes = DishOrderTable.objects.all()
+
+    # 叶小楠Bug记录 ： 购物车无法显示总蛋白质问题
+    # print(f"--- 调试信息: 正在渲染菜品 '{dishes[0].name}'，其蛋白质为: {dishes[0].total_protein} ---")
+    return render(request, 'orders.html', {'dishes': dishes})
 
 
 def profile(request):
@@ -81,4 +86,39 @@ def NoComment(request):
 
 def profile_view(request):
     return render(request, 'profile.html')  # 渲染 profile.html 模板
+
+def menu_view(request):
+    dishes = DishOrderTable.objects.all()  # 查询所有菜品
+    return render(request, 'main/menu.html', {'dishes': dishes})
+
+
+
+# 放在文件最底部，不影响原有代码
+import pymysql
+from django.http import JsonResponse
+
+def api_orders(request):
+    """
+    提供 JSON 接口，供前端 AJAX 获取订单数据
+    """
+    conn = pymysql.connect(
+        host='172.16.7.79',
+        port=3306,
+        user='root',
+        password='BigData#123..',
+        database='ds',
+        charset='utf8mb4',
+        cursorclass=pymysql.cursors.DictCursor
+    )
+    with conn.cursor() as cursor:
+        sql = """
+            SELECT id, name AS username, dishname, price, calorie,
+                   carbon_emission, protein, fat, carbohydrate, created_at
+            FROM main_userinputdishtable
+            ORDER BY created_at DESC
+        """
+        cursor.execute(sql)
+        rows = cursor.fetchall()
+    conn.close()
+    return JsonResponse(rows, safe=False)
 

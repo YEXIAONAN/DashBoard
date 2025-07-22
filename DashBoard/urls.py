@@ -21,6 +21,7 @@ urlpatterns = [
     path('Collection/',views.Collection,name='Collection'),
     path('NoComment/',views.NoComment,name='NoComment'),
     path('NoComment/profile/', views.profile, name='profile'),
+    path('api/orders/', views.api_orders, name='api_orders'),
 ]
 
 # 2. 在文件末尾添加以下关键代码
