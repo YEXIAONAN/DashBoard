@@ -23,7 +23,6 @@ urlpatterns = [
     path('MyOrder/',views.MyOrder,name='MyOrder'),
     path('Collection/',views.Collection,name='Collection'),
     path('NoComment/',views.NoComment,name='NoComment'),
-    path('NoComment/profile/', views.profile, name='profile'),
     path('api/orders/', views.api_orders, name='api_orders'),
 ]
 
