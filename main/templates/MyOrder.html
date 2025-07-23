@@ -604,6 +604,7 @@
 
     <script>
 
+
         document.getElementById('backButton').addEventListener('click', () => {
     window.location.href = '/profile';
 });
@@ -635,12 +636,12 @@
                 const card = `
                     <div class="order-card">
                         <div class="order-header">
-                            <div class="order-id">#${order.id}</div>
-                            <div class="order-status status-completed">已完成</div>
+                            <div style="display:inline-block;min-width:28px;height:28px;line-height:28px;background:linear-gradient(135deg,#e3f2fd,#bbdefb);color:#2196f3;border-radius:50%;text-align:center;font-size:13px;font-weight:600;box-shadow:0 2px 4px rgba(33,150,243,.25);">${order.id}</div>
+                            <div class="order-status ${data.indexOf(order) === 0 ? 'status-processing' : 'status-completed'}">${data.indexOf(order) === 0 ? '进行中' : '已完成'}</div>
                         </div>
                         <div class="order-time">
-                            <i class="far fa-clock"></i> ${order.created_at}
-                        </div>
+    <i class="far fa-clock"></i> ${new Date(order.created_at).toLocaleString('zh-CN', { year:'numeric', month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit' }).replace(/\//g, '-')}
+</div>
 <div class="order-item" style="display:flex;align-items:center;margin-bottom:10px;">
     <img src="/static/Images/${order.dishname}.jpg"
          alt="${order.dishname}"

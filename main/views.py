@@ -1,10 +1,7 @@
-
-# 1. 将所有需要的模块一次性导入在文件顶部
-# D:\21089\下载\Dashboard\DashBoard\main\views.py
-
 from django.shortcuts import render
 from datetime import datetime, timedelta
 
+from django.template.defaultfilters import date
 # 2. 定义所有页面的渲染视图
 from django.utils import timezone
 from django.db.models import Sum
@@ -155,9 +152,6 @@ def menu_view(request):
     return render(request, 'main/menu.html', {'dishes': dishes})
 
 
-
-# 放在文件最底部，不影响原有代码
-import pymysql
 from django.http import JsonResponse
 from django.db.models import Sum
 from django.utils.timezone import now, timedelta
@@ -309,31 +303,23 @@ def calorie_trend_data(request):
         'this_week_data': this_week_data, # 重命名 y_data 为 this_week_data
         'last_week_data': last_week_data, # 新增上周数据
     })
+from .models import UserInputDishTable
 
 def api_orders(request):
-    """
-    提供 JSON 接口，供前端 AJAX 获取订单数据
-    """
-    conn = pymysql.connect(
-        host='172.16.7.79',
-        port=3306,
-        user='root',
-        password='BigData#123..',
-        database='ds',
-        charset='utf8mb4',
-        cursorclass=pymysql.cursors.DictCursor
-    )
-    with conn.cursor() as cursor:
-        sql = """
-            SELECT id, name AS username, dishname, price, calorie,
-                   carbon_emission, protein, fat, carbohydrate, created_at
-            FROM main_userinputdishtable
-            ORDER BY created_at DESC
-        """
-        cursor.execute(sql)
-        rows = cursor.fetchall()
-    conn.close()
-    return JsonResponse(rows, safe=False)
+    orders = UserInputDishTable.objects.all().order_by('-created_at')
+
+    data = [
+        {
+            'id': order.id,
+            'username': order.name,
+            'dishname': order.dishname,
+            'price': str(order.price),
+            'calorie': str(order.calorie),
+            'created_at': order.created_at.strftime('%Y-%m-%d %H:%M:%S'),
+        }
+        for order in orders
+    ]
+    return JsonResponse(data, safe=False)
 
 def nutrient_comparison_data(request):
     """
@@ -381,6 +367,7 @@ def nutrient_comparison_data(request):
     })
 
 # --- 月报热量趋势折线图数据视图 ---
+
 def get_weekly_calorie_sums_for_month(year, month):
     weekly_sums = []
     labels = []
