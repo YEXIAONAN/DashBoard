@@ -94,7 +94,7 @@
                 <input type="text" placeholder="搜索菜品或食材...">
             </div>
             <div class="user-avatar">
-                <img src="https://randomuser.me/api/portraits/women/32.jpg" alt="用户头像" onclick="location.href='/profile/'">
+                <img src="https://cdn-icons-png.flaticon.com/512/847/847969.png" alt="用户头像" onclick="location.href='/profile/'">
             </div>
         </div>
 
@@ -120,10 +120,19 @@
                 <div class="progress-container">
                     <div class="progress-bar"
                          style="background:linear-gradient(90deg,#ff5252,#ff6e40);
-                                width:{% widthratio totals.calorie 7500 100 %}%;">
+                                width:{% widthratio totals.calorie 7500 100 %}%;
+                                min-width:1px">
                         <span class="progress-value"
-                              style="position:absolute;right:-32px;top:50%;transform:translateY(-50%);">
+                              style="position:absolute;left:8px;top:50%;transform:translateY(-50%);
+                                     color:#fff;font-weight:600;font-size:.75rem;text-shadow:0 1px 2px rgba(0,0,0,.3);">
                             {% widthratio totals.calorie 7500 100 %}%
+                        </span>
+                        <!-- 实际值 -->
+                        <span style="position:absolute;left:90%;top:50%;
+                                     transform:translate(-50%,-50%);
+                                     color:#fff;font-weight:600;font-size:.75rem;
+                                     text-shadow:0 1px 2px rgba(0,0,0,.4);">
+                            {{ totals.calorie|floatformat:0 }}
                         </span>
                     </div>
                 </div>
@@ -143,10 +152,19 @@
                     <div class="progress-container">
                         <div class="progress-bar"
                              style="background:linear-gradient(90deg,#4fc3f7,#29b6f6);
-                                    width:{% widthratio totals.protein 750 100 %}%;">
+                                    width:{% widthratio totals.protein 750 100 %}%;
+                                    min-width:1px">
                             <span class="progress-value"
-                                  style="position:absolute;right:-32px;top:50%;transform:translateY(-50%);">
+                                  style="position:absolute;left:8px;top:50%;transform:translateY(-50%);
+                                         color:#fff;font-weight:600;font-size:.7rem;text-shadow:0 1px 2px rgba(0,0,0,.3);">
                                 {% widthratio totals.protein 750 100 %}%
+                            </span>
+                            <!-- 实际值 -->
+                            <span style="position:absolute;left:90%;top:50%;
+                                         transform:translate(-50%,-50%);
+                                         color:#fff;font-weight:600;font-size:.75rem;
+                                         text-shadow:0 1px 2px rgba(0,0,0,.4);">
+                                {{ totals.protein|floatformat:1 }}
                             </span>
                         </div>
                     </div>
@@ -164,10 +182,19 @@
                     <div class="progress-container">
                         <div class="progress-bar"
                              style="background:linear-gradient(90deg,#ffca28,#ffb300);
-                                    width:{% widthratio totals.fat 750 100 %}%;">
+                                    width:{% widthratio totals.fat 750 100 %}%;
+                                    min-width:1px">
                             <span class="progress-value"
-                                  style="position:absolute;right:-32px;top:50%;transform:translateY(-50%);">
+                                  style="position:absolute;left:8px;top:50%;transform:translateY(-50%);
+                                         color:#fff;font-weight:600;font-size:.7rem;text-shadow:0 1px 2px rgba(0,0,0,.3);">
                                 {% widthratio totals.fat 750 100 %}%
+                            </span>
+                            <!-- 实际值 -->
+                            <span style="position:absolute;left:85%;top:50%;
+                                         transform:translate(-50%,-50%);
+                                         color:#fff;font-weight:600;font-size:.75rem;
+                                         text-shadow:0 1px 2px rgba(0,0,0,.4);">
+                                {{ totals.fat|floatformat:1 }}
                             </span>
                         </div>
                     </div>
@@ -185,10 +212,49 @@
                     <div class="progress-container">
                         <div class="progress-bar"
                              style="background:linear-gradient(90deg,#66bb6a,#43a047);
-                                    width:{% widthratio totals.carbohydrate 100 100 %}%;">
+                                    width:{% widthratio totals.carbohydrate 100 100 %}%;
+                                    min-width:1px">
                             <span class="progress-value"
-                                  style="position:absolute;right:-32px;top:50%;transform:translateY(-50%);">
+                                  style="position:absolute;left:8px;top:50%;transform:translateY(-50%);
+                                         color:#fff;font-weight:600;font-size:.7rem;text-shadow:0 1px 2px rgba(0,0,0,.3);">
                                 {% widthratio totals.carbohydrate 100 100 %}%
+                            </span>
+                            <!-- 实际值 -->
+                            <span style="position:absolute;left:77%;top:50%;
+                                         transform:translate(-50%,-50%);
+                                         color:#fff;font-weight:600;font-size:.75rem;
+                                         text-shadow:0 1px 2px rgba(0,0,0,.4);">
+                                {{ totals.carbohydrate|floatformat:1 }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <!-- 纤维 -->
+                <div class="nutrient-progress">
+                    <div class="progress-header">
+                        <div class="nutrient-name">
+                            <i class="fas fa-seedling"></i>
+                            <span>纤维</span>
+                        </div>
+                        <div class="nutrient-value">{{ totals.fiber|floatformat:1 }} / 30 g</div>
+                    </div>
+                    <div class="progress-container">
+                        <div class="progress-bar"
+                             style="background:linear-gradient(90deg,#ab47bc,#8e24aa);
+                                    width:{% widthratio totals.fiber 30 100 %}%;
+                                    min-width:1px">
+                            <!-- 百分比 -->
+                            <span class="progress-value"
+                                  style="position:absolute;left:8px;top:50%;transform:translateY(-50%);
+                                         color:#fff;font-weight:600;font-size:.7rem;text-shadow:0 1px 2px rgba(0,0,0,.3);">
+                                {% widthratio totals.fiber 30 100 %}%
+                            </span>
+                            <!-- 实际值 -->
+                            <span style="position:absolute;left:{% widthratio totals.fiber 30 100 %}%;
+                                         top:50%;transform:translate(-50%,-50%);
+                                         color:#fff;font-weight:600;font-size:.75rem;
+                                         text-shadow:0 1px 2px rgba(0,0,0,.4);">
+                                {{ totals.fiber|floatformat:1 }}
                             </span>
                         </div>
                     </div>
@@ -196,6 +262,7 @@
             </div>
             {% endwith %}
         </div>
+
         <!-- 功能区 -->
         <div class="function-section">
             <h2 class="section-title">
