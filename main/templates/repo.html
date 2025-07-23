@@ -1218,15 +1218,15 @@
                 .then(response => response.json())
                 .then(data => {
                     // 更新统计卡片数据
-                    document.getElementById('monthlyAvgCalorieStatValue').textContent = `${data.avg_calories.toLocaleString()} kcal`;
-                    document.getElementById('monthlyTotalCalorieDeficitValue').textContent = `${data.total_deficit.toLocaleString()} kcal`;
-                    document.getElementById('monthlyGoalAchievementStatValue').textContent = `${data.goal_achievement}%`;
-                    document.getElementById('daysGoalAchievedValue').textContent = `${data.days_achieved}天`;
-                    document.getElementById('monthlyFiberIntake').textContent = `${data.avg_fiber.toFixed(1)}g`;
-                    document.getElementById('monthlyFatIntake').textContent = `${data.avg_fat.toFixed(1)}g`;
-                    document.getElementById('monthlyCalciumGoalAchievement').textContent = `${data.calcium_achievement}%`;
-                    document.getElementById('monthlyVitaminCIntake').textContent = `${data.avg_vitamin_c.toFixed(1)}mg`;
-                    document.getElementById('monthlyTimeRange').textContent = `${data.month_start} - ${data.month_end}`;
+                    document.getElementById('monthlyAvgCalorieStatValue').textContent = `${data.monthly_avg_calories.toLocaleString()} kcal`;
+                    document.getElementById('monthlyTotalCalorieDeficitValue').textContent = `${data.monthly_calorie_deficit_kcal.toLocaleString()} kcal`;
+                    document.getElementById('monthlyGoalAchievementStatValue').textContent = `${data.monthly_goal_achievement_percentage}%`;
+                    document.getElementById('daysGoalAchievedValue').textContent = `${data.days_goal_achieved}天`;
+                    document.getElementById('monthlyFiberIntake').textContent = `${data.fiber_intake_this_month.toFixed(1)}g`;
+                    document.getElementById('monthlyFatIntake').textContent = `${data.fat_intake_this_month.toFixed(1)}g`;
+                    document.getElementById('monthlyCalciumGoalAchievement').textContent = `${data.calcium_goal_achievement_this_month}%`;
+                    document.getElementById('monthlyVitaminCIntake').textContent = `${data.vitamin_c_intake_this_month.toFixed(1)}mg`;
+                    document.getElementById('monthlyTimeRange').textContent = `${data.this_month_start_date} - ${data.this_month_end_date}`;
                 })
                 .catch(error => {
                     console.error('获取月度统计数据失败:', error);
@@ -1537,7 +1537,7 @@ if (weeklyCalorieChartDom) {
                 return response.json();
             })
             .then(data => {
-                console.log("获取到营养数据:", data);
+                console.log("获取到周报营养数据柱状图:", data);
                 const option = {
                     tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
                     legend: { data: ['本周', '上周'], top: 'top', textStyle: { color: '#333' } },

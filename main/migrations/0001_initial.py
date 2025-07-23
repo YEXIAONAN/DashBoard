@@ -15,7 +15,6 @@ class Migration(migrations.Migration):
     operations = [
         migrations.CreateModel(
             name='NutritionRecord',
-            name='Dish',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('name', models.CharField(max_length=100, unique=True, verbose_name='菜品名称')),
@@ -66,7 +65,6 @@ class Migration(migrations.Migration):
                 'db_table': 'nutrition_records',
                 'verbose_name': '订单详情',
                 'verbose_name_plural': '订单详情',
-                'db_table': 'order_items',
             },
         ),
     ]

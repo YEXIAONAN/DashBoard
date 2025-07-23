@@ -340,26 +340,6 @@ def nutrient_comparison_data(request):
     提供 JSON 接口，供前端 AJAX 获取订单数据
     获取本周和上周的营养素（碳水、蛋白质、脂肪、膳食纤维、添加糖）总和数据。
     """
-    conn = pymysql.connect(
-        host='172.16.7.79',
-        port=3306,
-        user='root',
-        password='BigData#123..',
-        database='ds',
-        charset='utf8mb4',
-        cursorclass=pymysql.cursors.DictCursor
-    )
-    with conn.cursor() as cursor:
-        sql = """
-            SELECT id, name AS username, dishname, price, calorie,
-                   carbon_emission, protein, fat, carbohydrate, created_at
-            FROM main_userinputdishtable
-            ORDER BY created_at DESC
-        """
-        cursor.execute(sql)
-        rows = cursor.fetchall()
-    conn.close()
-    return JsonResponse(rows, safe=False)
     today = now().date()
 
     current_weekday = today.weekday() # 0=Monday, 6=Sunday
