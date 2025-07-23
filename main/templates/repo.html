@@ -1,11 +1,15 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>智能食堂健康平台 - 深蓝主题</title>
-    <link rel="stylesheet" href="../static/css/all.min.css">
-    <script src="../static/js/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+
+
     <style>
         * {
             margin: 0;
@@ -44,6 +48,8 @@
             max-width: 100%;
             margin: 0 auto;
             padding: 0 15px;
+            margin-bottom: -60px; /* 导航栏高度的负值 */
+            padding-bottom: 80px; /* 导航栏高度 + 额外间距 */
         }
         
         /* 顶部导航 */
@@ -590,6 +596,29 @@
                 grid-template-columns: 1fr;
             }
         }
+
+
+
+
+.chart-container {
+    width: 100%;
+    height: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px 0;
+}
+
+
+
+
+
+
+
+
+
+
+
     </style>
 </head>
 <body>
@@ -632,37 +661,51 @@
                         </div>
                         <h2>本周健康报告</h2>
                     </div>
-                    <div class="time-range">11月20日 - 11月26日</div>
+                    <div class="time-range">7月20日 - 7月26日</div>
                 </div>
                 
-                <div class="comparison-grid">
-                    <div class="comparison-card">
-                        <div>
-                            <div class="comparison-value">1,870 kcal</div>
-                            <div class="comparison-label">日均摄入热量</div>
-                        </div>
-                        <div class="comparison-change change-positive">
-                            <i class="fas fa-arrow-down"></i> 5.2%
-                        </div>
-                    </div>
-                    
-                    <div class="comparison-card">
-                        <div>
-                            <div class="comparison-value">78%</div>
-                            <div class="comparison-label">热量目标达成</div>
-                        </div>
-                        <div class="comparison-change change-positive">
-                            <i class="fas fa-arrow-up"></i> 7.8%
-                        </div>
-                    </div>
-                </div>
+<!-- <div class="comparison-grid">
+    <div class="stat-card">
+        <div>
+            <div class="value" id="weeklyDailyAvgCalorieStatValue">1,870 kcal</div>
+            <div class="label">日均摄入热量</div>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div>
+
+            <div class="value" id="weeklyGoalAchievementStatValue">78%</div>
+            <div class="label">热量目标达成</div>
+        </div>
+    </div>
+
+    
+    <div class="comparison-card">
+        <div>
+                <div class="stat-card">
+        <div>
+
+            <div class="value" id="weeklyDailyAvgCalorieStatValue">1,870 kcal</div>
+            <div class="label">日均摄入热量</div>
+        </div>
+    </div>
+            <div class="comparison-value" id="dailyGoalAchievementTodayValue">78%</div>
+            <div class="comparison-label">热量目标达成</div>
+        </div>
+
+        <div class="comparison-change change-positive" id="dailyGoalAchievementTodayChange">
+            <i class="fas fa-arrow-up"></i> 7.8%
+        </div>
+    </div>
+</div> -->
+
                 
                 <div class="report-section">
                     <div class="section-title">
                         <i class="fas fa-fire"></i> 热量摄入分析
                     </div>
                     <div class="chart-container">
-                        <canvas id="weeklyCalorieChart"></canvas>
+                        <div id="weeklyCalorieChart" style="width:100%;height:220px;"></div>
                     </div>
                     <div class="stats-grid">
                         <div class="stat-card">
@@ -674,43 +717,54 @@
                             <div class="label">热量目标达成</div>
                         </div>
                         <div class="stat-card">
-                            <div class="value">2.1 kg</div>
+                            <div class="value" id="accumulatedCalorieDeficitKg">2.1 kg</div> <!-- 添加 id -->
                             <div class="label">热量缺口累积</div>
                         </div>
-                        <div class="stat-card">
+                        <!-- <div class="stat-card">
                             <div class="value">22.8%</div>
                             <div class="label">运动消耗占比</div>
-                        </div>
+                        </div> -->
                     </div>
                 </div>
-                
-                <div class="report-section">
-                    <div class="section-title">
-                        <i class="fas fa-balance-scale"></i> 营养素分析
+
+
+
+
+
+                            <div class="report-section">
+                <div class="section-title">
+                    <i class="fas fa-balance-scale"></i> 营养素分析
+                </div>
+                <div class="chart-container">
+                    <div id="weeklyNutrientChart" style="width:100%;height:220px;"></div>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <!-- 添加 ID，内容将由 JS 动态填充 -->
+                        <div class="value" id="weeklyCarbRatio"></div>
+                        <div class="label">碳水占比</div>
                     </div>
-                    <div class="chart-container">
-                        <canvas id="weeklyNutrientChart"></canvas>
+                    <div class="stat-card">
+                        <!-- 添加 ID，内容将由 JS 动态填充 -->
+                        <div class="value" id="weeklyProteinRatio"></div>
+                        <div class="label">蛋白质占比</div>
                     </div>
-                    <div class="stats-grid">
-                        <div class="stat-card">
-                            <div class="value">48% <span class="comparison positive">+3%</span></div>
-                            <div class="label">碳水占比</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="value">22% <span class="comparison">-2%</span></div>
-                            <div class="label">蛋白质占比</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="value">30% <span class="comparison">-1%</span></div>
-                            <div class="label">脂肪占比</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="value">56g <span class="comparison positive">-8%</span></div>
-                            <div class="label">日均添加糖</div>
-                        </div>
+                    <div class="stat-card">
+                        <!-- 添加 ID，内容将由 JS 动态填充 -->
+                        <div class="value" id="weeklyFatRatio"></div>
+                        <div class="label">脂肪占比</div>
+                    </div>
+                    <div class="stat-card">
+                        <!-- 添加 ID，内容将由 JS 动态填充 -->
+                        <div class="value" id="weeklyAvgAddedSugar"></div>
+                        <div class="label">日均添加糖</div>
                     </div>
                 </div>
-                
+            </div>
+
+
+
+
                 <div class="report-section">
                     <div class="section-title">
                         <i class="fas fa-lightbulb"></i> AI分析反馈
@@ -823,104 +877,126 @@
                         </div>
                         <h2>本月健康报告</h2>
                     </div>
-                    <div class="time-range">11月1日 - 11月30日</div>
+                    <div class="time-range" id="monthlyTimeRange">11月1日 - 11月30日</div> 
                 </div>
-                
                 <div class="comparison-grid">
-                    <div class="comparison-card">
-                        <div>
-                            <div class="comparison-value">1,920 kcal</div>
-                            <div class="comparison-label">月均摄入热量</div>
-                        </div>
-                        <div class="comparison-change change-positive">
-                            <i class="fas fa-arrow-down"></i> 3.2%
-                        </div>
-                    </div>
-                    
-                    <div class="comparison-card">
-                        <div>
-                            <div class="comparison-value">76%</div>
-                            <div class="comparison-label">热量目标达成</div>
-                        </div>
-                        <div class="comparison-change change-positive">
-                            <i class="fas fa-arrow-up"></i> 6.5%
-                        </div>
-                    </div>
-                    
-                    <div class="comparison-card">
-                        <div>
-                            <div class="comparison-value">82分</div>
-                            <div class="comparison-label">健康指数</div>
-                        </div>
-                        <div class="comparison-change change-positive">
-                            <i class="fas fa-arrow-up"></i> 6.0%
-                        </div>
-                    </div>
-                    
-                    <div class="comparison-card">
-                        <div>
-                            <div class="comparison-value">12种</div>
-                            <div class="comparison-label">新尝试菜品</div>
-                        </div>
-                        <div class="comparison-change change-positive">
-                            <i class="fas fa-arrow-up"></i> 20%
-                        </div>
-                    </div>
-                </div>
+    <div class="comparison-card">
+        <div>
+            <!-- 添加 ID -->
+            <div class="comparison-value" id="monthlyAvgCalorieValue">1,920 kcal</div>
+            <div class="comparison-label">月均摄入热量</div>
+        </div>
+        <!-- 添加 ID -->
+        <div class="comparison-change change-positive" id="monthlyAvgCalorieChange">
+            <i class="fas fa-arrow-down"></i> 3.2%
+        </div>
+    </div>
+    
+    <div class="comparison-card">
+        <div>
+            <!-- 添加 ID -->
+            <div class="comparison-value" id="monthlyGoalAchievementValue">76%</div>
+            <div class="comparison-label">热量目标达成</div>
+        </div>
+        <!-- 添加 ID -->
+        <div class="comparison-change change-positive" id="monthlyGoalAchievementChange">
+            <i class="fas fa-arrow-up"></i> 6.5%
+        </div>
+    </div>
+    
+    <div class="comparison-card">
+        <div>
+            <!-- 添加 ID -->
+            <div class="comparison-value" id="healthIndexValue">82分</div>
+            <div class="comparison-label">健康指数</div>
+        </div>
+        <!-- 添加 ID -->
+        <div class="comparison-change change-positive" id="healthIndexChange">
+            <i class="fas fa-arrow-up"></i> 6.0%
+        </div>
+    </div>
+    
+    <div class="comparison-card">
+        <div>
+            <!-- 添加 ID -->
+            <div class="comparison-value" id="newDishesTriedValue">12种</div>
+            <div class="comparison-label">新尝试菜品</div>
+        </div>
+        <!-- 添加 ID -->
+        <div class="comparison-change change-positive" id="newDishesTriedChange">
+            <i class="fas fa-arrow-up"></i> 20%
+        </div>
+    </div>
+</div>
                 
                 <div class="report-section">
                     <div class="section-title">
                         <i class="fas fa-fire"></i> 月度热量趋势
                     </div>
-                    <div class="chart-container">
-                        <canvas id="monthlyCalorieChart"></canvas>
-                    </div>
-                    <div class="stats-grid">
-                        <div class="stat-card">
-                            <div class="value">1,920 kcal <span class="comparison positive">-3.2%</span></div>
-                            <div class="label">月均摄入热量</div>
+                        <div class="chart-container">
+        <!-- 这是 ECharts 唯一需要的容器 div。 -->
+        <!-- 务必确保这个 div 内部是 **空的**，没有任何子 div 或 canvas 标签。 -->
+        <!-- ECharts 会在这个 div 内部自动创建它自己的 canvas。 -->
+        <div id="monthlyCalorieChart" style="width: 450px; height: 240px;"></div>
                         </div>
-                        <div class="stat-card">
-                            <div class="value">8,400 kcal <span class="comparison positive">+18%</span></div>
-                            <div class="label">月度热量缺口</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="value">76% <span class="comparison positive">+6.5%</span></div>
-                            <div class="label">热量目标达成</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="value">27天 <span class="comparison positive">+4天</span></div>
-                            <div class="label">目标达成天数</div>
-                        </div>
-                    </div>
-                </div>
+<div class="stats-grid">
+    <div class="stat-card">
+        <!-- 添加 ID，内容将由 JS 动态填充 -->
+        <div class="value" id="monthlyAvgCalorieStatValue">1,920 kcal <span class="comparison positive">-3.2%</span></div>
+        <div class="label">月均摄入热量</div>
+    </div>
+    <div class="stat-card">
+        <!-- 添加 ID，内容将由 JS 动态填充 -->
+        <div class="value" id="monthlyTotalCalorieDeficitValue">8,400 kcal <span class="comparison positive">+18%</span></div>
+        <div class="label">月度热量缺口</div>
+    </div>
+    <div class="stat-card">
+        <!-- 添加 ID，内容将由 JS 动态填充 -->
+        <div class="value" id="monthlyGoalAchievementStatValue">76% <span class="comparison positive">+6.5%</span></div>
+        <div class="label">热量目标达成</div>
+    </div>
+    <div class="stat-card">
+        <!-- 添加 ID，内容将由 JS 动态填充 -->
+        <div class="value" id="daysGoalAchievedValue">27天 <span class="comparison positive">+4天</span></div>
+        <div class="label">目标达成天数</div>
+    </div>
+</div>
                 
                 <div class="report-section">
                     <div class="section-title">
                         <i class="fas fa-balance-scale"></i> 营养结构变化
                     </div>
                     <div class="chart-container">
-                        <canvas id="monthlyNutrientChart"></canvas>
+        <!-- 这是 ECharts 雷达图的容器 div。 -->
+                        <div id="monthlyNutrientRadarChart" style="width: 450px; height: 240px;"></div>
                     </div>
-                    <div class="stats-grid">
-                        <div class="stat-card">
-                            <div class="value">+12% <span class="comparison positive">↑</span></div>
-                            <div class="label">膳食纤维摄入</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="value">-18% <span class="comparison positive">↓</span></div>
-                            <div class="label">饱和脂肪摄入</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="value">65% <span class="comparison">-5%</span></div>
-                            <div class="label">钙摄入达标率</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="value">92% <span class="comparison positive">+8%</span></div>
-                            <div class="label">维生素C摄入</div>
-                        </div>
-                    </div>
-                </div>
+
+
+    
+    <div class="stats-grid">
+        <div class="stat-card">
+            <!-- 添加 ID，内容将由 JS 动态填充 -->
+            <div class="value" id="monthlyFiberIntake"></div>
+            <div class="label">膳食纤维摄入</div>
+        </div>
+        <div class="stat-card">
+            <!-- 添加 ID，内容将由 JS 动态填充 -->
+            <div class="value" id="monthlyFatIntake"></div>
+            <div class="label">脂肪摄入</div> <!-- 更改为“脂肪摄入”，因为数据库只有总脂肪 -->
+        </div>
+        <div class="stat-card">
+            <!-- 添加 ID，内容将由 JS 动态填充 -->
+            <div class="value" id="monthlyCalciumGoalAchievement"></div>
+            <div class="label">钙摄入达标率</div>
+        </div>
+        <div class="stat-card">
+            <!-- 添加 ID，内容将由 JS 动态填充 -->
+            <div class="value" id="monthlyVitaminCIntake"></div>
+            <div class="label">维生素C摄入</div>
+        </div>
+    </div>
+</div>
+
                 
                 <div class="report-section">
                     <div class="section-title">
@@ -1134,6 +1210,29 @@
 
     <script>
         // 标签切换功能
+        let monthlyChartInitialized = false; // 标记月报图表是否已初始化
+
+        // 获取月度统计数据并更新DOM
+        function fetchMonthlySummaryData() {
+            fetch('/monthly-summary-data/')
+                .then(response => response.json())
+                .then(data => {
+                    // 更新统计卡片数据
+                    document.getElementById('monthlyAvgCalorieStatValue').textContent = `${data.monthly_avg_calories.toLocaleString()} kcal`;
+                    document.getElementById('monthlyTotalCalorieDeficitValue').textContent = `${data.monthly_calorie_deficit_kcal.toLocaleString()} kcal`;
+                    document.getElementById('monthlyGoalAchievementStatValue').textContent = `${data.monthly_goal_achievement_percentage}%`;
+                    document.getElementById('daysGoalAchievedValue').textContent = `${data.days_goal_achieved}天`;
+                    document.getElementById('monthlyFiberIntake').textContent = `${data.fiber_intake_this_month.toFixed(1)}g`;
+                    document.getElementById('monthlyFatIntake').textContent = `${data.fat_intake_this_month.toFixed(1)}g`;
+                    document.getElementById('monthlyCalciumGoalAchievement').textContent = `${data.calcium_goal_achievement_this_month}%`;
+                    document.getElementById('monthlyVitaminCIntake').textContent = `${data.vitamin_c_intake_this_month.toFixed(1)}mg`;
+                    document.getElementById('monthlyTimeRange').textContent = `${data.this_month_start_date} - ${data.this_month_end_date}`;
+                })
+                .catch(error => {
+                    console.error('获取月度统计数据失败:', error);
+                });
+        }
+
         document.querySelectorAll('.tab').forEach(tab => {
             tab.addEventListener('click', function() {
                 // 移除所有标签的active类
@@ -1148,190 +1247,671 @@
                 
                 // 显示选中的报告
                 const reportId = this.getAttribute('data-report') + '-report';
-                document.getElementById(reportId).classList.add('active');
+                const activeContainer = document.getElementById(reportId);
+                if (activeContainer) {
+                    activeContainer.classList.add('active');
+                }
+
+                // *** 修复：当切换到月报时，懒加载或重置图表大小 ***
+                if (this.dataset.report === 'monthly') {
+                    if (!monthlyChartInitialized) {
+                        // 如果尚未初始化，则初始化图表
+                        initMonthlyCalorieChart();
+                        fetchMonthlySummaryData(); // 获取并更新月度统计数据
+                        monthlyChartInitialized = true;
+                    } else {
+                        // 如果已经初始化，只需调整大小
+                        setTimeout(() => {
+                            const monthlyCalorieChartDom = document.getElementById('monthlyCalorieChart');
+                            if (monthlyCalorieChartDom) {
+                                const monthlyCalorieChart = echarts.getInstanceByDom(monthlyCalorieChartDom);
+                                if (monthlyCalorieChart) {
+                                    monthlyCalorieChart.resize();
+                                }
+                            }
+                        }, 50);
+                    }
+                }
             });
         });
-        
-        // 周报热量图表
-        const weeklyCalorieCtx = document.getElementById('weeklyCalorieChart').getContext('2d');
-        const weeklyCalorieChart = new Chart(weeklyCalorieCtx, {
-            type: 'line',
-            data: {
-                labels: ['一', '二', '三', '四', '五', '六', '日'],
-                datasets: [{
-                    label: '本周',
-                    data: [1850, 1750, 2100, 1820, 1900, 1950, 1800],
-                    borderColor: '#1a5f9e',
-                    backgroundColor: 'rgba(26, 95, 158, 0.1)',
-                    borderWidth: 3,
-                    tension: 0.3,
-                    fill: true
-                }, {
-                    label: '上周',
-                    data: [1950, 1900, 2200, 1850, 1950, 2000, 1950],
-                    borderColor: '#ff6b6b',
-                    backgroundColor: 'rgba(255, 107, 107, 0.1)',
-                    borderWidth: 2,
-                    borderDash: [5, 5],
-                    tension: 0.3,
-                    fill: true
+
+        function initMonthlyCalorieChart() {
+            const monthlyCalorieChartDom = document.getElementById('monthlyCalorieChart');
+            if (monthlyCalorieChartDom) {
+                let monthlyCalorieChart = echarts.init(monthlyCalorieChartDom);
+
+                fetch('/monthly-calorie-data/')
+                    .then(response => response.json())
+                    .then(data => {
+                        const option = {
+                            tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+                            legend: { data: ['本月', '上月'], top: 'top', textStyle: { color: '#333' } },
+                            grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
+                            xAxis: { type: 'category', data: data.labels, axisLabel: { color: '#333' } },
+                            yAxis: {
+                                type: 'value',
+                                name: '热量 (kcal)',
+                                min: 0,
+                                axisLabel: { formatter: '{value} kcal', color: '#333' },
+                                nameTextStyle: { color: '#333' }
+                            },
+                            series: [
+                                {
+                                    name: '本月', type: 'line', data: data.this_month_data, smooth: true,
+                                    lineStyle: { width: 3, color: '#1a5f9e' },
+                                    areaStyle: { opacity: 0.1, color: '#1a5f9e' },
+                                    emphasis: { focus: 'series' }
+                                },
+                                {
+                                    name: '上月', type: 'line', data: data.last_month_data, smooth: true,
+                                    lineStyle: { width: 2, type: 'dashed', color: '#ff6b6b' },
+                                    areaStyle: { opacity: 0.1, color: '#ff6b6b' },
+                                    emphasis: { focus: 'series' }
+                                }
+                            ]
+                        };
+                        monthlyCalorieChart.setOption(option);
+                        window.addEventListener('resize', () => monthlyCalorieChart.resize());
+                    })
+                    .catch(error => {
+                        console.error('获取月报热量数据失败:', error);
+                        monthlyCalorieChartDom.innerHTML = `<p style="color: red;">获取月报热量数据失败: ${error.message || error}</p>`;
+                    });
+            }
+        }
+
+document.addEventListener('DOMContentLoaded', function () {
+    console.log('DOM加载完成');
+    var chartDom = document.getElementById('weeklyCalorieChart');
+    if (!chartDom) {
+        console.error('找不到图表容器');
+        return;
+    }
+    console.log('找到图表容器', chartDom);
+
+    var myChart = echarts.init(chartDom);
+    console.log('图表初始化成功', myChart);
+
+    fetch('/calorie-data/')
+        .then(res => res.json())
+        .then(data => {
+            console.log('获取数据成功:', data);
+            var option = {
+                title: {
+                    text: '本周热量摄入趋势',
+                    left: 'center',
+                    textStyle: { fontSize: 14 }
+                },
+                tooltip: { trigger: 'axis' },
+                xAxis: { type: 'category', data: data.x_data ,
+                            axisLabel: {
+            rotate: 45,  // 标签旋转45度
+            interval: 0  // 强制显示所有标签
+        }
+                },
+                yAxis: { type: 'value', name: '千卡(kcal)' },
+                series: [{
+                    name: '热量',
+                    type: 'line',
+                    data: data.y_data,
+                    smooth: true,
+                    lineStyle: { width: 3, color: '#5470C6' },
+                    itemStyle: { color: '#91cc75' },
+                    areaStyle: { color: 'rgba(84,112,198,0.2)' }
                 }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    y: {
-                        beginAtZero: false,
-                        min: 1600,
-                        title: {
-                            display: true,
-                            text: '热量 (kcal)'
+            };
+            myChart.setOption(option);
+            window.addEventListener('resize', () => myChart.resize());
+        })
+        .catch(e => console.error('获取数据失败:', e));
+});
+
+
+
+// 所有的 JavaScript 代码都应该放在这一个 DOMContentLoaded 事件监听器内部
+document.addEventListener('DOMContentLoaded', function() {
+    console.log("DOM加载完成，开始初始化所有图表和数据更新。");
+
+// === 月报营养雷达图 (monthlyNutrientRadarChart) ===
+(function initRadar() {
+    const domId = "monthlyNutrientRadarChart";
+    const url = "/get_nutrient_radar_data/";
+    const dom = document.getElementById(domId);
+    if (!dom) {
+        console.error(`❌ 找不到容器 #${domId}`);
+        return;
+    }
+    // 销毁旧实例
+    let chart = echarts.getInstanceByDom(dom);
+    if (chart) {
+        chart.dispose();
+        console.log(`♻️ 已销毁旧实例 #${domId}`);
+    }
+    // 初始化
+    chart = echarts.init(dom);
+    console.log(`✅ 初始化成功 #${domId}`);
+
+    // 拉取数据
+    fetch(url)
+        .then(r => {
+            if (!r.ok) throw new Error(`HTTP ${r.status}`);
+            return r.json();
+        })
+        .then(data => {
+            console.log(`📥 ${domId} 返回:`, data);
+            if (!Array.isArray(data.this_month) || !Array.isArray(data.last_month)) {
+                throw new Error("返回值不是两个数组");
+            }
+            chart.setOption({
+                tooltip: { trigger: "item" },
+                legend: {
+                    data: ["本月", "上月"],
+                    top: 10, // 保持在顶部，可以根据需要微调
+                    padding: [0, 0]
+                },
+                radar: {
+                    indicator: [
+                        { name: "蛋白质", max: 100 },
+                        { name: "膳食纤维", max: 5 },
+                        { name: "钙", max: 60 },
+                        { name: "维生素C", max: 10 },
+                        { name: "铁", max: 10 },
+                        { name: "健康脂肪", max: 60 }
+                    ],
+                    radius: 70, // 保持缩小半径
+                    splitNumber: 5,
+                    shape: 'polygon',
+                    center: ['50%', '55%'], // 微调雷达图中心，向上移动一点
+                    name: { // 为指标名称添加样式
+                        textStyle: {
+                            color: '#333',
+                            backgroundColor: '#fff',
+                            borderRadius: 3,
+                            padding: [5, 5] // 保持内边距
                         }
                     }
                 },
-                plugins: {
-                    legend: {
-                        position: 'top',
-                    }
-                }
-            }
+                series: [{
+                    name: "营养对比",
+                    type: "radar",
+                    data: [
+                        { value: data.this_month.map(x => Number(x) || 0), name: "本月", itemStyle: { color: 'rgba(26, 95, 158, 0.8)' }, areaStyle: { opacity: 0.2 } },
+                        { value: data.last_month.map(x => Number(x) || 0), name: "上月", itemStyle: { color: 'rgba(255, 107, 107, 0.7)' }, areaStyle: { opacity: 0.2 } }
+                    ]
+                }]
+            });
+            chart.resize();
+            console.log(`📊 渲染完成 #${domId}`);
+        })
+        .catch(e => {
+            console.error(`❌ 渲染失败 #${domId}`, e);
+            dom.innerHTML = `<p style="color: red; text-align: center; padding: 20px;">获取或渲染雷达图失败: ${e.message || e}</p>`;
         });
 
-        // 周报营养图表
-        const weeklyNutrientCtx = document.getElementById('weeklyNutrientChart').getContext('2d');
-        const weeklyNutrientChart = new Chart(weeklyNutrientCtx, {
-            type: 'bar',
-            data: {
-                labels: ['碳水', '蛋白质', '脂肪', '膳食纤维', '添加糖'],
-                datasets: [{
-                    label: '本周',
-                    data: [48, 22, 30, 75, 56],
-                    backgroundColor: 'rgba(26, 95, 158, 0.8)',
-                    borderColor: 'rgba(26, 95, 158, 1)',
-                    borderWidth: 1
-                }, {
-                    label: '上周',
-                    data: [45, 24, 31, 70, 61],
-                    backgroundColor: 'rgba(255, 107, 107, 0.7)',
-                    borderColor: 'rgba(255, 107, 107, 1)',
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        max: 100,
-                        title: {
-                            display: true,
-                            text: '百分比(%) / 克(g)'
-                        }
-                    }
-                },
-                plugins: {
-                    legend: {
-                        position: 'top',
-                    }
-                }
-            }
-        });
+    window.addEventListener("resize", () => { if (chart) chart.resize(); });
+})();
 
-        // 月报热量图表
-        const monthlyCalorieCtx = document.getElementById('monthlyCalorieChart').getContext('2d');
-        const monthlyCalorieChart = new Chart(monthlyCalorieCtx, {
-            type: 'line',
-            data: {
-                labels: ['第1周', '第2周', '第3周', '第4周'],
-                datasets: [{
-                    label: '本月',
-                    data: [1980, 2010, 1890, 1870],
-                    borderColor: '#1a5f9e',
-                    backgroundColor: 'rgba(26, 95, 158, 0.1)',
-                    borderWidth: 3,
-                    tension: 0.3,
-                    fill: true
-                }, {
-                    label: '上月',
-                    data: [2050, 2080, 1950, 1900],
-                    borderColor: '#ff6b6b',
-                    backgroundColor: 'rgba(255, 107, 107, 0.1)',
-                    borderWidth: 2,
-                    borderDash: [5, 5],
-                    tension: 0.3,
-                    fill: true
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    y: {
-                        beginAtZero: false,
-                        min: 1800,
-                        title: {
-                            display: true,
-                            text: '热量 (kcal)'
-                        }
-                    }
-                },
-                plugins: {
-                    legend: {
-                        position: 'top',
-                    }
-                }
-            }
-        });
 
-        // 月报营养图表
-        const monthlyNutrientCtx = document.getElementById('monthlyNutrientChart').getContext('2d');
-        const monthlyNutrientChart = new Chart(monthlyNutrientCtx, {
-            type: 'radar',
-            data: {
-                labels: ['蛋白质', '膳食纤维', '钙', '维生素C', '铁', '健康脂肪'],
-                datasets: [{
-                    label: '本月',
-                    data: [82, 76, 65, 92, 78, 85],
-                    fill: true,
-                    backgroundColor: 'rgba(26, 95, 158, 0.2)',
-                    borderColor: 'rgba(26, 95, 158, 1)',
-                    pointBackgroundColor: 'rgba(26, 95, 158, 1)',
-                    pointBorderColor: '#fff',
-                    pointHoverBackgroundColor: '#fff',
-                    pointHoverBorderColor: 'rgba(26, 95, 158, 1)'
-                }, {
-                    label: '上月',
-                    data: [75, 64, 60, 85, 75, 70],
-                    fill: true,
-                    backgroundColor: 'rgba(255, 107, 107, 0.2)',
-                    borderColor: 'rgba(255, 107, 107, 1)',
-                    pointBackgroundColor: 'rgba(255, 107, 107, 1)',
-                    pointBorderColor: '#fff',
-                    pointHoverBackgroundColor: '#fff',
-                    pointHoverBorderColor: 'rgba(255, 107, 107, 1)'
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    r: {
-                        min: 0,
-                        max: 100,
-                        ticks: {
-                            stepSize: 20
-                        }
-                    }
+
+
+// --- 周报热量图表 (weeklyCalorieChart) ---
+const weeklyCalorieChartDom = document.getElementById('weeklyCalorieChart');
+if (weeklyCalorieChartDom) {
+    console.log("找到图表容器 div#weeklyCalorieChart");
+    weeklyCalorieChartDom.innerHTML = ''; // 强制清空容器
+    let weeklyCalorieChart = echarts.getInstanceByDom(weeklyCalorieChartDom);
+    if (weeklyCalorieChart) {
+        weeklyCalorieChart.dispose();
+        console.log("已销毁旧的周报热量图表实例。");
+    }
+    weeklyCalorieChart = echarts.init(weeklyCalorieChartDom);
+    console.log("周报热量图表初始化成功", weeklyCalorieChart);
+
+    fetch('/calorie-data/') // 确保这个URL对应您更新后的 calorie_trend_data 视图
+        .then(response => {
+            if (!response.ok) { return response.text().then(text => { throw new Error(text) }); }
+            return response.json();
+        })
+        .then(data => {
+            console.log("从 /calorie-data/ 获取到的原始数据:", data); 
+
+            const option = {
+                tooltip: { trigger: 'axis' },
+                // 添加图例，支持点击切换显示/隐藏
+                legend: {
+                    data: ['本周', '上周'], // 图例数据
+                    top: 'top', // 放置在图表顶部
+                    textStyle: { color: '#333' }
                 },
-                plugins: {
-                    legend: {
-                        position: 'top',
+                xAxis: { type: 'category', data: data.x_data },
+                yAxis: { type: 'value', name: '热量 (kcal)' },
+                series: [
+                    {
+                        name: '本周', // 本周数据系列
+                        type: 'line',
+                        data: data.this_week_data, // 使用后端返回的 this_week_data
+                        smooth: true,
+                        areaStyle: { opacity: 0.1, color: '#1a5f9e' }, // 填充区域样式
+                        lineStyle: { width: 3, color: '#1a5f9e' }, // 线条样式
+                        emphasis: { focus: 'series' }
+                    },
+                    {
+                        name: '上周', // 上周数据系列
+                        type: 'line',
+                        data: data.last_week_data, // 使用后端返回的 last_week_data
+                        smooth: true,
+                        areaStyle: { opacity: 0.1, color: '#ff6b6b' }, // 填充区域样式
+                        lineStyle: { width: 2, type: 'dashed', color: '#ff6b6b' }, // 线条样式，虚线
+                        emphasis: { focus: 'series' }
                     }
+                ]
+            };
+            weeklyCalorieChart.setOption(option);
+            weeklyCalorieChart.resize();
+        })
+        .catch(error => {
+            console.error('获取周报热量数据失败:', error);
+            weeklyCalorieChartDom.innerHTML = `<p style="color: red; text-align: center; padding: 20px;">获取周报热量数据失败: ${error.message || error}</p>`;
+        });
+    window.addEventListener('resize', function() { if (weeklyCalorieChart) { weeklyCalorieChart.resize(); } });
+} else {
+    console.error("未能找到周报热量图表容器元素 (div#weeklyCalorieChart)。");
+}
+
+    // --- 周报营养图表 (weeklyNutrientChart) ---
+    const weeklyNutrientChartDom = document.getElementById('weeklyNutrientChart');
+    if (weeklyNutrientChartDom) {
+        console.log("找到营养图表容器 div#weeklyNutrientChart");
+        weeklyNutrientChartDom.innerHTML = ''; // 强制清空容器
+        let weeklyNutrientChart = echarts.getInstanceByDom(weeklyNutrientChartDom);
+        if (weeklyNutrientChart) {
+            weeklyNutrientChart.dispose();
+            console.log("已销毁旧的营养图表实例。");
+        }
+        weeklyNutrientChart = echarts.init(weeklyNutrientChartDom);
+        console.log("营养图表初始化成功", weeklyNutrientChart);
+
+        fetch('/nutrient-comparison-data/')
+            .then(response => {
+                if (!response.ok) { return response.text().then(text => { throw new Error(text) }); }
+                return response.json();
+            })
+            .then(data => {
+                console.log("获取到周报营养数据柱状图:", data);
+                const option = {
+                    tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+                    legend: { data: ['本周', '上周'], top: 'top', textStyle: { color: '#333' } },
+                    grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
+                    xAxis: {
+                        type: 'category',
+                        data: data.labels,
+                        axisLabel: { color: '#333', rotate: 45, interval: 0 }
+                    },
+                    yAxis: {
+                        type: 'value', name: '总量 (g)', min: 0, max: null,
+                        axisLabel: { formatter: '{value}', color: '#333' },
+                        nameTextStyle: { color: '#333' }
+                    },
+                    series: [
+                        { name: '本周', type: 'bar', data: data.this_week_data, itemStyle: { color: 'rgba(26, 95, 158, 0.8)' }, emphasis: { focus: 'series' } },
+                        { name: '上周', type: 'bar', data: data.last_week_data, itemStyle: { color: 'rgba(255, 107, 107, 0.7)' }, emphasis: { focus: 'series' } }
+                    ]
+                };
+                weeklyNutrientChart.setOption(option);
+                weeklyNutrientChart.resize();
+            })
+            .catch(error => {
+                console.error('获取营养数据失败:', error);
+                weeklyNutrientChartDom.innerHTML = `<p style="color: red; text-align: center; padding: 20px;">获取营养数据失败: ${error.message || error}</p>`;
+            });
+        window.addEventListener('resize', function() { if (weeklyNutrientChart) { weeklyNutrientChart.resize(); } });
+    } else {
+        console.error("未能找到营养图表容器元素 (div#weeklyNutrientChart)。");
+    }
+
+    // --- 月报热量图表 (monthlyCalorieChart) ---
+    const monthlyCalorieChartDom = document.getElementById('monthlyCalorieChart');
+    if (monthlyCalorieChartDom) {
+        console.log("找到月报热量图表容器 div#monthlyCalorieChart");
+        monthlyCalorieChartDom.innerHTML = ''; // 强制清空容器
+        let monthlyCalorieChart = echarts.getInstanceByDom(monthlyCalorieChartDom);
+        if (monthlyCalorieChart) {
+            monthlyCalorieChart.dispose();
+            console.log("已销毁旧的月报热量图表实例。");
+        }
+        monthlyCalorieChart = echarts.init(monthlyCalorieChartDom);
+        console.log("月报热量图表初始化成功", monthlyCalorieChart);
+
+        fetch('/monthly-calorie-data/')
+            .then(response => {
+                if (!response.ok) { return response.text().then(text => { throw new Error(text) }); }
+                return response.json();
+            })
+            .then(data => {
+                console.log("获取到月报热量数据:", data);
+                const option = {
+                    tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+                    legend: { data: ['本月', '上月'], top: 'top', textStyle: { color: '#333' } },
+                    grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
+                    xAxis: { type: 'category', data: data.labels, axisLabel: { color: '#333' } },
+                    yAxis: {
+                        type: 'value', name: '热量 (kcal)', min: 0,
+                        axisLabel: { formatter: '{value} kcal', color: '#333' },
+                        nameTextStyle: { color: '#333' }
+                    },
+                    series: [
+                        { name: '本月', type: 'line', data: data.this_month_data, smooth: true,
+                            lineStyle: { width: 3, color: '#1a5f9e' },
+                            areaStyle: { opacity: 0.1, color: '#1a5f9e' }, emphasis: { focus: 'series' } },
+                        { name: '上月', type: 'line', data: data.last_month_data, smooth: true,
+                            lineStyle: { width: 2, type: 'dashed', color: '#ff6b6b' },
+                            areaStyle: { opacity: 0.1, color: '#ff6b6b' }, emphasis: { focus: 'series' } }
+                    ]
+                };
+                monthlyCalorieChart.setOption(option);
+                monthlyCalorieChart.resize();
+            })
+            .catch(error => {
+                console.error('获取月报热量数据失败:', error);
+                monthlyCalorieChartDom.innerHTML = `<p style="color: red; text-align: center; padding: 20px;">获取月报热量数据失败: ${error.message || error}</p>`;
+            });
+        window.addEventListener('resize', function() { if (monthlyCalorieChart) { monthlyCalorieChart.resize(); } });
+    } else {
+        console.error("未能找到月报热量图表容器元素 (div#monthlyCalorieChart)。");
+    }
+
+
+    // --- 辅助函数：更新带有变化百分比的卡片 (顶部 comparison-grid 样式) ---
+    function updateComparisonCard(valueElementId, changeElementId, value, change_percentage, unit = '', is_score = false) {
+        const valueElement = document.getElementById(valueElementId);
+        const changeElement = document.getElementById(changeElementId);
+
+        if (valueElement) {
+            valueElement.textContent = `${value}${unit}`;
+        }
+
+        if (changeElement) {
+            changeElement.innerHTML = ''; // 清空旧内容
+            const changeIcon = document.createElement('i');
+            const changeText = document.createTextNode(` ${Math.abs(change_percentage)}%`);
+
+            let changeClass = 'comparison-change';
+            if (change_percentage > 0) {
+                changeIcon.className = 'fas fa-arrow-up';
+                changeClass += ' change-positive';
+            } else if (change_percentage < 0) {
+                changeIcon.className = 'fas fa-arrow-down';
+                changeClass += ' change-negative';
+            } else {
+                changeIcon.className = 'fas fa-arrows-alt-h';
+            }
+
+            // 特殊处理分数类指标，例如健康指数，通常是越高越好
+            if (is_score) { // 如果是分数，下降是负面，上升是正面
+                if (change_percentage < 0) {
+                    changeClass = 'comparison-change change-negative';
+                    changeIcon.className = 'fas fa-arrow-down';
+                } else if (change_percentage > 0) {
+                    changeClass = 'comparison-change change-positive';
+                    changeIcon.className = 'fas fa-arrow-up';
                 }
             }
-        });
+
+            changeElement.className = changeClass;
+            changeElement.appendChild(changeIcon);
+            changeElement.appendChild(changeText);
+        }
+    }
+
+    // --- 辅助函数：更新下方 stats-grid 的卡片 (只更新值，没有变化百分比的独立 div) ---
+    function updateStatCardValue(elementId, value, unit = '') {
+        const element = document.getElementById(elementId);
+        if (element) {
+            element.textContent = `${value}${unit}`;
+        }
+    }
+
+    // --- 新增辅助函数：更新带有嵌套变化百分比的 stat-card (用于营养结构变化和周报营养素分析) ---
+    function updateStatCardWithNestedChange(valueElementId, value, change_percentage, unit = '', is_positive_better = true) {
+        const valueElement = document.getElementById(valueElementId);
+        if (valueElement) {
+            valueElement.innerHTML = ''; // 清空现有内容
+
+            const valueText = document.createTextNode(`${value}${unit}`);
+            valueElement.appendChild(valueText);
+
+            const comparisonSpan = document.createElement('span');
+            comparisonSpan.className = 'comparison';
+
+            const changeIcon = document.createElement('i');
+            let changeTextContent = '';
+
+            if (change_percentage > 0) {
+                changeIcon.className = 'fas fa-arrow-up';
+                changeTextContent = `+${Math.abs(change_percentage)}%`; // 确保显示正号
+            } else if (change_percentage < 0) {
+                changeIcon.className = 'fas fa-arrow-down';
+                changeTextContent = `${change_percentage}%`;
+            } else {
+                changeIcon.className = 'fas fa-arrows-alt-h';
+                changeTextContent = `0%`;
+            }
+
+            // 根据 is_positive_better 调整颜色类
+            if (is_positive_better) {
+                if (change_percentage > 0) {
+                    comparisonSpan.classList.add('positive');
+                } else if (change_percentage < 0) {
+                    comparisonSpan.classList.add('negative');
+                }
+            } else { // 越低越好（如脂肪、添加糖）
+                if (change_percentage < 0) { // 减少是积极的
+                    comparisonSpan.classList.add('positive');
+                } else if (change_percentage > 0) { // 增加是消极的
+                    comparisonSpan.classList.add('negative');
+                }
+            }
+
+            comparisonSpan.appendChild(document.createTextNode(' ')); // 值与百分比之间的空格
+            comparisonSpan.appendChild(changeIcon);
+            comparisonSpan.appendChild(document.createTextNode(` ${changeTextContent}`));
+            
+            valueElement.appendChild(comparisonSpan);
+        }
+    }
+
+    // --- 获取并更新周报概览数据 (updateWeeklySummary) ---
+    function updateWeeklySummary() {
+        fetch('/weekly-summary-data/')
+            .then(response => {
+                if (!response.ok) { return response.text().then(text => { throw new Error(text) }); }
+                return response.json();
+            })
+            .then(data => {
+                console.log("获取到周报概览数据:", data);
+
+                // 更新日期范围
+                const timeRangeElement = document.querySelector('.report-header .time-range');
+                if (timeRangeElement) {
+                    timeRangeElement.textContent = `${data.week_start_date} - ${data.week_end_date}`;
+                }
+
+                // 更新日均摄入热量
+                updateComparisonCard('dailyAvgValue', 'dailyAvgChange', data.daily_avg_calories, data.change_percentage, ' kcal');
+
+                // 更新热量目标达成
+                updateComparisonCard('goalAchievementValue', 'goalAchievementChange', data.goal_achievement_percentage, data.goal_achievement_percentage, '%', true);
+
+                // 更新热量缺口累积
+                const accumulatedDeficitKgElement = document.getElementById('accumulatedCalorieDeficitKg');
+                if (accumulatedDeficitKgElement) {
+                    if (data.accumulated_deficit_kg < 0) {
+                        accumulatedDeficitKgElement.textContent = `${Math.abs(data.accumulated_deficit_kg)} kg (盈余)`;
+                    } else {
+                        accumulatedDeficitKgElement.textContent = `${data.accumulated_deficit_kg} kg`;
+                    }
+                }
+
+                // 更新下方 stats-grid 的日均摄入热量和热量目标达成
+                const dailyAvgStatCardValue = document.querySelector('.report-section .stats-grid .stat-card:nth-child(1) .value');
+                const goalAchievementStatCardValue = document.querySelector('.report-section .stats-grid .stat-card:nth-child(2) .value');
+                
+                if (dailyAvgStatCardValue) { dailyAvgStatCardValue.textContent = `${data.daily_avg_calories} kcal`; }
+                if (goalAchievementStatCardValue) { goalAchievementStatCardValue.textContent = `${data.goal_achievement_percentage}%`; }
+
+            })
+            .catch(error => {
+                console.error('获取周报概览数据失败:', error);
+                const elementsToReset = [
+                    document.querySelector('.report-header .time-range'),
+                    document.querySelector('.comparison-card:nth-child(1) .comparison-value'),
+                    document.querySelector('.comparison-card:nth-child(2) .comparison-value'),
+                    document.getElementById('accumulatedCalorieDeficitKg'),
+                    document.querySelector('.report-section .stats-grid .stat-card:nth-child(1) .value'),
+                    document.querySelector('.report-section .stats-grid .stat-card:nth-child(2) .value')
+                ];
+                elementsToReset.forEach(element => {
+                    if (element) element.textContent = 'N/A';
+                });
+                const changeElementsToReset = [
+                    document.querySelector('.comparison-card:nth-child(1) .comparison-change'),
+                    document.querySelector('.comparison-card:nth-child(2) .comparison-change')
+                ];
+                changeElementsToReset.forEach(element => {
+                    if (element) element.textContent = '';
+                });
+            });
+    }
+
+    // --- 获取并更新月报概览数据 (updateMonthlySummaryReport) ---
+    function updateMonthlySummaryReport() {
+        fetch('/monthly-summary-data/') // 调用新的月报 API
+            .then(response => {
+                if (!response.ok) { return response.text().then(text => { throw new Error(text) }); }
+                return response.json();
+            })
+            .then(data => {
+                console.log("获取到月报概览数据:", data);
+
+                // --- 更新月报顶部概览卡片 ---
+                // 日期范围
+                const monthlyTimeRangeElement = document.getElementById('monthlyTimeRange');
+                if (monthlyTimeRangeElement) {
+                    // 使用后端返回的动态日期
+                    monthlyTimeRangeElement.textContent = `${data.this_month_start_date} - ${data.this_month_end_date}`;
+                }
+
+                // 月均摄入热量 (热量越低越好，所以 is_score 保持 false 或默认)
+                updateComparisonCard('monthlyAvgCalorieValue', 'monthlyAvgCalorieChange', data.monthly_avg_calories, data.avg_calorie_change, ' kcal', false); 
+
+                // 热量目标达成 (达成率越高越好，所以 is_score 为 true)
+                updateComparisonCard('monthlyGoalAchievementValue', 'monthlyGoalAchievementChange', data.monthly_goal_achievement_percentage, data.goal_achievement_change, '%', true); 
+
+                // 健康指数 (健康指数越高越好，所以 is_score 为 true)
+                updateComparisonCard('healthIndexValue', 'healthIndexChange', data.health_index, data.health_index_change, '分', true); 
+
+                // 新尝试菜品 (尝试新菜品越多越好，所以 is_score 为 true)
+                updateComparisonCard('newDishesTriedValue', 'newDishesTriedChange', data.new_dishes_tried, data.new_dishes_change, '种', true); 
+
+                // --- 更新月度热量趋势下方的 stats-grid ---
+                // 月均摄入热量 (热量越低越好)
+                updateStatCardWithNestedChange('monthlyAvgCalorieStatValue', data.monthly_avg_calories, data.avg_calorie_change, ' kcal', false); 
+                
+                // 月度热量缺口 
+                updateStatCardWithNestedChange('monthlyTotalCalorieDeficitValue', data.monthly_calorie_deficit_kcal, data.monthly_deficit_change, ' kcal', true); 
+                
+                // 热量目标达成 (达成率越高越好)
+                updateStatCardWithNestedChange('monthlyGoalAchievementStatValue', data.monthly_goal_achievement_percentage, data.goal_achievement_change, '%', true); 
+                
+                // 目标达成天数 (达成天数越多越好)
+                updateStatCardWithNestedChange('daysGoalAchievedValue', data.days_goal_achieved, data.days_goal_achieved_change, '天', true); 
+
+                // --- 更新营养结构变化下方的 stats-grid (使用新的 updateStatCardWithNestedChange 辅助函数) ---
+                // 膳食纤维摄入 (越高越好)
+                updateStatCardWithNestedChange('monthlyFiberIntake', data.fiber_intake_this_month, data.fiber_intake_change, 'g', true);
+                // 脂肪摄入 (越低越好)
+                updateStatCardWithNestedChange('monthlyFatIntake', data.fat_intake_this_month, data.fat_intake_change, 'g', false); 
+                // 钙摄入达标率 (越高越好)
+                updateStatCardWithNestedChange('monthlyCalciumGoalAchievement', data.calcium_goal_achievement_this_month, data.calcium_goal_change, '%', true);
+                // 维生素C摄入 (越高越好)
+                updateStatCardWithNestedChange('monthlyVitaminCIntake', data.vitamin_c_intake_this_month, data.vitamin_c_change, 'mg', true);
+
+            })
+            .catch(error => {
+                console.error('获取月报概览数据失败:', error);
+                const elementsToReset = [
+                    'monthlyTimeRange', 'monthlyAvgCalorieValue', 'monthlyGoalAchievementValue',
+                    'healthIndexValue', 'newDishesTriedValue', 'monthlyTotalCalorieDeficitValue',
+                    'daysGoalAchievedValue', 'monthlyAvgCalorieStatValue', 'monthlyGoalAchievementStatValue',
+                    'monthlyFiberIntake', 'monthlyFatIntake', 'monthlyCalciumGoalAchievement', 'monthlyVitaminCIntake'
+                ];
+                elementsToReset.forEach(id => {
+                    const element = document.getElementById(id);
+                    if (element) element.textContent = 'N/A';
+                });
+
+                const changeElementsToReset = [
+                    'monthlyAvgCalorieChange', 'monthlyGoalAchievementChange',
+                    'healthIndexChange', 'newDishesTriedChange'
+                ];
+                changeElementsToReset.forEach(id => {
+                    const element = document.getElementById(id);
+                    if (element) element.innerHTML = ''; // 清空内容
+                });
+            });
+    }
+
+    // --- 新增：获取并更新周报营养素分析数据 (updateWeeklyNutrientAnalysis) ---
+    function updateWeeklyNutrientAnalysis() {
+        fetch('/weekly-nutrient-analysis-data/')
+            .then(response => {
+                if (!response.ok) { return response.text().then(text => { throw new Error(text) }); }
+                return response.json();
+            })
+            .then(data => {
+                console.log("获取到周报营养素分析数据:", data);
+
+                // 碳水占比 (假设合理范围内是积极的，这里按数值变化判断，上升为 positive，下降为 negative)
+                updateStatCardWithNestedChange('weeklyCarbRatio', data.this_week_carb_percent, data.carb_percent_change, '%', true);
+
+                // 蛋白质占比 (通常越高越好)
+                updateStatCardWithNestedChange('weeklyProteinRatio', data.this_week_protein_percent, data.protein_percent_change, '%', true);
+
+                // 脂肪占比 (通常越低越好)
+                updateStatCardWithNestedChange('weeklyFatRatio', data.this_week_fat_percent, data.fat_percent_change, '%', false);
+
+                // 日均添加糖 (越低越好)
+                updateStatCardWithNestedChange('weeklyAvgAddedSugar', data.this_week_avg_sugar_added, data.avg_sugar_added_change, 'g', false);
+            })
+            .catch(error => {
+                console.error('获取周报营养素分析数据失败:', error);
+                const elementsToReset = [
+                    'weeklyCarbRatio', 'weeklyProteinRatio', 'weeklyFatRatio', 'weeklyAvgAddedSugar'
+                ];
+                elementsToReset.forEach(id => {
+                    const element = document.getElementById(id);
+                    if (element) element.textContent = 'N/A';
+                });
+            });
+    }
+
+
+    // 在 DOM 加载完成后立即调用所有更新函数，以显示初始数据
+    updateWeeklySummary();
+    updateMonthlySummaryReport();
+    updateWeeklyNutrientAnalysis(); // 新增：调用周报营养素分析更新函数
+
+    // 如果你需要定期更新数据，可以取消注释下面的行
+    // setInterval(updateWeeklySummary, 60000);
+    // setInterval(updateMonthlySummaryReport, 60000);
+    // setInterval(updateWeeklyNutrientAnalysis, 60000); // 新增：周报营养素分析定期更新
+});
+
+
+
+
+
+
     </script>
 </body>
 </html>
