@@ -15,6 +15,7 @@ class DishOrderTable(models.Model):
     total_protein = models.DecimalField(max_digits=10, decimal_places=2)
     total_fat = models.DecimalField(max_digits=10, decimal_places=2)
     total_carbohydrate = models.DecimalField(max_digits=10, decimal_places=2)
+    total_fiber = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
 
     def __str__(self):
         return self.name
@@ -30,12 +31,24 @@ class UserInputDishTable(models.Model):
     protein = models.DecimalField(max_digits=10, decimal_places=2)
     fat = models.DecimalField(max_digits=10, decimal_places=2)
     carbohydrate = models.DecimalField(max_digits=10, decimal_places=2)
+    fiber = models.DecimalField(max_digits=10, decimal_places=2)
 
     # ---------------------------------------------------
     # 核心修复：只在这里添加下单时间字段
     # auto_now_add=True 会在创建记录时自动填充当前时间
     # ---------------------------------------------------
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="下单时间")
+
+    def save(self, *args, **kwargs):
+        # 自动填充 fiber
+        if not self.fiber:  # 允许手动传值，防止覆盖
+            try:
+                dish = DishOrderTable.objects.get(name=self.dishname)
+                self.fiber = dish.total_fiber or 0  # 若 total_fiber 为 None 则默认 0
+            except DishOrderTable.DoesNotExist:
+                # 若菜品不存在，可设默认值或记录日志
+                self.fiber = 0
+        super().save(*args, **kwargs)
 
     def __str__(self):
         if self.created_at:
