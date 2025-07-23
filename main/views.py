@@ -499,7 +499,25 @@ def monthly_summary_data(request):
     daily_calcium_goal = 800   # 每日钙目标(mg)
     daily_vitamin_c_goal = 100 # 每日维生素C目标(mg)
     daily_fat_limit = 70       # 每日脂肪限制(g)
+
     daily_sugar_added_limit = 25 # 每日添加糖限制(g)
+    
+    # TDEE（总日常能量消耗）计算 - 基于平均成人估计
+    # 可以根据用户实际信息调整这些参数
+    user_age = 30  # 假设用户年龄
+    user_weight = 65  # 假设用户体重(kg)
+    user_height = 170  # 假设用户身高(cm)
+    user_gender = 'female'  # 假设性别
+    activity_level = 1.375  # 轻度活动水平
+    
+    # 计算BMR（基础代谢率）
+    if user_gender == 'male':
+        bmr = 88.362 + (13.397 * user_weight) + (4.799 * user_height) - (5.677 * user_age)
+    else:
+        bmr = 447.593 + (9.247 * user_weight) + (3.098 * user_height) - (4.330 * user_age)
+    
+    # 计算TDEE
+    tdee = bmr * activity_level
 
     def get_monthly_aggregated_data(start_date, end_date, current_month_flag=True):
         """
@@ -568,10 +586,8 @@ def monthly_summary_data(request):
             total_fat += day_fat
             total_sugar_added += day_sugar_added
 
-            daily_deficit = daily_calorie_goal - day_cal
-            print(daily_deficit)
-            if daily_deficit < 0:
-                daily_deficit = 0
+            # 使用TDEE计算每日热量缺口
+            daily_deficit = tdee - day_cal
             accumulated_deficit_kcal += daily_deficit
 
             if day_cal <= daily_calorie_goal:
@@ -584,8 +600,9 @@ def monthly_summary_data(request):
 
         monthly_avg_calories = round(total_calories / total_days_in_period, 2) if total_days_in_period > 0 else 0
 
-        monthly_calorie_goal_total = daily_calorie_goal * total_days_in_period
-        monthly_goal_achievement_percentage = round((total_calories / monthly_calorie_goal_total) * 100, 2) if monthly_calorie_goal_total > 0 else 0
+        # 计算月度TDEE总量
+        monthly_tdee_total = tdee * total_days_in_period
+        monthly_goal_achievement_percentage = round((total_calories / monthly_tdee_total) * 100, 2) if monthly_tdee_total > 0 else 0
 
         health_score = 0
         if days_with_records > 0:
@@ -622,7 +639,7 @@ def monthly_summary_data(request):
             'monthly_goal_achievement_percentage': monthly_goal_achievement_percentage,
             'health_index': health_score,
             'new_dishes_tried': new_dishes_tried,
-            'monthly_calorie_deficit_kcal': round(accumulated_deficit_kcal, 2),
+            'monthly_calorie_deficit_kcal': round(monthly_tdee_total - total_calories, 2),
             'days_goal_achieved': days_goal_achieved,
             'avg_fiber_intake': avg_fiber_intake,
             'avg_fat_intake': avg_fat_intake,
