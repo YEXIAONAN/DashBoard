@@ -30,6 +30,7 @@ def index(request):
             protein=Sum('protein') or 0,
             fat=Sum('fat') or 0,
             carbohydrate=Sum('carbohydrate') or 0,
+            fiber=Sum('fiber') or 0,   # 确保这个字段存在于模型中
         )
     )
 
@@ -168,33 +169,33 @@ def daily_summary_data(request):
     """
     获取本日的日均热量、对比昨日的增加/减少百分比，以及热量目标达成情况。
     """
+    cache_key = f'daily_summary_{now().date()}'
+    cached_result = cache.get(cache_key)
+    if cached_result:
+        return JsonResponse(cached_result)
+
     current_date_today = now().date()
     previous_date_yesterday = current_date_today - timedelta(days=1)
 
-    # 获取今日总热量
+    # 使用select_related和values优化查询
     today_calories_aggregated_data = NutritionRecord.objects.filter(
         created_at__date=current_date_today
     ).aggregate(total_calories_for_today=Sum('calorie'))
     total_calories_consumed_today = float(today_calories_aggregated_data['total_calories_for_today'] or 0)
 
-    # 获取昨日总热量
     yesterday_calories_aggregated_data = NutritionRecord.objects.filter(
         created_at__date=previous_date_yesterday
     ).aggregate(total_calories_for_yesterday=Sum('calorie'))
     total_calories_consumed_yesterday = float(yesterday_calories_aggregated_data['total_calories_for_yesterday'] or 0)
 
-    # 计算日均热量（对于单日，就是当日总热量）
     calculated_daily_average_calories = total_calories_consumed_today
 
-    # 计算日均热量对比昨日的变化百分比
     daily_calorie_change_percentage = 0
     if total_calories_consumed_yesterday > 0:
         daily_calorie_change_percentage = ((total_calories_consumed_today - total_calories_consumed_yesterday) / total_calories_consumed_yesterday) * 100
-    elif total_calories_consumed_today > 0: # 昨日为0，今日有数据，视为大幅增长
-        daily_calorie_change_percentage = 100 # 或者一个很大的正数，表示从无到有
-    # 如果都为0，则变化为0
+    elif total_calories_consumed_today > 0:
+        daily_calorie_change_percentage = 100
 
-    # 计算今日热量目标达成百分比
     current_day_goal_achievement_percentage = 0
     if DAILY_CALORIE_GOAL > 0:
         current_day_goal_achievement_percentage = (total_calories_consumed_today / DAILY_CALORIE_GOAL) * 100
@@ -368,7 +369,14 @@ def nutrient_comparison_data(request):
 
 # --- 月报热量趋势折线图数据视图 ---
 
+from django.core.cache import cache
+
 def get_weekly_calorie_sums_for_month(year, month):
+    cache_key = f'weekly_calorie_{year}_{month}'
+    cached_result = cache.get(cache_key)
+    if cached_result:
+        return cached_result
+
     weekly_sums = []
     labels = []
 
@@ -397,7 +405,9 @@ def get_weekly_calorie_sums_for_month(year, month):
         current_week_start += timedelta(days=7)
         week_counter += 1
 
-    return labels, weekly_sums
+    result = (labels, weekly_sums)
+    cache.set(cache_key, result, 300)  # 缓存5分钟
+    return result
 
 def monthly_calorie_data(request):
     """

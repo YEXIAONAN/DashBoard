@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>智慧食堂 - 个人中心</title>
-    <link rel="stylesheet" href="../static/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
             margin: 0;
@@ -547,7 +547,8 @@
 
             <div class="profile-card">
                 <div class="user-avatar">
-                    <img src="https://cdn-icons-png.flaticon.com/512/847/847969.png" alt="用户头像">
+                    {% load static %}
+                <img src="{% static 'Images/user_avatar.png' %}" alt="用户头像">
                 </div>
                 <div class="user-info">
                     <div class="user-name">张婷婷</div>

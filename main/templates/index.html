@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>智慧食堂 - 首页</title>
-    <link rel="stylesheet" href="../static/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         /* ===== 通用样式（略，同第一版） ===== */
         *{margin:0;padding:0;box-sizing:border-box;font-family:'PingFang SC','Helvetica Neue',Arial,sans-serif}
@@ -94,7 +94,8 @@
                 <input type="text" placeholder="搜索菜品或食材...">
             </div>
             <div class="user-avatar">
-                <img src="https://cdn-icons-png.flaticon.com/512/847/847969.png" alt="用户头像" onclick="location.href='/profile/'">
+                {% load static %}
+        <img src="{% static 'Images/user_avatar.png' %}" alt="用户头像" onclick="location.href='/profile/'">
             </div>
         </div>
 
