@@ -147,11 +147,6 @@ def menu_view(request):
     dishes = DishOrderTable.objects.all()  # 查询所有菜品
     return render(request, 'main/menu.html', {'dishes': dishes})
 
-
-from django.http import JsonResponse
-from django.db.models import Sum
-from django.utils.timezone import now, timedelta
-from .models import NutritionRecord # 确保 NutritionRecord 模型已导入
 from django.http import JsonResponse
 from django.db.models import Sum
 from django.utils.timezone import now, timedelta
@@ -215,27 +210,11 @@ def daily_summary_data(request):
         'calorie_goal': DAILY_CALORIE_GOAL # 返回目标值，以备前端显示
     })
 
-
-
-
-
-
-
-
 def calorie_trend_data(request):
     """
     获取用户最近两周的每日卡路里摄入趋势数据（本周和上周）。
     """
     today = now().date()
-
-    # 计算本周的日期范围
-    # current_weekday = today.weekday() # 0=Monday, 6=Sunday
-    # current_week_start = today - timedelta(days=current_weekday)
-    # current_week_end = current_week_start + timedelta(days=6)
-
-    # 为了简化，我们直接获取最近7天作为“本周”，和再前7天作为“上周”
-    # 这样可以避免复杂的周一到周日计算，更符合“最近一周”和“上一周”的直观理解
-    # 如果严格需要周一到周日，请保留您原来的 current_weekday 计算逻辑
 
     # 获取本周数据 (最近7天)
     this_week_start = today - timedelta(days=6)
@@ -399,37 +378,6 @@ def monthly_calorie_data(request):
     获取本月和上月的每周热量趋势数据。
     """
     current_date = now().date()
-
-# import json
-# from django.http import JsonResponse
-# from django.views.decorators.csrf import csrf_exempt
-# from .models import Order, OrderItem, Dish
-#
-# @csrf_exempt
-# def submit_order(request):
-#     if request.method == 'POST':
-#         data = json.loads(request.body)
-#         items = data.get('items', [])
-#         if not items:
-#             return JsonResponse({'status': 'error', 'message': '购物车为空'})
-#
-#         order = Order.objects.create(user=request.user if request.user.is_authenticated else None)
-#         total_price = 0
-#         for item in items:
-#             dish = Dish.objects.filter(name=item['name']).first()
-#             if not dish:
-#                 return JsonResponse({'status': 'error', 'message': f'菜品不存在：{item["name"]}'})
-#             OrderItem.objects.create(
-#                 order=order,
-#                 dish=dish,
-#                 quantity=item['quantity'],
-#                 price=item['price']
-#             )
-#             total_price += item['price'] * item['quantity']
-#         order.total_price = total_price
-#         order.save()
-#
-#         return JsonResponse({'status': 'success', 'order_id': order.id})
     this_month_year = current_date.year
     this_month_month = current_date.month
 
