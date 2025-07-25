@@ -1,15 +1,13 @@
+from django.db.models import Sum, Value, DecimalField
+from django.db.models.functions import Coalesce
 from django.shortcuts import render
-from datetime import datetime, timedelta
 
 from django.template.defaultfilters import date
 # 2. 定义所有页面的渲染视图
 from django.utils import timezone
-from django.db.models import Sum
 from .models import DishOrderTable, UserInputDishTable
 from collections import defaultdict
-from django.http import JsonResponse
-from django.db.models import Sum, F
-from django.utils.timezone import now
+
 from datetime import date, timedelta
 from calendar import monthrange # 导入 monthrange 以获取月份天数
 
@@ -26,11 +24,11 @@ def index(request):
         UserInputDishTable.objects
         .filter(created_at__date=today)
         .aggregate(
-            calorie=Sum('calorie') or 0,
-            protein=Sum('protein') or 0,
-            fat=Sum('fat') or 0,
-            carbohydrate=Sum('carbohydrate') or 0,
-            fiber=Sum('fiber') or 0,   # 确保这个字段存在于模型中
+            calorie=Coalesce(Sum('calorie'), Value(0), output_field=DecimalField()),
+            protein=Coalesce(Sum('protein'), Value(0), output_field=DecimalField()),
+            fat=Coalesce(Sum('fat'), Value(0), output_field=DecimalField()),
+            carbohydrate=Coalesce(Sum('carbohydrate'), Value(0), output_field=DecimalField()),
+            fiber=Coalesce(Sum('fiber'), Value(0), output_field=DecimalField()),
         )
     )
 
@@ -39,7 +37,6 @@ def index(request):
         'today': today,
         'today_total': totals,
     })
-    return render(request, 'index.html')
 
 def orders(request):
     # 查询所有菜品，传给模板
@@ -48,8 +45,6 @@ def orders(request):
     # 叶小楠Bug记录 ： 购物车无法显示总蛋白质问题
     # print(f"--- 调试信息: 正在渲染菜品 '{dishes[0].name}'，其蛋白质为: {dishes[0].total_protein} ---")
     return render(request, 'orders.html', {'dishes': dishes})
-
-    return render(request, 'orders.html')
 
 def profile(request):
     """
@@ -169,33 +164,33 @@ def daily_summary_data(request):
     """
     获取本日的日均热量、对比昨日的增加/减少百分比，以及热量目标达成情况。
     """
-    cache_key = f'daily_summary_{now().date()}'
-    cached_result = cache.get(cache_key)
-    if cached_result:
-        return JsonResponse(cached_result)
-
     current_date_today = now().date()
     previous_date_yesterday = current_date_today - timedelta(days=1)
 
-    # 使用select_related和values优化查询
+    # 获取今日总热量
     today_calories_aggregated_data = NutritionRecord.objects.filter(
         created_at__date=current_date_today
     ).aggregate(total_calories_for_today=Sum('calorie'))
     total_calories_consumed_today = float(today_calories_aggregated_data['total_calories_for_today'] or 0)
 
+    # 获取昨日总热量
     yesterday_calories_aggregated_data = NutritionRecord.objects.filter(
         created_at__date=previous_date_yesterday
     ).aggregate(total_calories_for_yesterday=Sum('calorie'))
     total_calories_consumed_yesterday = float(yesterday_calories_aggregated_data['total_calories_for_yesterday'] or 0)
 
+    # 计算日均热量（对于单日，就是当日总热量）
     calculated_daily_average_calories = total_calories_consumed_today
 
+    # 计算日均热量对比昨日的变化百分比
     daily_calorie_change_percentage = 0
     if total_calories_consumed_yesterday > 0:
         daily_calorie_change_percentage = ((total_calories_consumed_today - total_calories_consumed_yesterday) / total_calories_consumed_yesterday) * 100
-    elif total_calories_consumed_today > 0:
-        daily_calorie_change_percentage = 100
+    elif total_calories_consumed_today > 0: # 昨日为0，今日有数据，视为大幅增长
+        daily_calorie_change_percentage = 100 # 或者一个很大的正数，表示从无到有
+    # 如果都为0，则变化为0
 
+    # 计算今日热量目标达成百分比
     current_day_goal_achievement_percentage = 0
     if DAILY_CALORIE_GOAL > 0:
         current_day_goal_achievement_percentage = (total_calories_consumed_today / DAILY_CALORIE_GOAL) * 100
@@ -369,14 +364,7 @@ def nutrient_comparison_data(request):
 
 # --- 月报热量趋势折线图数据视图 ---
 
-from django.core.cache import cache
-
 def get_weekly_calorie_sums_for_month(year, month):
-    cache_key = f'weekly_calorie_{year}_{month}'
-    cached_result = cache.get(cache_key)
-    if cached_result:
-        return cached_result
-
     weekly_sums = []
     labels = []
 
@@ -405,9 +393,7 @@ def get_weekly_calorie_sums_for_month(year, month):
         current_week_start += timedelta(days=7)
         week_counter += 1
 
-    result = (labels, weekly_sums)
-    cache.set(cache_key, result, 300)  # 缓存5分钟
-    return result
+    return labels, weekly_sums
 
 def monthly_calorie_data(request):
     """
