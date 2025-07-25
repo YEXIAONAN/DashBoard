@@ -1,15 +1,13 @@
+from django.db.models import Sum, Value, DecimalField
+from django.db.models.functions import Coalesce
 from django.shortcuts import render
-from datetime import datetime, timedelta
 
 from django.template.defaultfilters import date
 # 2. 定义所有页面的渲染视图
 from django.utils import timezone
-from django.db.models import Sum
 from .models import DishOrderTable, UserInputDishTable
 from collections import defaultdict
-from django.http import JsonResponse
-from django.db.models import Sum, F
-from django.utils.timezone import now
+
 from datetime import date, timedelta
 from calendar import monthrange # 导入 monthrange 以获取月份天数
 
@@ -26,10 +24,11 @@ def index(request):
         UserInputDishTable.objects
         .filter(created_at__date=today)
         .aggregate(
-            calorie=Sum('calorie') or 0,
-            protein=Sum('protein') or 0,
-            fat=Sum('fat') or 0,
-            carbohydrate=Sum('carbohydrate') or 0,
+            calorie=Coalesce(Sum('calorie'), Value(0), output_field=DecimalField()),
+            protein=Coalesce(Sum('protein'), Value(0), output_field=DecimalField()),
+            fat=Coalesce(Sum('fat'), Value(0), output_field=DecimalField()),
+            carbohydrate=Coalesce(Sum('carbohydrate'), Value(0), output_field=DecimalField()),
+            fiber=Coalesce(Sum('fiber'), Value(0), output_field=DecimalField()),
         )
     )
 
@@ -38,7 +37,6 @@ def index(request):
         'today': today,
         'today_total': totals,
     })
-    return render(request, 'index.html')
 
 def orders(request):
     # 查询所有菜品，传给模板
@@ -47,8 +45,6 @@ def orders(request):
     # 叶小楠Bug记录 ： 购物车无法显示总蛋白质问题
     # print(f"--- 调试信息: 正在渲染菜品 '{dishes[0].name}'，其蛋白质为: {dishes[0].total_protein} ---")
     return render(request, 'orders.html', {'dishes': dishes})
-
-    return render(request, 'orders.html')
 
 def profile(request):
     """
@@ -303,7 +299,6 @@ def calorie_trend_data(request):
         'this_week_data': this_week_data, # 重命名 y_data 为 this_week_data
         'last_week_data': last_week_data, # 新增上周数据
     })
-from .models import UserInputDishTable
 
 def api_orders(request):
     orders = UserInputDishTable.objects.all().order_by('-created_at')
