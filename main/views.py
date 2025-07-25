@@ -1,13 +1,15 @@
-from django.db.models import Sum, Value, DecimalField
-from django.db.models.functions import Coalesce
 from django.shortcuts import render
+from datetime import datetime, timedelta
 
 from django.template.defaultfilters import date
 # 2. 定义所有页面的渲染视图
 from django.utils import timezone
+from django.db.models import Sum
 from .models import DishOrderTable, UserInputDishTable
 from collections import defaultdict
-
+from django.http import JsonResponse
+from django.db.models import Sum, F
+from django.utils.timezone import now
 from datetime import date, timedelta
 from calendar import monthrange # 导入 monthrange 以获取月份天数
 
@@ -24,11 +26,10 @@ def index(request):
         UserInputDishTable.objects
         .filter(created_at__date=today)
         .aggregate(
-            calorie=Coalesce(Sum('calorie'), Value(0), output_field=DecimalField()),
-            protein=Coalesce(Sum('protein'), Value(0), output_field=DecimalField()),
-            fat=Coalesce(Sum('fat'), Value(0), output_field=DecimalField()),
-            carbohydrate=Coalesce(Sum('carbohydrate'), Value(0), output_field=DecimalField()),
-            fiber=Coalesce(Sum('fiber'), Value(0), output_field=DecimalField()),
+            calorie=Sum('calorie') or 0,
+            protein=Sum('protein') or 0,
+            fat=Sum('fat') or 0,
+            carbohydrate=Sum('carbohydrate') or 0,
         )
     )
 
@@ -37,6 +38,7 @@ def index(request):
         'today': today,
         'today_total': totals,
     })
+    return render(request, 'index.html')
 
 def orders(request):
     # 查询所有菜品，传给模板
@@ -45,6 +47,8 @@ def orders(request):
     # 叶小楠Bug记录 ： 购物车无法显示总蛋白质问题
     # print(f"--- 调试信息: 正在渲染菜品 '{dishes[0].name}'，其蛋白质为: {dishes[0].total_protein} ---")
     return render(request, 'orders.html', {'dishes': dishes})
+
+    return render(request, 'orders.html')
 
 def profile(request):
     """
@@ -900,3 +904,54 @@ def get_nutrient_radar_data(request):
         "this_month": [safe(this_month_avg[k]) for k in ['protein', 'fiber', 'calcium', 'vitamin_c', 'iron', 'fat']],
         "last_month": [safe(last_month_avg[k]) for k in ['protein', 'fiber', 'calcium', 'vitamin_c', 'iron', 'fat']]
     })
+
+
+
+#获取订单状态
+def get_order_status(request):
+    # 将字符串转换为带时区的 datetime 对象（假设原时间是当前时区）
+    naive_time = datetime.strptime("2025-07-20 03:55:01", "%Y-%m-%d %H:%M:%S")
+    aware_time = timezone.make_aware(naive_time, timezone.get_current_timezone())
+    order_all = UserInputDishTable.objects.filter(created_at=aware_time)
+    # progress = {
+    #     # 'status': order.status,
+    #     'data': order_all,
+    #     # 'estimated_time': order.estimated_completion_time()
+    # }
+    #JsonResponse(progress)
+
+    return render(request, 'order_status.html', {'data': "123"})
+
+
+
+#获取订单状态
+def get_order_status(request):
+    # 将字符串转换为带时区的 datetime 对象（假设原时间是当前时区）
+    naive_time = datetime.strptime("2025-07-20 03:55:01", "%Y-%m-%d %H:%M:%S")
+    aware_time = timezone.make_aware(naive_time, timezone.get_current_timezone())
+    order_all = UserInputDishTable.objects.filter(created_at=aware_time)
+    # progress = {
+    #     # 'status': order.status,
+    #     'data': order_all,
+    #     # 'estimated_time': order.estimated_completion_time()
+    # }
+    #JsonResponse(progress)
+
+    return render(request, 'order_status.html', {'data': "123"})
+
+
+
+#获取订单状态
+def get_order_status(request):
+    # 将字符串转换为带时区的 datetime 对象（假设原时间是当前时区）
+    naive_time = datetime.strptime("2025-07-20 03:55:01", "%Y-%m-%d %H:%M:%S")
+    aware_time = timezone.make_aware(naive_time, timezone.get_current_timezone())
+    order_all = UserInputDishTable.objects.filter(created_at=aware_time)
+    # progress = {
+    #     # 'status': order.status,
+    #     'data': order_all,
+    #     # 'estimated_time': order.estimated_completion_time()
+    # }
+    #JsonResponse(progress)
+
+    return render(request, 'order_status.html', {'data': "123"})

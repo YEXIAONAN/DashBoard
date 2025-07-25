@@ -1,4 +1,5 @@
 # main/models.py
+from django.utils import timezone
 
 from django.db import models
 
@@ -45,6 +46,7 @@ class DishOrderTable(models.Model):
 # 用户下单记录表
 class UserInputDishTable(models.Model):
     name = models.CharField(max_length=100)
+    order_id = models.IntegerField(max_length=100)
     dishname = models.CharField(max_length=100)
     price = models.DecimalField(max_digits=10, decimal_places=2)
     calorie = models.DecimalField(max_digits=10, decimal_places=2, db_column='calorie')
@@ -90,3 +92,14 @@ class UserInputDishTable(models.Model):
             return f"{self.name} 在 {self.created_at.strftime('%Y-%m-%d %H:%M')} 点了 {self.dishname}"
         return self.name
 
+class Orders(models.Model):
+    order_number = models.CharField(unique=True, max_length=20, db_comment='订单号(唯一)')
+    status = models.IntegerField(blank=True, null=True, db_comment='订单状态')
+    created_at = models.DateTimeField(blank=True, null=True, db_comment='创建时间',default=timezone.now())
+    updated_at = models.DateTimeField(blank=True, null=True, db_comment='更新时间',default=timezone.now())
+    payment_status = models.IntegerField(blank=True, null=True, db_comment='支付状态')
+    paid_at = models.DateTimeField(blank=True, null=True, db_comment='支付时间',default=timezone.now())
+
+    class Meta:
+        managed = False
+        db_table = 'orders'

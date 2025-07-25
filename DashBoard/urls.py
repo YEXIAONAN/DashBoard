@@ -36,6 +36,7 @@ urlpatterns = [
     path('monthly-summary-data/', views.monthly_summary_data, name='monthly_summary_data'),
     path('weekly-nutrient-analysis-data/', views.weekly_nutrient_analysis_data, name='weekly_nutrient_analysis_data'),
     path('get_nutrient_radar_data/', views.get_nutrient_radar_data, name='get_nutrient_radar_data'),
+    path('get_order_status/', views.get_order_status, name='get_order_status'),
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATICFILES_DIRS[0])
