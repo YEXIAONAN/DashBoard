@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智慧食堂 - 订单状态</title>
+    <link rel="stylesheet" href="../static/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+        }
+
+        body {
+            background: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 100%;
+            padding: 0;
+            margin: 0;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #4361ee, #3a0ca3);
+            color: white;
+            padding: 15px;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .back-btn {
+            position: absolute;
+            left: 15px;
+            top: 15px;
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        .order-card {
+            background: white;
+            margin: 15px;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .order-id {
+            font-weight: 600;
+        }
+
+        .order-status {
+            color: #4361ee;
+            font-weight: 600;
+        }
+
+        .order-items {
+            margin-bottom: 15px;
+        }
+
+        .order-item {
+            display: flex;
+            margin-bottom: 10px;
+        }
+
+        .item-image {
+            width: 60px;
+            height: 60px;
+            background: #eee;
+            border-radius: 8px;
+            margin-right: 10px;
+            overflow: hidden;
+        }
+
+        .item-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .item-info {
+            flex: 1;
+        }
+
+        .item-name {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .item-price {
+            color: #f72585;
+            font-weight: 600;
+        }
+
+        .order-total {
+            display: flex;
+            justify-content: space-between;
+            font-weight: 600;
+            font-size: 1.1rem;
+            padding-top: 10px;
+            border-top: 1px solid #eee;
+        }
+
+        .status-timeline {
+            margin: 20px 15px;
+            position: relative;
+            padding-left: 30px;
+        }
+
+        .timeline-line {
+            position: absolute;
+            left: 10px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: #ddd;
+        }
+
+        .timeline-step {
+            position: relative;
+            margin-bottom: 25px;
+        }
+
+        .timeline-step:last-child {
+            margin-bottom: 0;
+        }
+
+        .step-icon {
+            position: absolute;
+            left: -30px;
+            top: 0;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #ddd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.7rem;
+        }
+
+        .step-icon.active {
+            background: #4361ee;
+        }
+
+        .step-icon.completed {
+            background: #4ade80;
+        }
+
+        .step-content {
+            padding-bottom: 5px;
+        }
+
+        .step-title {
+            font-weight: 600;
+            margin-bottom: 3px;
+        }
+
+        .step-desc {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .step-time {
+            color: #999;
+            font-size: 0.8rem;
+        }
+
+        .robot-view {
+            margin: 15px;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .view-title {
+            padding: 15px;
+            font-weight: 600;
+            border-bottom: 1px solid #eee;
+        }
+
+        .view-content {
+            height: 200px;
+            background: #000;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+
+        .view-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            background: rgba(0,0,0,0.5);
+        }
+
+        .view-icon {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .action-buttons {
+            display: flex;
+            margin: 15px;
+            gap: 10px;
+        }
+
+        .action-btn {
+            flex: 1;
+            padding: 12px;
+            border-radius: 8px;
+            border: none;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #4361ee, #3a0ca3);
+            color: white;
+        }
+
+        .btn-outline {
+            background: white;
+            border: 1px solid #4361ee;
+            color: #4361ee;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <a href="/menu/" class="back-btn">
+                <i class="fas fa-chevron-left"></i>
+            </a>
+            <h1>订单状态</h1>
+        </div>
+
+        <div class="order-card">
+            <div class="order-header">
+                <div class="order-id">订单号: #20230615001</div>
+                <div class="order-status">准备中</div>
+            </div>
+            <div class="order-items">
+                <div class="order-item">
+                    <div class="item-image">
+                        <img src="https://via.placeholder.com/60x60/f8f9fa/6c757d?text=牛排" alt="牛排">
+                    </div>
+                    <div class="item-info">
+                        <div class="item-name">香煎牛排套餐</div>
+                        <div class="item-desc">x1</div>
+                        <div class="item-price">¥38</div>
+                    </div>
+                </div>
+                <div class="order-item">
+                    <div class="item-image">
+                        <img src="https://via.placeholder.com/60x60/f8f9fa/6c757d?text=三文鱼" alt="三文鱼">
+                    </div>
+                    <div class="item-info">
+                        <div class="item-name">三文鱼寿司拼盘</div>
+                        <div class="item-desc">x1</div>
+                        <div class="item-price">¥32</div>
+                    </div>
+                </div>
+            </div>
+            <div class="order-total">
+                <div>总计</div>
+                <div>¥70</div>
+            </div>
+        </div>
+
+        <div class="status-timeline">
+            <div class="timeline-line"></div>
+
+            <div class="timeline-step">
+                <div class="step-icon completed">
+                    <i class="fas fa-check"></i>
+                </div>
+                <div class="step-content">
+                    <div class="step-title">订单已提交</div>
+                    <div class="step-desc">您的订单已成功提交</div>
+                    <div class="step-time">12:05:23</div>
+                </div>
+            </div>
+
+            <div class="timeline-step">
+                <div class="step-icon completed">
+                    <i class="fas fa-check"></i>
+                </div>
+                <div class="step-content">
+                    <div class="step-title">支付成功</div>
+                    <div class="step-desc">已通过微信支付完成付款</div>
+                    <div class="step-time">12:05:28</div>
+                </div>
+            </div>
+
+            <div class="timeline-step">
+                <div class="step-icon active">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <div class="step-content">
+                    <div class="step-title">机械臂准备中</div>
+                    <div class="step-desc">智能机械臂正在准备您的餐品</div>
+                    <div class="step-time">预计完成时间: 12:13</div>
+                </div>
+            </div>
+
+            <div class="timeline-step">
+                <div class="step-icon">
+                    <i class="fas fa-utensils"></i>
+                </div>
+                <div class="step-content">
+                    <div class="step-title">待取餐</div>
+                    <div class="step-desc">请前往3号取餐窗口取餐</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="robot-view">
+            <div class="view-title">
+                <i class="fas fa-video"></i> 机械臂实时画面
+            </div>
+            <div class="view-content">
+                <div style="color: #555; text-align: center;">
+                    机械臂工作区实时监控
+                </div>
+                <div class="view-overlay">
+                    <div class="view-icon">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <div>智能机械臂正在准备您的餐品</div>
+                    <div style="margin-top: 10px; font-size: 0.9rem;">预计等待时间: 5分钟</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="action-buttons">
+            <button class="action-btn btn-outline">
+                <i class="fas fa-phone-alt"></i> 联系客服
+            </button>
+            <button class="action-btn btn-primary">
+                <i class="fas fa-map-marker-alt"></i> 导航到取餐点
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // 模拟订单状态更新
+        document.addEventListener('DOMContentLoaded', function() {
+            // 这里可以添加WebSocket或轮询来获取实时订单状态
+            // 以下是模拟状态变化
+            console.log("aaa")
+            console.log({{data}})
+            setTimeout(() => {
+                const preparingStep = document.querySelector('.timeline-step:nth-child(3) .step-icon');
+                preparingStep.classList.remove('active');
+                preparingStep.classList.add('completed');
+                preparingStep.innerHTML = '<i class="fas fa-check"></i>';
+
+                const stepContent = document.querySelector('.timeline-step:nth-child(3) .step-content');
+                stepContent.querySelector('.step-title').textContent = '准备完成';
+                stepContent.querySelector('.step-desc').textContent = '您的餐品已准备完成';
+                stepContent.querySelector('.step-time').textContent = '12:12:45';
+
+                const readyStep = document.querySelector('.timeline-step:nth-child(4) .step-icon');
+                readyStep.classList.add('active');
+
+                // 更新订单状态
+                document.querySelector('.order-status').textContent = '待取餐';
+
+                // 更新机器人视图
+                const robotView = document.querySelector('.view-overlay');
+                robotView.innerHTML = `
+                    <div class="view-icon" style="color: #4ade80;">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div>您的餐品已准备完成</div>
+                    <div style="margin-top: 15px; font-size: 0.9rem;">请前往3号取餐窗口取餐</div>
+                `;
+            }, 5000);
+        });
+    </script>
+</body>
+</html>
