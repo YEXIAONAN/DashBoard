@@ -30,6 +30,7 @@ def index(request):
             protein=Sum('protein') or 0,
             fat=Sum('fat') or 0,
             carbohydrate=Sum('carbohydrate') or 0,
+            fiber=Sum('fiber') or 0,
         )
     )
 
@@ -38,7 +39,7 @@ def index(request):
         'today': today,
         'today_total': totals,
     })
-    return render(request, 'index.html')
+
 
 def orders(request):
     # 查询所有菜品，传给模板
