@@ -7,9 +7,6 @@ from django.utils import timezone
 from django.db.models import Sum
 from .models import DishOrderTable, UserInputDishTable
 from collections import defaultdict
-from django.http import JsonResponse
-from django.db.models import Sum, F
-from django.utils.timezone import now
 from datetime import date, timedelta
 from calendar import monthrange # 导入 monthrange 以获取月份天数
 
@@ -48,8 +45,6 @@ def orders(request):
     # 叶小楠Bug记录 ： 购物车无法显示总蛋白质问题
     # print(f"--- 调试信息: 正在渲染菜品 '{dishes[0].name}'，其蛋白质为: {dishes[0].total_protein} ---")
     return render(request, 'orders.html', {'dishes': dishes})
-
-    return render(request, 'orders.html')
 
 def profile(request):
     """
