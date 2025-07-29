@@ -30,6 +30,7 @@ def index(request):
             protein=Sum('protein') or 0,
             fat=Sum('fat') or 0,
             carbohydrate=Sum('carbohydrate') or 0,
+            fiber=Sum('fiber') or 0,
         )
     )
 
