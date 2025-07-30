@@ -3,8 +3,8 @@
 import json
 from datetime import datetime
 
-from django.http import JsonResponse
-from django.views.decorators.http import require_POST
+from django.http import JsonResponse, HttpResponse
+from django.views.decorators.http import require_POST, require_http_methods
 from django.views.decorators.csrf import csrf_exempt  # <--- 导入 csrf_exempt
 from .models import DishOrderTable, UserInputDishTable, Orders
 import asyncio
@@ -113,10 +113,9 @@ def mechanical_arm_scene(scene_id,lebai):
     try:
         while True:
             lebai.set_claw(force=1, amplitude=100)
-
             task_id = lebai.start_task(scene_id, None, None, False, 1)  # 调用场景 启动任务
-            print('task_id ', task_id)
             tasks = lebai.get_task_list()
+            print('task_id ', task_id)
             print('tasks ', tasks)
             break
         # 等待任务完成（可选）
@@ -128,10 +127,15 @@ def mechanical_arm_scene(scene_id,lebai):
     except Exception as e:
         print(f"主程序运行出错：{e}")
 
-def execute_task_one():
-    lebai = init_mechanical_arm()
-    mechanical_arm_scene("1011",lebai)
-
+@require_http_methods(["GET"])
+def execute_task_one(request):
+    scene_id = request.GET.get('scene_id','')
+    if scene_id != '':
+        lebai = init_mechanical_arm()
+        mechanical_arm_scene("1011",lebai)
+    else:
+        print("出现错误")
+        return HttpResponse(f"出现错误")
 
 def execute_task_two():
     lebai = init_mechanical_arm()
