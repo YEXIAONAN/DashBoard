@@ -103,7 +103,8 @@ def init_mechanical_arm():
         print(f"  力度: {claw_status['force']}")
         print(f"  开合度: {claw_status['amplitude']}")
         print(f"  是否夹住物体: {claw_status['hold_on']}")
-        return lebai
+        global global_lebai
+        global_lebai = lebai
     except Exception as e:
         print(f"发生错误：{e}")
 
@@ -150,7 +151,7 @@ def execute_task_one(request):
     scene_id = request.GET.get('scene_id','')
     if scene_id != '':
         if global_lebai is None:
-            global_lebai = init_mechanical_arm()
+             init_mechanical_arm()
         mechanical_arm_scene(scene_id)
         return HttpResponse(f"成功")
     else:
