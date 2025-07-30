@@ -917,7 +917,12 @@ def get_order_status(request):
     # 将字符串转换为带时区的 datetime 对象（假设原时间是当前时区）
     naive_time = datetime.strptime("2025-07-20 03:55:01", "%Y-%m-%d %H:%M:%S")
     aware_time = timezone.make_aware(naive_time, timezone.get_current_timezone())
-    order_all = UserInputDishTable.objects.filter(created_at=aware_time)
+    order_all = UserInputDishTable.objects.filter(order_id = 12)
+    order_price_sum = 0
+    for order in order_all:
+        order_price_sum = order_price_sum + order.price
+
+
     # progress = {
     #     # 'status': order.status,
     #     'data': order_all,
@@ -927,4 +932,4 @@ def get_order_status(request):
     #序列化json
     data = serializers.serialize('json',order_all)
 
-    return render(request, 'order_status.html', {'data': order_all})
+    return render(request, 'order_status.html', {'data': order_all,"order_price_sum":order_price_sum})

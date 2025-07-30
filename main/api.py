@@ -133,6 +133,7 @@ def execute_task_one(request):
     if scene_id != '':
         lebai = init_mechanical_arm()
         mechanical_arm_scene("1011",lebai)
+        return HttpResponse(f"成功")
     else:
         print("出现错误")
         return HttpResponse(f"出现错误")
