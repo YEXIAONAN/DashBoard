@@ -75,6 +75,7 @@ class UserInputDishTable(models.Model):
     # ---------------------------------------------------
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="下单时间")
 
+
     def save(self, *args, **kwargs):
         # 自动填充 fiber
         if not self.fiber:  # 允许手动传值，防止覆盖
