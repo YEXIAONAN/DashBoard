@@ -107,9 +107,8 @@ def init_mechanical_arm():
     except Exception as e:
         print(f"发生错误：{e}")
 
-    #scene_id场景编号 需要调用的场景编号
-def mechanical_arm_cj_one(scene_id):
-    lebai = init_mechanical_arm()
+    #scene_id场景编号 需要调用的场景编号  lebai传入乐白初始化对象
+def mechanical_arm_cj_one(scene_id,lebai):
     try:
         while True:
             lebai.set_claw(force=1, amplitude=100)
