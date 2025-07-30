@@ -274,17 +274,19 @@
                 <div class="order-status">准备中</div>
             </div>
             <div class="order-items">
+                {% for item in data_json%}
                 <div class="order-item">
                     <div class="item-image">
                         <img src="https://via.placeholder.com/60x60/f8f9fa/6c757d?text=牛排" alt="牛排">
                     </div>
                     <div class="item-info">
-                        <div class="item-name">香煎牛排套餐</div>
+                        <div class="item-name">{{item.dishname}}</div>
                         <div class="item-desc">x1</div>
-                        <div class="item-price">¥38</div>
+                        <div class="item-price">{{item.price}}</div>
                     </div>
                 </div>
-                <div class="order-item">
+                {% endfor%}
+                <!-- <div class="order-item">
                     <div class="item-image">
                         <img src="https://via.placeholder.com/60x60/f8f9fa/6c757d?text=三文鱼" alt="三文鱼">
                     </div>
@@ -293,7 +295,7 @@
                         <div class="item-desc">x1</div>
                         <div class="item-price">¥32</div>
                     </div>
-                </div>
+                </div> -->
             </div>
             <div class="order-total">
                 <div>总计</div>
@@ -382,7 +384,8 @@
             // 这里可以添加WebSocket或轮询来获取实时订单状态
             // 以下是模拟状态变化
             console.log("aaa")
-            console.log({{data}})
+            // console.log(JSON.parse('{{data_json|safe}}'))
+            // console.log('{{data_json|safe}}')
             setTimeout(() => {
                 const preparingStep = document.querySelector('.timeline-step:nth-child(3) .step-icon');
                 preparingStep.classList.remove('active');
