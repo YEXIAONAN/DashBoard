@@ -109,19 +109,20 @@ def init_mechanical_arm():
 
 
 #scene_id场景编号 需要调用的场景编号  lebai传入乐白初始化对象
-def mechanical_arm_scene(scene_id,lebai):
+def mechanical_arm_scene(scene_id):
+    global  global_lebai
     try:
         print("正在执行场景"+scene_id)
         while True:
-            lebai.set_claw(force=1, amplitude=100)
+            global_lebai.set_claw(force=1, amplitude=100)
 
-            task_id = lebai.start_task(scene_id, None, None, False, 1)  # 调用场景 启动任务
+            task_id = global_lebai.start_task(scene_id, None, None, False, 1)  # 调用场景 启动任务
 
-            tasks = lebai.get_task_list()
+            tasks = global_lebai.get_task_list()
             print('task_id ', task_id)
             print('tasks ', tasks)
             # 等待任务完成（可选）
-            lebai.wait_task(task_id)
+            global_lebai.wait_task(task_id)
             print("等待执行场景" + scene_id)
             break
 
@@ -132,7 +133,7 @@ def mechanical_arm_scene(scene_id,lebai):
         print("已完成场景" + scene_id)
     except Exception as e:
         print(f"主程序运行出错：{e}")
-
+#停止机械臂
 def stop_mechanical_arm_scene():
 
     if global_lebai is not None:
@@ -150,7 +151,7 @@ def execute_task_one(request):
     if scene_id != '':
         if global_lebai is None:
             global_lebai = init_mechanical_arm()
-        mechanical_arm_scene(scene_id,global_lebai)
+        mechanical_arm_scene(scene_id)
         return HttpResponse(f"成功")
     else:
         print("出现错误")
