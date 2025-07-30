@@ -928,20 +928,3 @@ def get_order_status(request):
     data = serializers.serialize('json',order_all)
 
     return render(request, 'order_status.html', {'data': order_all})
-
-
-
-#获取订单状态
-def get_order_status(request):
-    # 将字符串转换为带时区的 datetime 对象（假设原时间是当前时区）
-    naive_time = datetime.strptime("2025-07-20 03:55:01", "%Y-%m-%d %H:%M:%S")
-    aware_time = timezone.make_aware(naive_time, timezone.get_current_timezone())
-    order_all = UserInputDishTable.objects.filter(created_at=aware_time)
-    # progress = {
-    #     # 'status': order.status,
-    #     'data': order_all,
-    #     # 'estimated_time': order.estimated_completion_time()
-    # }
-    #JsonResponse(progress)
-
-    return render(request, 'order_status.html', {'data': "123"})
