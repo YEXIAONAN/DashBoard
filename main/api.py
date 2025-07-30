@@ -132,7 +132,7 @@ def execute_task_one(request):
     scene_id = request.GET.get('scene_id','')
     if scene_id != '':
         lebai = init_mechanical_arm()
-        mechanical_arm_scene("1011",lebai)
+        mechanical_arm_scene(scene_id,lebai)
         return HttpResponse(f"成功")
     else:
         print("出现错误")

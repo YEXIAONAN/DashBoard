@@ -38,6 +38,7 @@ urlpatterns = [
     path('get_order_status/', views.get_order_status, name='get_order_status'),
 
     path('submit-order/', api.submit_order, name='submit-order'),
+    path('execute_task_one/', api.execute_task_one, name='execute_task_one'),
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATICFILES_DIRS[0])

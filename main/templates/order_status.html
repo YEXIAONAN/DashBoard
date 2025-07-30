@@ -369,16 +369,33 @@
         </div>
 
         <div class="action-buttons">
-            <button class="action-btn btn-outline">
-                <i class="fas fa-phone-alt"></i> 联系客服
-            </button>
-            <button class="action-btn btn-primary">
-                <i class="fas fa-map-marker-alt"></i> 导航到取餐点
+<!--            <button class="action-btn btn-outline">-->
+<!--                <i class="fas fa-phone-alt"></i> 联系客服-->
+<!--            </button>-->
+            <button class="action-btn btn-primary" onclick="qucan()">
+                <i class="fas fa-map-marker-alt"></i> 取餐
             </button>
         </div>
     </div>
 
     <script>
+        function qucan(){
+            const params = new URLSearchParams();
+            params.append('scene_id', '123');
+            console.log('/execute_task_one?'+params.toString())
+            fetch('/execute_task_one?'+params.toString())
+            .then(response => {
+                if (!response.ok) { throw new Error(`HTTP error ${response.status}`); }
+                return response.json();
+            })
+            .then(data => {
+                alert('正在配餐');
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('订单提交时发生网络错误，请稍后重试。');
+            })
+        }
         // 模拟订单状态更新
         document.addEventListener('DOMContentLoaded', function() {
             // 这里可以添加WebSocket或轮询来获取实时订单状态
