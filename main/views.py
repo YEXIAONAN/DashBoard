@@ -101,6 +101,8 @@ def repo(request):
     """
     return render(request, 'repo.html')
 
+def ai_health_advisor(request):
+    return render(request, 'ai_health_advisor.html')
 
 def MyOrder(request):
     cutoff = timezone.now() - timedelta(days=3)
