@@ -17,6 +17,7 @@ from main import views  # 确保这个导入在文件顶部
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('', views.index, name='home'),  # 让根路径访问 index 视图
     path('index/', views.index, name='index'),
     path('orders/',views.orders,name='orders'),
     path('repo/', views.repo, name='repo'),
