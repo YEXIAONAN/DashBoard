@@ -1,12 +1,12 @@
 <!DOCTYPE html>
+{% load static %}
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>我的订单 - 智慧食堂</title>
-  <link rel="stylesheet" href="../static/css/all.min.css">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap">
-    <style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
         * {
             margin: 0;
             padding: 0;
@@ -552,47 +552,33 @@
         @keyframes fadeOut {
             to { opacity: 0; visibility: hidden; }
         }
+
     </style>
 </head>
 <body>
     <!-- 页面加载动画 -->
     <div class="loader">
         <div class="loader-content">
-            <div class="loader-logo">
-                <i class="fas fa-utensils"></i>
-            </div>
+            <div class="loader-logo"><i class="fas fa-utensils"></i></div>
             <div class="loader-text">智慧食堂</div>
         </div>
     </div>
 
-    <!-- 页面内容容器 -->
     <div class="page-container">
-        <!-- 顶部标题栏 -->
-<div class="header">
-    <a href="javascript:void(0);" class="back-btn" id="backButton">
-        <i class="fas fa-arrow-left"></i>
-    </a>
+        <div class="header">
+            <a href="javascript:void(0);" class="back-btn" id="backButton"><i class="fas fa-arrow-left"></i></a>
             <div class="header-title">我的订单</div>
-            <a href="javascript:void(0);" class="search-btn" id="searchButton">
-                <i class="fas fa-search"></i>
-            </a>
+            <a href="javascript:void(0);" class="search-btn" id="searchButton"><i class="fas fa-search"></i></a>
         </div>
-<script>
-    // 绑定返回按钮事件
-    document.getElementById('backButton').addEventListener('click', function() {
-        // 使用 Django URL 配置的路径进行跳转
-        window.location.href = '/profile/';
-    });
-</script>
-        <!-- 订单统计 -->
+
         <div class="stats-container">
             <div class="stat-item">
-                <div class="stat-value">28</div>
+                <div class="stat-value" id="totalOrders">-</div>
                 <div class="stat-label">本月订单</div>
             </div>
             <div class="divider"></div>
             <div class="stat-item">
-                <div class="stat-value">¥684.5</div>
+                <div class="stat-value" id="totalSpent">-</div>
                 <div class="stat-label">本月消费</div>
             </div>
             <div class="divider"></div>
@@ -602,7 +588,6 @@
             </div>
         </div>
 
-        <!-- 订单状态标签 -->
         <div class="order-tabs">
             <div class="tab active">全部订单</div>
             <div class="tab">待付款</div>
@@ -612,271 +597,87 @@
             <div class="tab">已取消</div>
         </div>
 
-        <!-- 订单列表容器 -->
-        <div class="order-container">
-            <div class="section-title">今日订单</div>
-
-            <!-- 订单卡片1 -->
-            <div class="order-card">
-                <div class="order-header">
-                    <div class="order-id">#202507191235</div>
-                    <div class="order-status status-completed">已完成</div>
-                </div>
-                <div class="order-time">
-                    <i class="far fa-clock"></i> 2025-07-19 12:35
-                </div>
-
-                <div class="order-items">
-                    <div class="order-item">
-                        <div class="item-name">
-                            清蒸鲈鱼套餐
-                            <span class="item-quantity">x1</span>
-                        </div>
-                        <div class="item-price">¥28.8</div>
-                    </div>
-
-                    <div class="order-item">
-                        <div class="item-name">
-                            时蔬沙拉
-                            <span class="item-quantity">x1</span>
-                        </div>
-                        <div class="item-price">¥15.0</div>
-                    </div>
-                </div>
-
-                <div class="order-footer">
-                    <div class="total-price">总计: ¥43.8</div>
-                    <div class="order-actions">
-                        <button class="action-btn btn-outline">再来一单</button>
-                        <button class="action-btn btn-primary">评价</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 订单卡片2 -->
-            <div class="order-card">
-                <div class="order-header">
-                    <div class="order-id">#202507191002</div>
-                    <div class="order-status status-processing">进行中</div>
-                </div>
-                <div class="order-time">
-                    <i class="far fa-clock"></i> 2025-07-19 10:02
-                </div>
-
-                <div class="order-items">
-                    <div class="order-item">
-                        <div class="item-name">
-                            香辣鸡翅
-                            <span class="item-quantity">x2</span>
-                        </div>
-                        <div class="item-price">¥37.6</div>
-                    </div>
-
-                    <div class="order-item">
-                        <div class="item-name">
-                            特色汤品
-                            <span class="item-quantity">x1</span>
-                        </div>
-                        <div class="item-price">¥12.0</div>
-                    </div>
-                </div>
-
-                <div class="order-footer">
-                    <div class="total-price">总计: ¥49.6</div>
-                    <div class="order-actions">
-                        <button class="action-btn btn-outline">取消订单</button>
-                        <button class="action-btn btn-primary">查看进度</button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="section-title">昨日订单</div>
-
-            <!-- 订单卡片3 -->
-            <div class="order-card">
-                <div class="order-header">
-                    <div class="order-id">#202507181830</div>
-                    <div class="order-status status-completed">已完成</div>
-                </div>
-                <div class="order-time">
-                    <i class="far fa-clock"></i> 2025-07-18 18:30
-                </div>
-
-                <div class="order-items">
-                    <div class="order-item">
-                        <div class="item-name">
-                            糖醋排骨
-                            <span class="item-quantity">x1</span>
-                        </div>
-                        <div class="item-price">¥26.5</div>
-                    </div>
-
-                    <div class="order-item">
-                        <div class="item-name">
-                            香辣鸡翅
-                            <span class="item-quantity">x2</span>
-                        </div>
-                        <div class="item-price">¥37.6</div>
-                    </div>
-                </div>
-
-                <div class="order-footer">
-                    <div class="total-price">总计: ¥64.1</div>
-                    <div class="order-actions">
-                        <button class="action-btn btn-outline">再来一单</button>
-                        <button class="action-btn btn-primary">查看详情</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 订单卡片4 -->
-            <div class="order-card">
-                <div class="order-header">
-                    <div class="order-id">#202507181210</div>
-                    <div class="order-status status-cancelled">已取消</div>
-                </div>
-                <div class="order-time">
-                    <i class="far fa-clock"></i> 2025-07-18 12:10
-                </div>
-
-                <div class="order-items">
-                    <div class="order-item">
-                        <div class="item-name">
-                            健康秘食套餐
-                            <span class="item-quantity">x1</span>
-                        </div>
-                        <div class="item-price">¥35.0</div>
-                    </div>
-                </div>
-
-                <div class="order-footer">
-                    <div class="total-price">总计: ¥35.0</div>
-                    <div class="order-actions">
-                        <button class="action-btn btn-outline">重新下单</button>
-                        <button class="action-btn btn-primary">删除</button>
-                    </div>
-                </div>
-            </div>
+        <div class="order-container" id="orderList">
+            <!-- 动态加载订单 -->
         </div>
-
-
     </div>
 
     <script>
+
+
+        document.getElementById('backButton').addEventListener('click', () => {
+    window.location.href = '/profile';
+});
+
+
         // 页面加载完成后隐藏加载动画
-        window.addEventListener('load', function() {
-            setTimeout(function() {
+        window.addEventListener('load', function () {
+            setTimeout(() => {
                 document.querySelector('.loader').style.display = 'none';
+                fetchOrders();
             }, 1200);
         });
 
-        // 水波动画效果
-        function createRipple(event) {
-            const button = event.currentTarget;
-            const circle = document.createElement("span");
-            const diameter = Math.max(button.clientWidth, button.clientHeight);
-            const radius = diameter / 2;
-
-            circle.style.width = circle.style.height = `${diameter}px`;
-            circle.style.left = `${event.clientX - button.getBoundingClientRect().left - radius}px`;
-            circle.style.top = `${event.clientY - button.getBoundingClientRect().top - radius}px`;
-            circle.classList.add("ripple");
-
-            const ripple = button.getElementsByClassName("ripple")[0];
-            if (ripple) ripple.remove();
-
-            button.appendChild(circle);
+        // 获取订单数据
+        function fetchOrders() {
+            fetch("{% url 'api_orders' %}")
+                .then(res => res.json())
+                .then(data => {
+                    renderOrders(data);
+                    updateStats(data);
+                });
         }
 
-        // 为所有按钮添加水波动画
-        const buttons = document.querySelectorAll('.action-btn, .tab, .stat-item');
-        buttons.forEach(button => {
-            button.addEventListener('click', createRipple);
-        });
+        // 渲染订单卡片
+        function renderOrders(data) {
+            const container = document.getElementById('orderList');
+            container.innerHTML = '';
+            data.forEach(order => {
+                const card = `
+                    <div class="order-card">
+                        <div class="order-header">
+                            <div style="display:inline-block;min-width:28px;height:28px;line-height:28px;background:linear-gradient(135deg,#e3f2fd,#bbdefb);color:#2196f3;border-radius:50%;text-align:center;font-size:13px;font-weight:600;box-shadow:0 2px 4px rgba(33,150,243,.25);">${order.id}</div>
+                            <div class="order-status ${data.indexOf(order) === 0 ? 'status-processing' : 'status-completed'}">${data.indexOf(order) === 0 ? '进行中' : '已完成'}</div>
+                        </div>
+                        <div class="order-time">
+    <i class="far fa-clock"></i> ${new Date(order.created_at).toLocaleString('zh-CN', { year:'numeric', month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit' }).replace(/\//g, '-')}
+</div>
+<div class="order-item" style="display:flex;align-items:center;margin-bottom:10px;">
+    <img src="/static/Images/${order.dishname}.jpg"
+         alt="${order.dishname}"
+         onerror="this.src='/static/Images/default.jpg'"
+         style="width:70px;height:70px;border-radius:12px;margin-right:12px;object-fit:cover;box-shadow:0 2px 6px rgba(0,0,0,.1);">
+    <div>
+        <div class="item-name" style="font-weight:600;color:#333;">${order.dishname}</div>
+        <div class="item-price" style="color:#e74c3c;font-weight:700;">￥${parseFloat(order.price).toFixed(2)}</div>
+    </div>
+</div>
 
-        // 顶部返回按钮功能
-        document.getElementById('backButton').addEventListener('click', function() {
-            // 添加页面转出动画
-            document.querySelector('.page-container').style.animation = 'fadeOut 0.4s forwards';
-
-            setTimeout(() => {
-                alert('返回上一页');
-                // window.history.back();
-                // 重置动画
-                document.querySelector('.page-container').style.animation = '';
-            }, 400);
-        });
-
-        // 顶部搜索按钮功能
-        document.getElementById('searchButton').addEventListener('click', function() {
-            // 添加页面转出动画
-            document.querySelector('.page-container').style.animation = 'fadeOut 0.4s forwards';
-
-            setTimeout(() => {
-                alert('跳转到搜索页面');
-                // window.location.href = '/search/';
-                // 重置动画
-                document.querySelector('.page-container').style.animation = '';
-            }, 400);
-        });
-
-        // 底部导航点击跳转
-        document.querySelectorAll('.bottom-nav .nav-item').forEach(item => {
-            item.addEventListener('click', function(e) {
-                e.preventDefault();
-
-                // 添加页面转出动画
-                document.querySelector('.page-container').style.animation = 'fadeOut 0.4s forwards';
-
-                setTimeout(() => {
-                    // 获取对应的页面路径
-                    const target = this.getAttribute('data-target');
-                    let targetUrl = '';
-
-                    switch(target) {
-                        case 'index':
-                            targetUrl = "/index/";  // 首页路径
-                            break;
-                        case 'orders':
-                            targetUrl = "/orders/";  // 点餐路径
-                            break;
-                        case 'repo':
-                            targetUrl = "/repo/";    // 报告路径
-                            break;
-                        case 'profile':
-                            targetUrl = "/profile/"; // 个人中心路径
-                            break;
-                        default:
-                            break;
-                    }
-
-                    // 显示跳转提示（实际应用中应直接跳转）
-                    alert(`跳转到: ${targetUrl}`);
-
-                    // 激活样式效果
-                    document.querySelectorAll('.bottom-nav .nav-item').forEach(i => {
-                        i.classList.remove('active');
-                    });
-                    this.classList.add('active');
-
-                    // 重置动画
-                    document.querySelector('.page-container').style.animation = '';
-                }, 400);
+                        <div class="order-footer">
+                            <div class="total-price">总计: ¥${parseFloat(order.price).toFixed(2)}</div>
+                            <div class="order-actions">
+                                <button class="action-btn btn-outline">再来一单</button>
+                                <button class="action-btn btn-primary">评价</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                container.innerHTML += card;
             });
-        });
+        }
 
-        // 订单标签点击事件
-        document.querySelectorAll('.order-tabs .tab').forEach(tab => {
-            tab.addEventListener('click', function() {
-                document.querySelectorAll('.order-tabs .tab').forEach(t => {
-                    t.classList.remove('active');
-                });
-                this.classList.add('active');
+        // 更新统计信息
+        function updateStats(data) {
+            const totalOrders = data.length;
+            const totalSpent = data.reduce((sum, order) => sum + parseFloat(order.price), 0);
+            document.getElementById('totalOrders').textContent = totalOrders;
+            document.getElementById('totalSpent').textContent = `¥${totalSpent.toFixed(1)}`;
+        }
 
-                // 在实际应用中，这里可以加载对应状态的订单
-                const status = this.textContent;
-                alert(`加载 ${status} 订单`);
-            });
+
+        // 搜索按钮
+        document.getElementById('searchButton').addEventListener('click', () => {
+            alert('跳转到搜索页面');
         });
     </script>
 </body>

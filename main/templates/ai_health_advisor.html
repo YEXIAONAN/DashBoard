@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no"/>
+<title>智慧食堂 - Ai营养顾问</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f5f7fa}
+.mobile-container{width:100%;max-width:414px;margin:0 auto;background:#f5f7fa;min-height:100vh;display:flex;flex-direction:column}
+.header{background:linear-gradient(135deg,#4285f4 0%,#2196f3 100%);color:#fff;padding:15px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.header-left{display:flex;align-items:center;gap:10px}
+.back-button{background:rgba(255,255,255,.2);border:none;color:#fff;border-radius:50%;width:32px;height:32px;font-size:16px;cursor:pointer}
+.main-content{flex:1;padding:0 16px 80px 16px;overflow-y:auto}
+.ai-status-card,.chat-section,.quick-actions{background:#fff;border-radius:12px;margin:16px 0;padding:20px;box-shadow:0 2px 8px rgba(0,0,0,.1)}
+.chat-container{height:400px;overflow-y:auto;padding:15px 15px 15px 40px;display:flex;flex-direction:column;gap:12px}
+.message{max-width:80%;padding:12px 16px;border-radius:18px;font-size:14px;line-height:1.4}
+.user-message{background:#4285f4;color:#fff;align-self:flex-end;border-bottom-right-radius:6px}
+.ai-message{background:#f1f3f4;color:#333;align-self:flex-start;border-bottom-left-radius:6px;position:relative}
+.ai-message::before{content:'🤖';position:absolute;left:-35px;top:50%;transform:translateY(-50%);background:#fff;border-radius:50%;width:24px;height:24px;display:flex;align-items:center;justify-content:center;font-size:18px;box-shadow:0 2px 4px rgba(0,0,0,.1)}
+.thinking-toggle-btn{background:none;border:none;color:#4285f4;font-size:12px;cursor:pointer;margin-left:8px}
+.thinking-content{display:none;margin-top:6px;font-size:13px;color:#666;white-space:pre-wrap;background:#f8f9fa;padding:8px;border-radius:6px}
+.typing-indicator{display:none;align-items:center;gap:8px;padding:12px 16px;background:#f1f3f4;border-radius:18px;max-width:80px;align-self:flex-start;border-bottom-left-radius:6px}
+.typing-indicator.active{display:flex}
+.typing-dot{width:6px;height:6px;border-radius:50%;background:#4285f4;animation:typing 1.4s infinite ease-in-out}
+.typing-dot:nth-child(1){animation-delay:-.32s}
+.typing-dot:nth-child(2){animation-delay:-.16s}
+.typing-dot:nth-child(3){animation-delay:0}
+.welcome-message{text-align:center;color:#666;font-size:14px;margin:30px 0;line-height:1.5}
+.quick-buttons{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.quick-button{background:#f8f9fa;border:none;border-radius:8px;padding:12px 8px;font-size:12px;color:#666;cursor:pointer}
+.quick-button:hover{background:#e9ecef}
+.input-container{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:414px;background:#fff;padding:12px 16px;border-top:1px solid #e9ecef;box-shadow:0 -2px 10px rgba(0,0,0,.1)}
+.input-wrapper{display:flex;gap:8px;align-items:flex-end}
+#messageInput{flex:1;border:1px solid #e9ecef;border-radius:20px;padding:10px 16px;font-size:14px;background:#f8f9fa;resize:none;max-height:80px;min-height:40px;outline:none}
+#sendButton{background:#4285f4;color:#fff;border:none;border-radius:50%;width:40px;height:40px;cursor:pointer;font-size:16px}
+#sendButton:disabled{opacity:.6;cursor:not-allowed}
+@keyframes typing{0%,80%,100%{transform:scale(0);opacity:.5}40%{transform:scale(1);opacity:1}}
+</style>
+</head>
+<body>
+<div class="mobile-container">
+  <div class="header">
+    <div class="header-left">
+      <button class="back-button" onclick="history.back()">←</button>
+      <span>📍</span>
+      <span>智慧食堂 - Ai营养顾问</span>
+    </div>
+    <div class="avatar">🤖</div>
+  </div>
+
+  <div class="main-content">
+    <div class="ai-status-card">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <div style="display:flex;align-items:center;gap:8px;font-weight:600">🤖 Ai营养顾问</div>
+        <div style="font-size:12px;color:#4caf50">● 在线服务</div>
+      </div>
+      <div style="font-size:14px;color:#666">24小时为您提供专业健康咨询，基于先进AI技术，解答健康问题并提供个性化建议。</div>
+    </div>
+
+    <div class="chat-section">
+      <div style="background:#f8f9fa;padding:15px 20px;border-bottom:1px solid #e9ecef;font-weight:600">💬 健康咨询对话</div>
+      <div class="chat-container" id="chatContainer">
+        <div class="welcome-message">
+          <span style="font-size:24px">👋</span>
+          您好！我是您的AI健康顾问<br>很高兴为您服务！<br><br>
+          请告诉我您的健康问题或需求<br>我会尽力为您提供专业建议
+        </div>
+        <div class="typing-indicator" id="typingIndicator">
+          <div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="quick-actions">
+      <div style="font-weight:600;margin-bottom:15px">⚡ 快捷咨询</div>
+      <div class="quick-buttons">
+        <button class="quick-button" onclick="sendQuick('我想了解一下健康饮食的建议')">🥗<br>健康饮食</button>
+        <button class="quick-button" onclick="sendQuick('请推荐一些适合的运动方式')">🏃‍♀️<br>运动建议</button>
+        <button class="quick-button" onclick="sendQuick('我最近睡眠质量不好，有什么改善方法吗？')">😴<br>睡眠健康</button>
+        <button class="quick-button" onclick="sendQuick('如何有效缓解工作压力？')">🧘‍♀️<br>压力管理</button>
+        <button class="quick-button" onclick="sendQuick('请介绍一些养生保健的方法')">🌿<br>养生保健</button>
+        <button class="quick-button" onclick="sendQuick('我想了解如何预防常见疾病')">🛡️<br>疾病预防</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="input-container">
+    <div class="input-wrapper">
+      <textarea id="messageInput" placeholder="请输入您的健康问题…" rows="1"></textarea>
+      <button id="sendButton">➤</button>
+    </div>
+  </div>
+</div>
+
+<script>
+let isProcessing=false;
+const chatBox=document.getElementById('chatContainer');
+const input=document.getElementById('messageInput');
+const sendBtn=document.getElementById('sendButton');
+const typing=document.getElementById('typingIndicator');
+
+function scrollBottom(){setTimeout(()=>chatBox.scrollTop=chatBox.scrollHeight,100)}
+function addMsg(text,type){
+  const div=document.createElement('div');
+  div.className='message '+(type==='user'?'user-message':'ai-message');
+  div.textContent=text;
+  chatBox.insertBefore(div,typing);
+  scrollBottom();
+}
+
+function toggleThink(btn){
+  const content=btn.nextElementSibling;
+  const open=content.style.display==='block';
+  content.style.display=open?'none':'block';
+  btn.textContent=open?'🤔 查看思考':'🤔 收起思考';
+}
+
+function sendQuick(msg){
+  input.value=msg;
+  sendMsg();
+}
+
+async function sendMsg(){
+  const text=input.value.trim();
+  if(!text||isProcessing) return;
+  addMsg(text,'user');
+  input.value='';
+  isProcessing=true;
+  sendBtn.disabled=true;
+  scrollBottom();
+
+  // 创建思考中消息
+  const thinkDiv=document.createElement('div');
+  thinkDiv.className='message ai-message';
+  const timerSpan=document.createElement('span');
+  thinkDiv.appendChild(timerSpan);
+  chatBox.insertBefore(thinkDiv,typing);
+
+  const start=Date.now();
+  const timer=setInterval(()=>{
+    timerSpan.textContent=`🤔 AI 正在思考中…（${((Date.now()-start)/1000).toFixed(1)} 秒）`;
+    scrollBottom();
+  },200);
+
+  const controller=new AbortController();
+  try{
+    const res=await fetch('http://192.168.101.247:11434/api/chat',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'deepseek-r1:70b',
+        messages:[{role:'system',content:'你是健康顾问，用中文，简洁专业。'},{role:'user',content:text}],
+        stream:true
+      }),
+      signal:controller.signal
+    });
+    const reader=res.body.getReader();
+    const decoder=new TextDecoder();
+    let buffer='';
+    let thinking='';
+    let answer='';
+    let thinkingDone=false;
+
+    while(true){
+      const {done,value}=await reader.read();
+      if(done) break;
+      buffer+=decoder.decode(value,{stream:true});
+      const lines=buffer.split('\n');
+      buffer=lines.pop()||'';
+      for(const l of lines){
+        if(!l.trim()) continue;
+        try{
+          const d=JSON.parse(l);
+          const c=d.message?.content||'';
+          if(!thinkingDone){
+            const m=c.match(/<think>([\s\S]*?)<\/think>/);
+            if(m) thinking+=m[1];
+            if(c.includes('</think>')) thinkingDone=true;
+          }else{
+            answer+=c;
+            // 流式输出
+            if(!answerDiv){
+              clearInterval(timer);
+              thinkDiv.innerHTML=''; // 清除思考中
+              answerDiv=document.createElement('div');
+              answerDiv.className='message ai-message';
+              chatBox.insertBefore(answerDiv,typing);
+            }
+            answerDiv.innerHTML=`
+              <div>
+                ✅ AI 思考完毕 ${thinking?`<button class="thinking-toggle-btn" onclick="toggleThink(this)">🤔 查看思考</button>`:''}
+                ${thinking?`<div class="thinking-content">${thinking}</div>`:''}
+              </div>
+              <div style="margin-top:8px">${answer}</div>
+            `;
+            scrollBottom();
+          }
+        }catch{}
+      }
+    }
+    clearInterval(timer);
+    if(!answerDiv){
+      thinkDiv.innerHTML='';
+      answerDiv=document.createElement('div');
+      answerDiv.className='message ai-message';
+      chatBox.insertBefore(answerDiv,typing);
+      answerDiv.innerHTML=`
+        <div>
+          ✅ AI 思考完毕 ${thinking?`<button class="thinking-toggle-btn" onclick="toggleThink(this)">🤔 查看思考</button>`:''}
+          ${thinking?`<div class="thinking-content">${thinking}</div>`:''}
+        </div>
+        <div style="margin-top:8px">${answer||'抱歉，我暂时无法回答您的问题。'}</div>
+      `;
+    }
+  }catch{
+    clearInterval(timer);
+    thinkDiv.textContent='服务暂时不可用，请稍后再试。';
+  }finally{
+    isProcessing=false;
+    sendBtn.disabled=false;
+  }
+  let answerDiv=null;
+}
+
+sendBtn.addEventListener('click',sendMsg);
+input.addEventListener('keydown',e=>{
+  if(e.key==='Enter'&&!e.shiftKey&&!isProcessing){e.preventDefault();sendMsg()}
+});
+</script>
+</body>
+</html>

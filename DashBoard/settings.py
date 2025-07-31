@@ -82,7 +82,7 @@ DATABASES = {
         'NAME': 'ds',               # 数据库名称，我们使用新设计的库
         'USER': 'root',                           # 您的 MySQL 用户名
         'PASSWORD': 'BigData#123..',              # 您的 MySQL 密码
-        'HOST': '172.16.7.79',                      # 您的 MySQL 主机地址
+        'HOST': '192.168.101.232',                      # 您的 MySQL 主机地址
         'PORT': 3306,                             # 您的 MySQL 端口号
         'OPTIONS': {
             'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
@@ -129,6 +129,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = '/static/'
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field

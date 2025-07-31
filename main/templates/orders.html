@@ -1,10 +1,12 @@
+<!-- 调试信息: 第一个菜品的蛋白质是 {{ dishes.0.total_protein }} 克 -->
 <!DOCTYPE html>
+{% load static %}
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>智慧食堂 - 手机点餐</title>
-   <link rel="stylesheet" href="../static/css/all.min.css">
+   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
    <style>
         * {
             margin: 0;
@@ -50,7 +52,7 @@
         .food-nutrition { display: flex; justify-content: space-between; font-size: 0.75rem; color: #78909c; margin-bottom: 12px; }
         .nutrition-value { font-weight: 600; color: #1e88e5; }
         .food-footer { display: flex; justify-content: space-between; align-items: center; }
-        .food-price { font-size: 1rem; font-weight: 700; color: #0d47a1; }
+        .food-price { font-size: 1.3rem; font-weight: 700; color: #0d47a1; }
         .add-to-cart { background: #1e88e5; color: white; border: none; padding: 6px 12px; border-radius: 15px; cursor: pointer; font-weight: 500; display: flex; align-items: center; gap: 5px; font-size: 0.85rem; transition: all 0.3s ease; }
         .add-to-cart:hover { background: #1565c0; box-shadow: 0 4px 10px rgba(30, 136, 229, 0.3); }
         .cart-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.7); z-index: 1000; display: flex; justify-content: flex-end; flex-direction: column; opacity: 0; visibility: hidden; transition: all 0.3s ease; }
@@ -76,7 +78,7 @@
         .total-row { font-size: 1rem; padding-top: 10px; border-top: 2px dashed #90caf9; }
         .checkout-btn { background: #1e88e5; color: white; border: none; width: 100%; padding: 14px; border-radius: 12px; font-size: 1rem; font-weight: 600; margin-top: 15px; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 5px 15px rgba(30, 136, 229, 0.3); display: flex; justify-content: center; align-items: center; gap: 10px; }
         .checkout-btn:hover { background: #1565c0; box-shadow: 0 8px 20px rgba(30, 136, 229, 0.4); }
-        .bottom-nav { display: flex; justify-content: space-around; background: white; padding: 12px 0; box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.07); border-top-left-radius: 20px; border-top-right-radius: 20px; position: fixed; bottom: 0; left: 0; width: 100%; max-width: 480px; margin: 0 auto; z-index: 90; }
+        .bottom-nav{display:flex;justify-content:space-around;background:#fff;padding:12px 0;box-shadow:0 -4px 15px rgba(0,0,0,.07);border-top-left-radius:20px;border-top-right-radius:20px;position:fixed;bottom:0;left:0;width: 100%;max-width: none;margin: 0;border-radius: 0; z-index:90}
         .nav-item { display: flex; flex-direction: column; align-items: center; color: #78909c; font-size: 0.8rem; text-decoration: none; transition: all 0.2s ease; padding: 5px 10px; border-radius: 15px; }
         .nav-item.active { color: #1e88e5; background: rgba(227, 242, 253, 0.7); }
         .nav-item i { font-size: 1.3rem; margin-bottom: 4px; }
@@ -85,8 +87,6 @@
     </style>
 </head>
 <body>
-    {% load static %}
-
     <div class="container">
         <!-- 顶部导航栏 -->
         <div class="header">
@@ -100,32 +100,32 @@
                     <div class="cart-count">0</div>
                 </div>
             </div>
-
-            <div class="category-nav">
-                <div class="category-item active">全部菜品</div>
-                <div class="category-item">中餐热菜</div>
-                <div class="category-item">西式快餐</div>
-                <div class="category-item">健康轻食</div>
-                <div class="category-item">特色汤品</div>
-            </div>
+<!-- 去除 -->
+<!--            <div class="category-nav">-->
+<!--                <div class="category-item active">全部菜品</div>-->
+<!--                <div class="category-item">中餐热菜</div>-->
+<!--                <div class="category-item">西式快餐</div>-->
+<!--                <div class="category-item">健康轻食</div>-->
+<!--                <div class="category-item">特色汤品</div>-->
+<!--            </div>-->
         </div>
 
         <!-- 主内容区 -->
         <div class="main-container">
             <!-- AI推荐区域 -->
-            <div class="recommendation-banner" data-dish-id="99"> <!-- 给推荐区一个唯一的ID -->
+            <div class="recommendation-banner" data-dish-id="99">
                 <div class="ai-tag"><i class="fas fa-robot"></i> AI智能推荐</div>
                 <div class="recommend-title">您可能喜欢的菜品</div>
                 <div class="recommend-desc">根据您的口味偏好和健康数据精选推荐</div>
                 <div class="recommend-dish">
                     <div class="dish-info">
-                        <div class="dish-name">清蒸鲈鱼套餐</div>
+                        <div class="dish-name">黄焖鸡米饭</div>
                         <div class="dish-nutrition">
-                            <span>热量: <span class="nutrition-value">420 kcal</span></span>
-                            <span>蛋白: <span class="nutrition-value">35g</span></span>
+                            <span>热量: <span class="nutrition-value">650 kcal</span></span>
+                            <span>蛋白: <span class="nutrition-value">55.60g</span></span>
                         </div>
                     </div>
-                    <div class="dish-price">¥28.8</div>
+                    <div class="dish-price">¥12.25</div>
                     <div class="add-btn"><i class="fas fa-plus"></i></div>
                 </div>
             </div>
@@ -135,138 +135,38 @@
                 <h2 class="section-title">
                     <i class="fas fa-utensils"></i> 今日菜单
                 </h2>
-                {% load static %}
                 <div class="menu-grid">
-                    <!-- 菜品卡片 - 宫保鸡丁 -->
-                    <div class="food-card" data-dish-id="1">
+                   {% for dish in dishes %}
+                    <div class="food-card" data-dish-id="{{ dish.id }}">
                         <div class="food-image">
-                            <img src="{% static 'Images/宫保鸡丁.jpg' %}" alt="宫保鸡丁">
+                            <!-- 这里用后端确保dish.image_url为完整静态路径 -->
+                            <img src="{% static dish.image_url %}" alt="{{ dish.name }}" width="120" height="90">
                         </div>
                         <div class="food-info">
-                            <div class="food-name">宫保鸡丁</div>
-                            <div class="food-desc">经典川菜，辣味十足，口感鲜香。</div>
-                            <div class="food-nutrition">
-                                <span>热量: <span class="nutrition-value">769.50 kcal</span></span>
-                                <span>蛋白: <span class="nutrition-value">67.40g</span></span>
-                            </div>
-                            <div class="food-footer">
-                                <div class="food-price">¥12.25</div>
-                                <button class="add-to-cart">
-                                    <i class="fas fa-plus"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+    <div class="food-name">{{ dish.name }}</div>
+    <div class="food-desc">{{ dish.description }}</div>
 
-                    <!-- 菜品卡片 - 红烧牛肉 -->
-                    <div class="food-card" data-dish-id="2">
-                        <div class="food-image">
-                            <img src="{% static 'Images/红烧牛肉.jpg' %}" alt="红烧牛肉">
-                        </div>
-                        <div class="food-info">
-                            <div class="food-name">红烧牛肉</div>
-                            <div class="food-desc">浓郁酱香，肉质鲜嫩，入口即化。</div>
-                            <div class="food-nutrition">
-                                <span>热量: <span class="nutrition-value">664.90 kcal</span></span>
-                                <span>蛋白: <span class="nutrition-value">67.40g</span></span>
-                            </div>
-                            <div class="food-footer">
-                                <div class="food-price">¥15.75</div>
-                                <button class="add-to-cart">
-                                    <i class="fas fa-plus"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+    <!-- 修改这里 -->
+<div class="nutrition">
+    <span class="nutrition-value" data-type="calorie">卡路里：{{ dish.total_calorie }} kcal</span></br>
+    <span class="nutrition-value" data-type="protein">蛋白质：{{ dish.total_protein }}g</span>
+</div>
 
-                    <!-- 菜品卡片 - 清蒸鲈鱼 -->
-                    <div class="food-card" data-dish-id="3">
-                        <div class="food-image">
-                            <img src="{% static 'Images/清蒸鲈鱼.jpg' %}" alt="清蒸鲈鱼">
-                        </div>
-                        <div class="food-info">
-                            <div class="food-name">清蒸鲈鱼</div>
-                            <div class="food-desc">清淡鲜美，保留鱼的原汁原味。</div>
-                            <div class="food-nutrition">
-                                <span>热量: <span class="nutrition-value">299.00 kcal</span></span>
-                                <span>蛋白: <span class="nutrition-value">60.20g</span></span>
-                            </div>
-                            <div class="food-footer">
-                                <div class="food-price">¥19.25</div>
-                                <button class="add-to-cart">
-                                    <i class="fas fa-plus"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
 
-                    <!-- 菜品卡片 - 麻婆豆腐 -->
-                    <div class="food-card" data-dish-id="4">
-                        <div class="food-image">
-                            <img src="{% static 'Images/麻婆豆腐.jpg' %}" alt="麻婆豆腐">
-                        </div>
-                        <div class="food-info">
-                            <div class="food-name">麻婆豆腐</div>
-                            <div class="food-desc">麻辣鲜香，豆腐嫩滑，口感丰富。</div>
-                            <div class="food-nutrition">
-                                <span>热量: <span class="nutrition-value">400.00 kcal</span></span>
-                                <span>蛋白: <span class="nutrition-value">38.30g</span></span>
-                            </div>
-                            <div class="food-footer">
-                                <div class="food-price">¥8.75</div>
-                                <button class="add-to-cart">
-                                    <i class="fas fa-plus"></i>
-                                </button>
-                            </div>
-                        </div>
+    <div class="food-footer">
+        <div class="food-price">¥{{ dish.price }}</div>
+        <button class="add-to-cart">
+            <i class="fas fa-plus"></i>
+        </button>
+    </div>
+</div>
                     </div>
-                    {% load static %}
-                    <!-- 菜品卡片 - 糖醋里脊 -->
-                    <div class="food-card" data-dish-id="5">
-                        <div class="food-image">
-                          <img src="{% static 'Images/糖醋里脊.jpg' %}" alt="糖醋里脊">
-                        </div>
-                        <div class="food-info">
-                            <div class="food-name">糖醋里脊</div>
-                            <div class="food-desc">酸甜可口，外酥里嫩，深受喜爱。</div>
-                            <div class="food-nutrition">
-                                <span>热量: <span class="nutrition-value">536.45 kcal</span></span>
-                                <span>蛋白: <span class="nutrition-value">45.60g</span></span>
-                            </div>
-                            <div class="food-footer">
-                                <div class="food-price">¥10.50</div>
-                                <button class="add-to-cart">
-                                    <i class="fas fa-plus"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- 菜品卡片 - 鱼香茄子 -->
-                    <div class="food-card" data-dish-id="6">
-                        <div class="food-image">
-                            <img src="{% static 'Images/鱼香茄子.jpg' %}" alt="鱼香茄子">
-                        </div>
-                        <div class="food-info">
-                            <div class="food-name">鱼香茄子</div>
-                            <div class="food-desc">酸辣甜香，茄子软糯，风味独特。</div>
-                            <div class="food-nutrition">
-                                <span>热量: <span class="nutrition-value">328.95 kcal</span></span>
-                                <span>蛋白: <span class="nutrition-value">26.40g</span></span>
-                            </div>
-                            <div class="food-footer">
-                                <div class="food-price">¥9.80</div>
-                                <button class="add-to-cart">
-                                    <i class="fas fa-plus"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+                   {% endfor %}
                 </div>
             </div>
 
             <!-- 购物车悬浮按钮 -->
-            <div class="cart-indicator" id="openCart2">
+            <div class="cart-indicator" id="openCart2" style="display:none;">
                 <i class="fas fa-shopping-cart"></i>
                 <div class="cart-count">0</div>
             </div>
@@ -279,9 +179,7 @@
                     <h2 class="section-title"><i class="fas fa-shopping-cart"></i> 我的购物车</h2>
                     <div class="close-cart" id="closeCart"><i class="fas fa-times"></i></div>
                 </div>
-                <div class="cart-items">
-                    <!-- 由JavaScript动态填充 -->
-                </div>
+                <div class="cart-items"></div>
                 <div class="cart-summary">
                     <div class="summary-row">
                         <div class="summary-title">菜品总价</div>
@@ -332,51 +230,77 @@
         const cartOverlay = document.getElementById('cartOverlay');
         const openCartButtons = document.querySelectorAll('#openCart, #openCart2');
         const closeCartButton = document.getElementById('closeCart');
-        const addButtons = document.querySelectorAll('.add-to-cart, .add-btn');
         const cartItemsContainer = document.querySelector('.cart-items');
         const checkoutBtn = document.getElementById('checkoutBtn');
+        const cartIndicator = document.getElementById('openCart2');
 
         openCartButtons.forEach(btn => btn.addEventListener('click', () => cartOverlay.classList.add('active')));
         closeCartButton.addEventListener('click', () => cartOverlay.classList.remove('active'));
 
-        addButtons.forEach(button => {
-            button.addEventListener('click', function(event) {
-                event.stopPropagation();
-                const foodCard = this.closest('.food-card, .recommendation-banner');
-                const dishId = foodCard.getAttribute('data-dish-id');
+        // 事件委托绑定加号按钮，支持动态新增按钮
+document.addEventListener('click', function(event) {
+    const target = event.target;
+    // 监听“添加到购物车”或“推荐菜品的加号”按钮的点击
+    if (target.closest('.add-to-cart') || target.closest('.add-btn')) {
+        event.stopPropagation(); // 阻止事件冒泡
 
-                if (!dishId) { return; }
+        const btn = target.closest('.add-to-cart, .add-btn');
+        const foodCard = btn.closest('.food-card, .recommendation-banner');
 
-                const foodName = foodCard.querySelector('.food-name, .dish-name').textContent.trim();
-                const foodPriceText = foodCard.querySelector('.food-price, .dish-price').textContent.trim();
-                const foodPrice = parseFloat(foodPriceText.replace('¥', ''));
+        // 如果找不到父级菜品卡片，则退出
+        if (!foodCard) return;
 
-                // --- 修复部分 1: 读取营养数据 ---
-                const calorieSpan = foodCard.querySelector('.nutrition-value:nth-of-type(1)');
-                const proteinSpan = foodCard.querySelector('.nutrition-value:nth-of-type(2)');
+        const dishId = foodCard.getAttribute('data-dish-id');
+        if (!dishId) return;
 
-                const calorie = calorieSpan ? parseFloat(calorieSpan.textContent) : 0;
-                const protein = proteinSpan ? parseFloat(proteinSpan.textContent) : 0;
-                const carbohydrate = 0;
+        // --- 数据提取 ---
+        const foodName = foodCard.querySelector('.food-name, .dish-name').textContent.trim();
+        const foodPriceText = foodCard.querySelector('.food-price, .dish-price').textContent.trim();
+        const foodPrice = parseFloat(foodPriceText.replace('¥', ''));
 
-                const originalHTML = this.innerHTML;
-                if (this.classList.contains('add-to-cart')) {
-                    this.innerHTML = '<i class="fas fa-check"></i>';
-                    setTimeout(() => { this.innerHTML = '<i class="fas fa-plus"></i>'; }, 1000);
-                }
+        // 【核心修改部分】
+        // 1. 分别获取热量、蛋白质和碳水的DOM元素
+        //    使用 :nth-of-type(n) 按顺序选择第n个class为.nutrition-value的元素
+        const calorieSpan = foodCard.querySelector('.nutrition-value:nth-of-type(1)');
+        const proteinSpan = foodCard.querySelector('.nutrition-value:nth-of-type(2)');
+        const carbohydrateSpan = foodCard.querySelector('.nutrition-value:nth-of-type(3)'); // 新增：获取碳水元素
 
-                showNotification(`${foodName} 已添加`);
+        // 2. 将元素的文本内容转换为数字。
+        //    使用 ?. (可选链操作符) 和 || 0 来安全地处理，如果元素不存在(null)也不会报错，并默认值为0。
+        const getNutritionValue = (type) => {
+    const span = foodCard.querySelector(`.nutrition-value[data-type="${type}"]`);
+    if (!span) {
+        console.warn(`⚠️ 未找到 ${type} 的 DOM 节点`);
+        return 0;
+    }
+    const text = span.textContent.replace(/[^\d.]/g, ''); // 去除单位如 kcal、g
+    const value = parseFloat(text);
+    return isNaN(value) ? 0 : value;
+};
 
-                addOrUpdateCartItem({
-                    id: dishId,
-                    name: foodName,
-                    price: foodPrice,
-                    calorie: calorie,
-                    protein: protein,
-                    carbohydrate: carbohydrate
-                });
-            });
+const calorie = getNutritionValue("calorie");
+const protein = getNutritionValue("protein");
+const carbohydrate = getNutritionValue("carbohydrate");
+
+
+        // --- UI反馈 ---
+        btn.innerHTML = '<i class="fas fa-check"></i>';
+        setTimeout(() => { btn.innerHTML = '<i class="fas fa-plus"></i>'; }, 1000);
+
+        showNotification(`${foodName} 已添加`);
+
+        // --- 更新购物车 ---
+        // 将读取到的所有正确数据传递给购物车处理函数
+        addOrUpdateCartItem({
+            id: dishId,
+            name: foodName,
+            price: foodPrice,
+            calorie: calorie,
+            protein: protein,
+            carbohydrate: carbohydrate // 现在传递的是从HTML读取到的真实值
         });
+    }
+});
 
         checkoutBtn.addEventListener('click', function() {
             const cartItemsElements = document.querySelectorAll('.cart-item');
@@ -396,7 +320,6 @@
             this.disabled = true;
             this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 处理中...';
 
-            // CSRF Token logic removed for simplicity as per user request
             fetch('/submit-order/', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -413,6 +336,8 @@
                     updateCartTotal();
                     updateCartCount();
                     cartOverlay.classList.remove('active');
+                    
+                    window.location.href = "/get_order_status?order_id="+data.order_id;
                 } else {
                     alert('订单提交失败: ' + data.message);
                 }
@@ -446,14 +371,11 @@
                     </div>`;
                 const newCartItem = document.createElement('div');
                 newCartItem.className = 'cart-item';
-
-                // --- 修复部分 2: 存储所有数据到 data-* 属性 ---
                 newCartItem.setAttribute('data-dish-id', dish.id);
                 newCartItem.setAttribute('data-price', dish.price);
                 newCartItem.setAttribute('data-calorie', dish.calorie);
                 newCartItem.setAttribute('data-protein', dish.protein);
                 newCartItem.setAttribute('data-carbohydrate', dish.carbohydrate);
-
                 newCartItem.innerHTML = cartItemHTML;
                 cartItemsContainer.appendChild(newCartItem);
                 addEventListenersToControls(newCartItem);
@@ -490,7 +412,6 @@
             let totalPrice = 0, totalCalorie = 0, totalProtein = 0, totalCarbohydrate = 0;
 
             document.querySelectorAll('.cart-item').forEach(item => {
-                // --- 修复部分 3: 从 data-* 属性读取数据进行计算 ---
                 const price = parseFloat(item.getAttribute('data-price'));
                 const calorie = parseFloat(item.getAttribute('data-calorie'));
                 const protein = parseFloat(item.getAttribute('data-protein'));
@@ -515,10 +436,16 @@
         function updateCartCount() {
             const totalItems = Array.from(document.querySelectorAll('.cart-item .quantity'))
                 .reduce((sum, el) => sum + parseInt(el.textContent), 0);
-            document.querySelectorAll('.cart-count').forEach(el => {
+            const cartCountElements = document.querySelectorAll('.cart-count');
+
+            cartCountElements.forEach(el => {
                 el.textContent = totalItems;
                 el.style.display = totalItems > 0 ? 'flex' : 'none';
             });
+
+            if (cartIndicator) {
+                cartIndicator.style.display = totalItems > 0 ? 'flex' : 'none';
+            }
         }
 
         function showNotification(message) {

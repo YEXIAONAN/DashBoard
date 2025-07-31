@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>测试雷达图</title>
+    {% load static %}
+    <script src="{% static 'js/echarts.min.js' %}"></script>
+</head>
+<body>
+    <div id="monthlyNutrientRadarChart" style="width: 450px; height: 300px;"></div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const radarChartDom = document.getElementById('monthlyNutrientRadarChart');
+            const myRadarChart = echarts.init(radarChartDom);
+
+            console.log("✅ 正在渲染静态雷达图...");
+
+            const option = {
+                tooltip: { trigger: 'item' },
+                legend: { data: ['本月', '上月'], top: 10 },
+                radar: {
+                    indicator: [
+                        { name: '蛋白质', max: 100 },
+                        { name: '膳食纤维', max: 5 },
+                        { name: '钙', max: 60 },
+                        { name: '维生素C', max: 10 },
+                        { name: '铁', max: 10 },
+                        { name: '健康脂肪', max: 60 }
+                    ],
+                    radius: 100,
+                    shape: 'polygon'
+                },
+                series: [{
+                    name: '营养对比',
+                    type: 'radar',
+                    data: [
+                        {
+                            value: [80, 4, 50, 6, 7, 40],
+                            name: '本月'
+                        },
+                        {
+                            value: [70, 3, 40, 5, 6, 35],
+                            name: '上月'
+                        }
+                    ]
+                }]
+            };
+
+            myRadarChart.setOption(option);
+        });
+    </script>
+</body>
+</html>
