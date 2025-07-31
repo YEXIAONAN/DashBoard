@@ -1,13 +1,15 @@
+from django.core import serializers
+from django.db.models import Sum, Value, DecimalField
+from django.db.models.functions import Coalesce
 from django.shortcuts import render
-from datetime import datetime, timedelta
 
 from django.template.defaultfilters import date
 # 2. 定义所有页面的渲染视图
 from django.utils import timezone
-from django.db.models import Sum
 from .models import DishOrderTable, UserInputDishTable
 from collections import defaultdict
-from datetime import date, timedelta
+
+from datetime import date, timedelta, datetime
 from calendar import monthrange # 导入 monthrange 以获取月份天数
 
 from .models import NutritionRecord # 确保这个导入是正确的
@@ -23,11 +25,11 @@ def index(request):
         UserInputDishTable.objects
         .filter(created_at__date=today)
         .aggregate(
-            calorie=Sum('calorie') or 0,
-            protein=Sum('protein') or 0,
-            fat=Sum('fat') or 0,
-            carbohydrate=Sum('carbohydrate') or 0,
-            fiber=Sum('fiber') or 0,
+            calorie=Coalesce(Sum('calorie'), Value(0), output_field=DecimalField()),
+            protein=Coalesce(Sum('protein'), Value(0), output_field=DecimalField()),
+            fat=Coalesce(Sum('fat'), Value(0), output_field=DecimalField()),
+            carbohydrate=Coalesce(Sum('carbohydrate'), Value(0), output_field=DecimalField()),
+            fiber=Coalesce(Sum('fiber'), Value(0), output_field=DecimalField()),
         )
     )
 
@@ -36,7 +38,6 @@ def index(request):
         'today': today,
         'today_total': totals,
     })
-
 
 def orders(request):
     # 查询所有菜品，传给模板
@@ -100,6 +101,8 @@ def repo(request):
     """
     return render(request, 'repo.html')
 
+def ai_health_advisor(request):
+    return render(request, 'ai_health_advisor.html')
 
 def MyOrder(request):
     cutoff = timezone.now() - timedelta(days=3)
@@ -299,7 +302,6 @@ def calorie_trend_data(request):
         'this_week_data': this_week_data, # 重命名 y_data 为 this_week_data
         'last_week_data': last_week_data, # 新增上周数据
     })
-from .models import UserInputDishTable
 
 def api_orders(request):
     orders = UserInputDishTable.objects.all().order_by('-created_at')
@@ -902,52 +904,35 @@ def get_nutrient_radar_data(request):
     })
 
 
+#获取所有菜品信息为对象存入map字典中
+def get_dish_name_map():
+
+    dish_all = DishOrderTable.objects.all()
+
+    dish_map = {dish.name: dish for dish in dish_all}
+
+    return dish_map
+
 
 #获取订单状态
 def get_order_status(request):
+    order_id = request.GET.get("order_id","")
     # 将字符串转换为带时区的 datetime 对象（假设原时间是当前时区）
     naive_time = datetime.strptime("2025-07-20 03:55:01", "%Y-%m-%d %H:%M:%S")
     aware_time = timezone.make_aware(naive_time, timezone.get_current_timezone())
-    order_all = UserInputDishTable.objects.filter(created_at=aware_time)
+    order_all = UserInputDishTable.objects.filter(order_id = int(order_id))
+    order_price_sum = 0
+    for order in order_all:
+        order_price_sum = order_price_sum + order.price
+
+
     # progress = {
     #     # 'status': order.status,
     #     'data': order_all,
     #     # 'estimated_time': order.estimated_completion_time()
     # }
     #JsonResponse(progress)
+    #序列化json
+    data = serializers.serialize('json',order_all)
 
-    return render(request, 'order_status.html', {'data': "123"})
-
-
-
-#获取订单状态
-def get_order_status(request):
-    # 将字符串转换为带时区的 datetime 对象（假设原时间是当前时区）
-    naive_time = datetime.strptime("2025-07-20 03:55:01", "%Y-%m-%d %H:%M:%S")
-    aware_time = timezone.make_aware(naive_time, timezone.get_current_timezone())
-    order_all = UserInputDishTable.objects.filter(created_at=aware_time)
-    # progress = {
-    #     # 'status': order.status,
-    #     'data': order_all,
-    #     # 'estimated_time': order.estimated_completion_time()
-    # }
-    #JsonResponse(progress)
-
-    return render(request, 'order_status.html', {'data': "123"})
-
-
-
-#获取订单状态
-def get_order_status(request):
-    # 将字符串转换为带时区的 datetime 对象（假设原时间是当前时区）
-    naive_time = datetime.strptime("2025-07-20 03:55:01", "%Y-%m-%d %H:%M:%S")
-    aware_time = timezone.make_aware(naive_time, timezone.get_current_timezone())
-    order_all = UserInputDishTable.objects.filter(created_at=aware_time)
-    # progress = {
-    #     # 'status': order.status,
-    #     'data': order_all,
-    #     # 'estimated_time': order.estimated_completion_time()
-    # }
-    #JsonResponse(progress)
-
-    return render(request, 'order_status.html', {'data': "123"})
+    return render(request, 'order_status.html', {'data': order_all,"order_price_sum":order_price_sum})

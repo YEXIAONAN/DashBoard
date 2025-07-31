@@ -393,6 +393,7 @@
             const l=item.querySelector('.func-label')?.textContent.trim();
             if(l==='智能点餐') item.addEventListener('click',()=>location.href='/orders/');
             else if(l==='历史订单') item.addEventListener('click',()=>location.href='/order_history/');
+            else if (l==='营养咨询') item.addEventListener('click',()=>location.href='/ai_health_advisor')
             else if(l==='健康报告') item.addEventListener('click',()=>location.href='/repo/');
             else if(l==='我的收藏') item.addEventListener('click',()=>location.href='/Collection/');
             else if(l==='营养食谱') item.addEventListener('click',()=>location.href='/nutrition_recipes/');

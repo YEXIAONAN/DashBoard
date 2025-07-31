@@ -274,17 +274,19 @@
                 <div class="order-status">准备中</div>
             </div>
             <div class="order-items">
+                {% for item in data%}
                 <div class="order-item">
                     <div class="item-image">
                         <img src="https://via.placeholder.com/60x60/f8f9fa/6c757d?text=牛排" alt="牛排">
                     </div>
                     <div class="item-info">
-                        <div class="item-name">香煎牛排套餐</div>
+                        <div class="item-name">{{item.dishname}}</div>
                         <div class="item-desc">x1</div>
-                        <div class="item-price">¥38</div>
+                        <div class="item-price">{{item.price}}</div>
                     </div>
                 </div>
-                <div class="order-item">
+                {% endfor%}
+                <!-- <div class="order-item">
                     <div class="item-image">
                         <img src="https://via.placeholder.com/60x60/f8f9fa/6c757d?text=三文鱼" alt="三文鱼">
                     </div>
@@ -293,11 +295,11 @@
                         <div class="item-desc">x1</div>
                         <div class="item-price">¥32</div>
                     </div>
-                </div>
+                </div> -->
             </div>
             <div class="order-total">
                 <div>总计</div>
-                <div>¥70</div>
+                <div>¥{{order_price_sum}}</div>
             </div>
         </div>
 
@@ -367,22 +369,40 @@
         </div>
 
         <div class="action-buttons">
-            <button class="action-btn btn-outline">
-                <i class="fas fa-phone-alt"></i> 联系客服
-            </button>
-            <button class="action-btn btn-primary">
-                <i class="fas fa-map-marker-alt"></i> 导航到取餐点
+<!--            <button class="action-btn btn-outline">-->
+<!--                <i class="fas fa-phone-alt"></i> 联系客服-->
+<!--            </button>-->
+            <button class="action-btn btn-primary" onclick="qucan()">
+                <i class="fas fa-map-marker-alt"></i> 取餐
             </button>
         </div>
     </div>
 
     <script>
+        function qucan(){
+            const params = new URLSearchParams();
+            params.append('scene_id', '10014');
+            console.log('/execute_task_one?'+params.toString())
+            fetch('/execute_task_one?'+params.toString())
+            .then(response => {
+                if (!response.ok) { throw new Error(`HTTP error ${response.status}`); }
+                return response.json();
+            })
+            .then(data => {
+                alert('正在配餐');
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('订单提交时发生网络错误，请稍后重试。');
+            })
+        }
         // 模拟订单状态更新
         document.addEventListener('DOMContentLoaded', function() {
             // 这里可以添加WebSocket或轮询来获取实时订单状态
             // 以下是模拟状态变化
             console.log("aaa")
-            console.log({{data}})
+            // console.log(JSON.parse('{{data_json|safe}}'))
+            // console.log('{{data_json|safe}}')
             setTimeout(() => {
                 const preparingStep = document.querySelector('.timeline-step:nth-child(3) .step-icon');
                 preparingStep.classList.remove('active');

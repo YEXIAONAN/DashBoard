@@ -336,6 +336,8 @@ const carbohydrate = getNutritionValue("carbohydrate");
                     updateCartTotal();
                     updateCartCount();
                     cartOverlay.classList.remove('active');
+                    
+                    window.location.href = "/get_order_status?order_id="+data.order_id;
                 } else {
                     alert('订单提交失败: ' + data.message);
                 }

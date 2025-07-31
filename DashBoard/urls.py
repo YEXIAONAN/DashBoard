@@ -21,7 +21,6 @@ urlpatterns = [
     path('orders/',views.orders,name='orders'),
     path('repo/', views.repo, name='repo'),
     path('dishdb/',dishdb.dishdb),
-    path('submit-order/', api.submit_order, name='submit-order'),
     path('profile/',views.profile,name='profile'),
     path('order_history/', views.order_history, name='order_history'),
     path('nutrition_recipes/', views.nutrition_recipes, name='nutrition_recipes'),
@@ -37,6 +36,9 @@ urlpatterns = [
     path('weekly-nutrient-analysis-data/', views.weekly_nutrient_analysis_data, name='weekly_nutrient_analysis_data'),
     path('get_nutrient_radar_data/', views.get_nutrient_radar_data, name='get_nutrient_radar_data'),
     path('get_order_status/', views.get_order_status, name='get_order_status'),
+    path('ai_health_advisor/', views.ai_health_advisor, name='ai_health_advisor'),
+    path('submit-order/', api.submit_order, name='submit-order'),
+    path('execute_task_one/', api.execute_task_one, name='execute_task_one'),
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATICFILES_DIRS[0])
