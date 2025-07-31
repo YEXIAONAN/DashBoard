@@ -45,8 +45,14 @@ if settings.DEBUG:
 
 
 
+
+
+from django.views.static import serve
+import os
+from django.conf import settings
+
 urlpatterns += [
-    path('img/<str:dish>.jpg', serve, {
+    re_path(r'^img/(?P<path>.*)$', serve, {
         'document_root': os.path.join(settings.BASE_DIR, 'main', 'static', 'Images'),
-    }, name='dish_img'),
+    }),
 ]

@@ -262,7 +262,7 @@
 <body>
     <div class="container">
         <div class="header">
-            <a href="/menu/" class="back-btn">
+            <a href="/orders/" class="back-btn">
                 <i class="fas fa-chevron-left"></i>
             </a>
             <h1>订单状态</h1>
@@ -277,8 +277,10 @@
                 {% for item in data%}
                 <div class="order-item">
                     <div class="item-image">
-                        <img src="https://via.placeholder.com/60x60/f8f9fa/6c757d?text=牛排" alt="牛排">
-                    </div>
+                        <img src="/img/{{ item.dishname }}.jpg"
+                        alt="{{ item.dishname }}"
+                        onerror="this.style.display='none'; this.onerror=null;">
+                </div>
                     <div class="item-info">
                         <div class="item-name">{{item.dishname}}</div>
                         <div class="item-desc">x1</div>
@@ -393,7 +395,7 @@
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('订单提交时发生网络错误，请稍后重试。');
+                alert('正在取餐中');
             })
         }
         // 模拟订单状态更新
