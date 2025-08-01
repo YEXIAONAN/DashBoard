@@ -1,232 +1,362 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no"/>
-<title>智慧食堂 - Ai营养顾问</title>
-<style>
-*{margin:0;padding:0;box-sizing:border-box}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f5f7fa}
-.mobile-container{width:100%;max-width:414px;margin:0 auto;background:#f5f7fa;min-height:100vh;display:flex;flex-direction:column}
-.header{background:linear-gradient(135deg,#4285f4 0%,#2196f3 100%);color:#fff;padding:15px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
-.header-left{display:flex;align-items:center;gap:10px}
-.back-button{background:rgba(255,255,255,.2);border:none;color:#fff;border-radius:50%;width:32px;height:32px;font-size:16px;cursor:pointer}
-.main-content{flex:1;padding:0 16px 80px 16px;overflow-y:auto}
-.ai-status-card,.chat-section,.quick-actions{background:#fff;border-radius:12px;margin:16px 0;padding:20px;box-shadow:0 2px 8px rgba(0,0,0,.1)}
-.chat-container{height:400px;overflow-y:auto;padding:15px 15px 15px 40px;display:flex;flex-direction:column;gap:12px}
-.message{max-width:80%;padding:12px 16px;border-radius:18px;font-size:14px;line-height:1.4}
-.user-message{background:#4285f4;color:#fff;align-self:flex-end;border-bottom-right-radius:6px}
-.ai-message{background:#f1f3f4;color:#333;align-self:flex-start;border-bottom-left-radius:6px;position:relative}
-.ai-message::before{content:'🤖';position:absolute;left:-35px;top:50%;transform:translateY(-50%);background:#fff;border-radius:50%;width:24px;height:24px;display:flex;align-items:center;justify-content:center;font-size:18px;box-shadow:0 2px 4px rgba(0,0,0,.1)}
-.thinking-toggle-btn{background:none;border:none;color:#4285f4;font-size:12px;cursor:pointer;margin-left:8px}
-.thinking-content{display:none;margin-top:6px;font-size:13px;color:#666;white-space:pre-wrap;background:#f8f9fa;padding:8px;border-radius:6px}
-.typing-indicator{display:none;align-items:center;gap:8px;padding:12px 16px;background:#f1f3f4;border-radius:18px;max-width:80px;align-self:flex-start;border-bottom-left-radius:6px}
-.typing-indicator.active{display:flex}
-.typing-dot{width:6px;height:6px;border-radius:50%;background:#4285f4;animation:typing 1.4s infinite ease-in-out}
-.typing-dot:nth-child(1){animation-delay:-.32s}
-.typing-dot:nth-child(2){animation-delay:-.16s}
-.typing-dot:nth-child(3){animation-delay:0}
-.welcome-message{text-align:center;color:#666;font-size:14px;margin:30px 0;line-height:1.5}
-.quick-buttons{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
-.quick-button{background:#f8f9fa;border:none;border-radius:8px;padding:12px 8px;font-size:12px;color:#666;cursor:pointer}
-.quick-button:hover{background:#e9ecef}
-.input-container{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:414px;background:#fff;padding:12px 16px;border-top:1px solid #e9ecef;box-shadow:0 -2px 10px rgba(0,0,0,.1)}
-.input-wrapper{display:flex;gap:8px;align-items:flex-end}
-#messageInput{flex:1;border:1px solid #e9ecef;border-radius:20px;padding:10px 16px;font-size:14px;background:#f8f9fa;resize:none;max-height:80px;min-height:40px;outline:none}
-#sendButton{background:#4285f4;color:#fff;border:none;border-radius:50%;width:40px;height:40px;cursor:pointer;font-size:16px}
-#sendButton:disabled{opacity:.6;cursor:not-allowed}
-@keyframes typing{0%,80%,100%{transform:scale(0);opacity:.5}40%{transform:scale(1);opacity:1}}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 健康顾问</title>
+    <style>
+        :root {
+            --primary-color: #007bff; /* 主题蓝 */
+            --secondary-color: #f0f8ff; /* 淡蓝色背景 */
+            --white-color: #ffffff;
+            --text-color: #333;
+            --gray-color: #888;
+            --border-color: #e0e0e0;
+            --user-msg-bg: #007bff;
+            --user-msg-text: #ffffff;
+            --bot-msg-bg: #e9ecef;
+            --bot-msg-text: #333;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            background-color: var(--secondary-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: var(--text-color);
+        }
+
+        .chat-container {
+            width: 100%;
+            height: 100%;
+            max-width: 800px;
+            display: flex;
+            flex-direction: column;
+            background-color: var(--white-color);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            border-radius: 16px;
+            overflow: hidden;
+        }
+
+        .chat-header {
+            background-color: var(--primary-color);
+            color: var(--white-color);
+            padding: 1rem;
+            text-align: center;
+            border-bottom: 1px solid var(--border-color);
+            z-index: 2;
+        }
+
+        .chat-header h1 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+
+        .disclaimer {
+            font-size: 0.75rem;
+            padding: 0.5rem 1rem;
+            background-color: #fff3cd;
+            color: #856404;
+            text-align: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 1rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .message {
+            display: flex;
+            align-items: flex-end;
+            gap: 10px;
+            max-width: 80%;
+        }
+
+        .message-content {
+            padding: 0.75rem 1rem;
+            border-radius: 18px;
+            line-height: 1.5;
+        }
+
+        .user-message {
+            align-self: flex-end;
+            flex-direction: row-reverse;
+        }
+
+        .user-message .message-content {
+            background-color: var(--user-msg-bg);
+            color: var(--user-msg-text);
+            border-bottom-right-radius: 4px;
+        }
+
+        .bot-message {
+            align-self: flex-start;
+        }
+
+        .bot-message .message-content {
+            background-color: var(--bot-msg-bg);
+            color: var(--bot-msg-text);
+            border-bottom-left-radius: 4px;
+        }
+
+        .message-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--border-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .bot-message .message-avatar {
+            background-color: #d1e7dd;
+        }
+
+        .user-message .message-avatar {
+             background-color: #cce5ff;
+        }
+
+        .typing-indicator {
+            align-self: flex-start;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 0.75rem 1rem;
+        }
+
+        .typing-indicator span {
+            width: 8px;
+            height: 8px;
+            background-color: var(--gray-color);
+            border-radius: 50%;
+            animation: typing 1.4s infinite both;
+        }
+
+        .typing-indicator span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-indicator span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes typing {
+            0%, 80%, 100% {
+                transform: scale(0);
+            }
+            40% {
+                transform: scale(1.0);
+            }
+        }
+
+        .chat-input {
+            display: flex;
+            padding: 1rem;
+            border-top: 1px solid var(--border-color);
+            background-color: var(--white-color);
+        }
+
+        #message-input {
+            flex: 1;
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            font-size: 1rem;
+            resize: none;
+        }
+
+        #message-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        #send-button {
+            background-color: var(--primary-color);
+            color: var(--white-color);
+            border: none;
+            padding: 0.75rem 1.5rem;
+            margin-left: 0.5rem;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s;
+        }
+
+        #send-button:hover {
+            background-color: #0056b3;
+        }
+
+        /* 移动端适配 */
+        @media (max-width: 600px) {
+            body {
+                height: 100%;
+            }
+            .chat-container {
+                border-radius: 0;
+                height: 100vh;
+            }
+            .chat-header h1 {
+                font-size: 1.2rem;
+            }
+            .chat-input {
+                padding: 0.5rem;
+            }
+            #message-input, #send-button {
+                padding: 0.6rem;
+                font-size: 0.9rem;
+            }
+             #send-button {
+                padding: 0.6rem 1rem;
+            }
+        }
+
+    </style>
 </head>
 <body>
-<div class="mobile-container">
-  <div class="header">
-    <div class="header-left">
-      <button class="back-button" onclick="history.back()">←</button>
-      <span>📍</span>
-      <span>智慧食堂 - Ai营养顾问</span>
-    </div>
-    <div class="avatar">🤖</div>
-  </div>
 
-  <div class="main-content">
-    <div class="ai-status-card">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
-        <div style="display:flex;align-items:center;gap:8px;font-weight:600">🤖 Ai营养顾问</div>
-        <div style="font-size:12px;color:#4caf50">● 在线服务</div>
-      </div>
-      <div style="font-size:14px;color:#666">24小时为您提供专业健康咨询，基于先进AI技术，解答健康问题并提供个性化建议。</div>
-    </div>
-
-    <div class="chat-section">
-      <div style="background:#f8f9fa;padding:15px 20px;border-bottom:1px solid #e9ecef;font-weight:600">💬 健康咨询对话</div>
-      <div class="chat-container" id="chatContainer">
-        <div class="welcome-message">
-          <span style="font-size:24px">👋</span>
-          您好！我是您的AI健康顾问<br>很高兴为您服务！<br><br>
-          请告诉我您的健康问题或需求<br>我会尽力为您提供专业建议
+    <div class="chat-container">
+        <header class="chat-header">
+            <h1>AI 健康顾问</h1>
+        </header>
+        <div class="disclaimer">
+            <strong>免责声明:</strong> 本顾问提供基于AI的通用健康建议，尤其侧重于餐饮行业。信息仅供参考，不能替代专业医师、营养师的诊断和建议。 [4, 8]
         </div>
-        <div class="typing-indicator" id="typingIndicator">
-          <div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>
+        <div class="chat-messages" id="chat-messages">
+            <!-- 聊天消息将在这里动态插入 -->
+            <div class="bot-message message">
+                <div class="message-avatar">AI</div>
+                <div class="message-content">
+                    <p>您好！我是您的餐饮业AI健康顾问。无论是关于食材营养、健康烹饪还是员工健康问题，我都可以为您提供建议。请问有什么可以帮您的？</p>
+                </div>
+            </div>
         </div>
-      </div>
+        <div class="chat-input">
+            <input type="text" id="message-input" placeholder="输入您的问题...">
+            <button id="send-button">发送</button>
+        </div>
     </div>
 
-    <div class="quick-actions">
-      <div style="font-weight:600;margin-bottom:15px">⚡ 快捷咨询</div>
-      <div class="quick-buttons">
-        <button class="quick-button" onclick="sendQuick('我想了解一下健康饮食的建议')">🥗<br>健康饮食</button>
-        <button class="quick-button" onclick="sendQuick('请推荐一些适合的运动方式')">🏃‍♀️<br>运动建议</button>
-        <button class="quick-button" onclick="sendQuick('我最近睡眠质量不好，有什么改善方法吗？')">😴<br>睡眠健康</button>
-        <button class="quick-button" onclick="sendQuick('如何有效缓解工作压力？')">🧘‍♀️<br>压力管理</button>
-        <button class="quick-button" onclick="sendQuick('请介绍一些养生保健的方法')">🌿<br>养生保健</button>
-        <button class="quick-button" onclick="sendQuick('我想了解如何预防常见疾病')">🛡️<br>疾病预防</button>
-      </div>
-    </div>
-  </div>
+    <script>
+        const chatMessages = document.getElementById('chat-messages');
+        const messageInput = document.getElementById('message-input');
+        const sendButton = document.getElementById('send-button');
 
-  <div class="input-container">
-    <div class="input-wrapper">
-      <textarea id="messageInput" placeholder="请输入您的健康问题…" rows="1"></textarea>
-      <button id="sendButton">➤</button>
-    </div>
-  </div>
-</div>
+        const API_URL = 'http://192.168.101.247:3099/v1';
+        const API_KEY = 'app-CLtB616AcDjvsll56n0rSNcU';
+        const USER_ID = 'mobile-user-' + Date.now(); // 为每个会话创建一个唯一用户ID
 
-<script>
-let isProcessing=false;
-const chatBox=document.getElementById('chatContainer');
-const input=document.getElementById('messageInput');
-const sendBtn=document.getElementById('sendButton');
-const typing=document.getElementById('typingIndicator');
-
-function scrollBottom(){setTimeout(()=>chatBox.scrollTop=chatBox.scrollHeight,100)}
-function addMsg(text,type){
-  const div=document.createElement('div');
-  div.className='message '+(type==='user'?'user-message':'ai-message');
-  div.textContent=text;
-  chatBox.insertBefore(div,typing);
-  scrollBottom();
-}
-
-function toggleThink(btn){
-  const content=btn.nextElementSibling;
-  const open=content.style.display==='block';
-  content.style.display=open?'none':'block';
-  btn.textContent=open?'🤔 查看思考':'🤔 收起思考';
-}
-
-function sendQuick(msg){
-  input.value=msg;
-  sendMsg();
-}
-
-async function sendMsg(){
-  const text=input.value.trim();
-  if(!text||isProcessing) return;
-  addMsg(text,'user');
-  input.value='';
-  isProcessing=true;
-  sendBtn.disabled=true;
-  scrollBottom();
-
-  // 创建思考中消息
-  const thinkDiv=document.createElement('div');
-  thinkDiv.className='message ai-message';
-  const timerSpan=document.createElement('span');
-  thinkDiv.appendChild(timerSpan);
-  chatBox.insertBefore(thinkDiv,typing);
-
-  const start=Date.now();
-  const timer=setInterval(()=>{
-    timerSpan.textContent=`🤔 AI 正在思考中…（${((Date.now()-start)/1000).toFixed(1)} 秒）`;
-    scrollBottom();
-  },200);
-
-  const controller=new AbortController();
-  try{
-    const res=await fetch('http://192.168.101.247:11434/api/chat',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({
-        model:'deepseek-r1:70b',
-        messages:[{role:'system',content:'你是健康顾问，用中文，简洁专业。'},{role:'user',content:text}],
-        stream:true
-      }),
-      signal:controller.signal
-    });
-    const reader=res.body.getReader();
-    const decoder=new TextDecoder();
-    let buffer='';
-    let thinking='';
-    let answer='';
-    let thinkingDone=false;
-
-    while(true){
-      const {done,value}=await reader.read();
-      if(done) break;
-      buffer+=decoder.decode(value,{stream:true});
-      const lines=buffer.split('\n');
-      buffer=lines.pop()||'';
-      for(const l of lines){
-        if(!l.trim()) continue;
-        try{
-          const d=JSON.parse(l);
-          const c=d.message?.content||'';
-          if(!thinkingDone){
-            const m=c.match(/<think>([\s\S]*?)<\/think>/);
-            if(m) thinking+=m[1];
-            if(c.includes('</think>')) thinkingDone=true;
-          }else{
-            answer+=c;
-            // 流式输出
-            if(!answerDiv){
-              clearInterval(timer);
-              thinkDiv.innerHTML=''; // 清除思考中
-              answerDiv=document.createElement('div');
-              answerDiv.className='message ai-message';
-              chatBox.insertBefore(answerDiv,typing);
+        sendButton.addEventListener('click', sendMessage);
+        messageInput.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                sendMessage();
             }
-            answerDiv.innerHTML=`
-              <div>
-                ✅ AI 思考完毕 ${thinking?`<button class="thinking-toggle-btn" onclick="toggleThink(this)">🤔 查看思考</button>`:''}
-                ${thinking?`<div class="thinking-content">${thinking}</div>`:''}
-              </div>
-              <div style="margin-top:8px">${answer}</div>
-            `;
-            scrollBottom();
-          }
-        }catch{}
-      }
-    }
-    clearInterval(timer);
-    if(!answerDiv){
-      thinkDiv.innerHTML='';
-      answerDiv=document.createElement('div');
-      answerDiv.className='message ai-message';
-      chatBox.insertBefore(answerDiv,typing);
-      answerDiv.innerHTML=`
-        <div>
-          ✅ AI 思考完毕 ${thinking?`<button class="thinking-toggle-btn" onclick="toggleThink(this)">🤔 查看思考</button>`:''}
-          ${thinking?`<div class="thinking-content">${thinking}</div>`:''}
-        </div>
-        <div style="margin-top:8px">${answer||'抱歉，我暂时无法回答您的问题。'}</div>
-      `;
-    }
-  }catch{
-    clearInterval(timer);
-    thinkDiv.textContent='服务暂时不可用，请稍后再试。';
-  }finally{
-    isProcessing=false;
-    sendBtn.disabled=false;
-  }
-  let answerDiv=null;
-}
+        });
 
-sendBtn.addEventListener('click',sendMsg);
-input.addEventListener('keydown',e=>{
-  if(e.key==='Enter'&&!e.shiftKey&&!isProcessing){e.preventDefault();sendMsg()}
-});
-</script>
+        function sendMessage() {
+            const messageText = messageInput.value.trim();
+            if (messageText === '') return;
+
+            appendMessage(messageText, 'user');
+            messageInput.value = '';
+
+            showTypingIndicator();
+
+            fetchBotResponse(messageText);
+        }
+
+        function appendMessage(text, sender) {
+            const messageWrapper = document.createElement('div');
+            messageWrapper.classList.add('message', `${sender}-message`);
+
+            const avatar = document.createElement('div');
+            avatar.classList.add('message-avatar');
+            avatar.textContent = sender === 'user' ? '您' : 'AI';
+
+            const messageElement = document.createElement('div');
+            messageElement.classList.add('message-content');
+            messageElement.textContent = text;
+
+            messageWrapper.appendChild(avatar);
+            messageWrapper.appendChild(messageElement);
+
+            chatMessages.appendChild(messageWrapper);
+            scrollToBottom();
+        }
+
+        function showTypingIndicator() {
+            const typingIndicator = document.createElement('div');
+            typingIndicator.id = 'typing-indicator';
+            typingIndicator.classList.add('message', 'bot-message', 'typing-indicator');
+            typingIndicator.innerHTML = `
+                <div class="message-avatar">AI</div>
+                <div>
+                    <span></span><span></span><span></span>
+                </div>
+            `;
+            chatMessages.appendChild(typingIndicator);
+            scrollToBottom();
+        }
+
+        function removeTypingIndicator() {
+            const typingIndicator = document.getElementById('typing-indicator');
+            if (typingIndicator) {
+                typingIndicator.remove();
+            }
+        }
+
+        async function fetchBotResponse(query) {
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${API_KEY}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        "inputs": {},
+                        "query": query,
+                        "response_mode": "blocking", // 使用阻塞模式，等待完整回复
+                        "user": USER_ID,
+                        "conversation_id": "" // 如果需要连续对话，请在这里传入之前的conversation_id
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`API 请求失败，状态码: ${response.status}`);
+                }
+
+                const data = await response.json();
+
+                removeTypingIndicator();
+
+                // 根据Dify API的返回结构，答案在 'answer' 字段中 [2]
+                const botReply = data.answer || "抱歉，我暂时无法回答这个问题。";
+                appendMessage(botReply, 'bot');
+
+            } catch (error) {
+                console.error('API调用错误:', error);
+                removeTypingIndicator();
+                appendMessage('抱歉，连接AI顾问时出现问题，请稍后再试。', 'bot');
+            }
+        }
+
+        function scrollToBottom() {
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+    </script>
+
 </body>
 </html>
