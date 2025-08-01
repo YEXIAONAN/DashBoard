@@ -17,6 +17,7 @@ from main import views  # 确保这个导入在文件顶部
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('', views.index, name='home'),  # 让根路径访问 index 视图
     path('index/', views.index, name='index'),
     path('orders/',views.orders,name='orders'),
     path('repo/', views.repo, name='repo'),
@@ -36,6 +37,7 @@ urlpatterns = [
     path('weekly-nutrient-analysis-data/', views.weekly_nutrient_analysis_data, name='weekly_nutrient_analysis_data'),
     path('get_nutrient_radar_data/', views.get_nutrient_radar_data, name='get_nutrient_radar_data'),
     path('get_order_status/', views.get_order_status, name='get_order_status'),
+    path('order_status/', views.get_order_status, name='order_status'),
     path('ai_health_advisor/', views.ai_health_advisor, name='ai_health_advisor'),
     path('submit-order/', api.submit_order, name='submit-order'),
     path('execute_task_one/', api.execute_task_one, name='execute_task_one'),
