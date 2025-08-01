@@ -916,23 +916,24 @@ def get_dish_name_map():
 
 #获取订单状态
 def get_order_status(request):
-    order_id = request.GET.get("order_id","")
+    order_id = request.GET.get("order_id", "1")
+    # 处理order_id为空的情况
+    try:
+        order_id_int = int(order_id) if order_id else 1
+    except ValueError:
+        order_id_int = 1
+
     # 将字符串转换为带时区的 datetime 对象（假设原时间是当前时区）
     naive_time = datetime.strptime("2025-07-20 03:55:01", "%Y-%m-%d %H:%M:%S")
     aware_time = timezone.make_aware(naive_time, timezone.get_current_timezone())
-    order_all = UserInputDishTable.objects.filter(order_id = int(order_id))
+    order_all = UserInputDishTable.objects.filter(order_id=order_id_int)
+
+    # 如果没有找到订单，使用默认订单
+    if not order_all:
+        order_all = UserInputDishTable.objects.filter(order_id=1)
+
     order_price_sum = 0
     for order in order_all:
         order_price_sum = order_price_sum + order.price
 
-
-    # progress = {
-    #     # 'status': order.status,
-    #     'data': order_all,
-    #     # 'estimated_time': order.estimated_completion_time()
-    # }
-    #JsonResponse(progress)
-    #序列化json
-    data = serializers.serialize('json',order_all)
-
-    return render(request, 'order_status.html', {'data': order_all,"order_price_sum":order_price_sum})
+    return render(request, 'order_status.html', {'data': order_all, "order_price_sum": order_price_sum})
