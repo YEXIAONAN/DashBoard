@@ -605,7 +605,9 @@
             align-items: center;
             padding: 10px 0;
         }
-
+        /* AI分析反馈和建议 */
+        .report-button{background:#2196F3;color:#fff;padding:10px 20px;border:none;border-radius:5px;cursor:pointer;font-size:16px}
+        .report-button:hover{background:#1976D2}
     </style>
 </head>
 <body>
@@ -754,40 +756,57 @@
 
 
 
-                <div class="report-section">
-                    <div class="section-title">
-                        <i class="fas fa-lightbulb"></i> AI分析反馈
-                    </div>
-                    <div class="feedback">
-                        <p>本周您的饮食结构整体良好，热量控制有明显进步！蛋白质摄入量略低于推荐值，建议增加豆制品和瘦肉摄入。周三晚餐摄入的油炸食品比例较高，导致当日饱和脂肪摄入超标。周末的蔬菜摄入量显著提升，继续保持！</p>
+                <!-- 合并后的按钮 -->
+                <button id="ai-feedback-btn" class="report-button">
+                  <i class="fas fa-lightbulb"></i> AI分析反馈和建议
+                </button>
 
-                        <div class="stats-grid" style="margin-top: 15px;">
-                            <div class="stat-card">
-                                <div class="value">85分 <span class="comparison positive">+8分</span></div>
-                                <div class="label">健康评分</div>
-                            </div>
-                            <div class="stat-card">
-                                <div class="value">12种 <span class="comparison positive">+3种</span></div>
-                                <div class="label">食物多样性</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <!-- 结果展示区域 -->
+                <div id="ai-content" style="display:none; margin-top:15px;"></div>
+                <script>
+                    document.getElementById('ai-feedback-btn').addEventListener('click', () => {
+                      const contentDiv = document.getElementById('ai-content');
 
-                <div class="report-section">
-                    <div class="section-title">
-                        <i class="fas fa-clipboard-list"></i> 优化建议
-                    </div>
-                    <div class="recommendation">
-                        <h4><i class="fas fa-check-circle"></i> 下周饮食优化建议</h4>
-                        <ul>
-                            <li>增加优质蛋白质摄入：午餐添加鸡胸肉或豆腐类菜品</li>
-                            <li>控制添加糖摄入：每日含糖饮料控制在200ml以内</li>
-                            <li>增加膳食纤维：每日确保摄入3种以上不同颜色蔬菜</li>
-                            <li>尝试新菜品：推荐尝试"藜麦鸡胸沙拉"和"番茄鱼片"</li>
-                        </ul>
-                    </div>
-                </div>
+                      // 已展开则收起
+                      if (contentDiv.style.display !== 'none') {
+                        contentDiv.style.display = 'none';
+                        return;
+                      }
+
+                      // 打开 SSE
+                      const sse = new EventSource('http://localhost:8020/sse');
+                      contentDiv.innerHTML = '正在连接服务器…';
+                      contentDiv.style.display = 'block';
+
+                      // 15 秒超时兜底
+                      const timeout = setTimeout(() => {
+                        contentDiv.innerHTML = '未接收到数据';
+                        sse.close();
+                      }, 15_000);
+
+                      sse.onmessage = (e) => {
+                        clearTimeout(timeout);          // 清除超时定时器
+                        try {
+                          const data = JSON.parse(e.data);
+                          contentDiv.innerHTML = `
+                            <h4>AI 分析结果</h4>
+                            <p>${data.prompt || '暂无数据'}</p>
+                            <pre>${JSON.stringify(data, null, 2)}</pre>
+                          `;
+                        } catch (err) {
+                          console.error(err);
+                          contentDiv.innerHTML = '解析数据失败';
+                        }
+                        sse.close();                    // 一次性连接，收完就关
+                      };
+
+                      sse.onerror = () => {
+                        clearTimeout(timeout);
+                        contentDiv.innerHTML = '连接服务器失败，请检查网络或后端地址';
+                        sse.close();
+                      };
+                    });
+                </script>
             </div>
 
             <!-- 推荐菜单 -->
