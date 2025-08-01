@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>智慧食堂 - 个人中心</title>
-    <link rel="stylesheet" href="../static/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
             margin: 0;
@@ -451,22 +451,7 @@
         }
 
         /* 底部导航栏 */
-        .bottom-nav {
-            display: flex;
-            justify-content: space-around;
-            background: white;
-            padding: 12px 0;
-            box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.07);
-            border-top-left-radius: 20px;
-            border-top-right-radius: 20px;
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            max-width: 480px;
-            margin: 0 auto;
-            z-index: 90;
-        }
+        .bottom-nav{display:flex;justify-content:space-around;background:#fff;padding:12px 0;box-shadow:0 -4px 15px rgba(0,0,0,.07);border-top-left-radius:20px;border-top-right-radius:20px;position:fixed;bottom:0;left:0;width: 100%;max-width: none;margin: 0;border-radius: 0; z-index:90}
 
         .nav-item {
             display: flex;
@@ -547,7 +532,8 @@
 
             <div class="profile-card">
                 <div class="user-avatar">
-                    <img src="https://cdn-icons-png.flaticon.com/512/847/847969.png" alt="用户头像">
+                    {% load static %}
+                <img src="{% static 'Images/user_avatar.png' %}" alt="用户头像">
                 </div>
                 <div class="user-info">
                     <div class="user-name">张婷婷</div>
