@@ -40,6 +40,7 @@
             color: #2c3e50;
             line-height: 1.6;
             padding: 0;
+            padding-top: 100px; /* 🔧 加这一行，防止内容被遮挡 */
             min-height: 100vh;
             overflow-x: hidden;
         }
@@ -54,15 +55,19 @@
 
         /* 顶部导航 */
         .app-header {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-            color: white;
-            padding: 18px 15px;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            border-bottom-left-radius: 20px;
-            border-bottom-right-radius: 20px;
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+          color: white;
+          padding: 18px 15px;
+          transform: translateY(-100%);   /* 默认隐藏 */
+          transition: transform 0.3s ease-in-out;
+          z-index: 100;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+          border-bottom-left-radius: 20px;
+          border-bottom-right-radius: 20px;
         }
 
         .header-content {
@@ -652,43 +657,6 @@
                     </div>
                     <div class="time-range">7月20日 - 7月26日</div>
                 </div>
-
-<!-- <div class="comparison-grid">
-    <div class="stat-card">
-        <div>
-            <div class="value" id="weeklyDailyAvgCalorieStatValue">1,870 kcal</div>
-            <div class="label">日均摄入热量</div>
-        </div>
-    </div>
-    <div class="stat-card">
-        <div>
-
-            <div class="value" id="weeklyGoalAchievementStatValue">78%</div>
-            <div class="label">热量目标达成</div>
-        </div>
-    </div>
-
-
-    <div class="comparison-card">
-        <div>
-                <div class="stat-card">
-        <div>
-
-            <div class="value" id="weeklyDailyAvgCalorieStatValue">1,870 kcal</div>
-            <div class="label">日均摄入热量</div>
-        </div>
-    </div>
-            <div class="comparison-value" id="dailyGoalAchievementTodayValue">78%</div>
-            <div class="comparison-label">热量目标达成</div>
-        </div>
-
-        <div class="comparison-change change-positive" id="dailyGoalAchievementTodayChange">
-            <i class="fas fa-arrow-up"></i> 7.8%
-        </div>
-    </div>
-</div> -->
-
-
                 <div class="report-section">
                     <div class="section-title">
                         <i class="fas fa-fire"></i> 热量摄入分析
@@ -709,10 +677,6 @@
                             <div class="value" id="accumulatedCalorieDeficitKg">2.1 kg</div> <!-- 添加 id -->
                             <div class="label">热量缺口累积</div>
                         </div>
-                        <!-- <div class="stat-card">
-                            <div class="value">22.8%</div>
-                            <div class="label">运动消耗占比</div>
-                        </div> -->
                     </div>
                 </div>
 
@@ -921,9 +885,6 @@
                         <i class="fas fa-fire"></i> 月度热量趋势
                     </div>
                         <div class="chart-container">
-        <!-- 这是 ECharts 唯一需要的容器 div。 -->
-        <!-- 务必确保这个 div 内部是 **空的**，没有任何子 div 或 canvas 标签。 -->
-        <!-- ECharts 会在这个 div 内部自动创建它自己的 canvas。 -->
         <div id="monthlyCalorieChart" style="width: 450px; height: 240px;"></div>
                         </div>
 <div class="stats-grid">
@@ -948,7 +909,6 @@
         <div class="label">目标达成天数</div>
     </div>
 </div>
-
                 <div class="report-section">
                     <div class="section-title">
                         <i class="fas fa-balance-scale"></i> 营养结构变化
@@ -957,9 +917,6 @@
         <!-- 这是 ECharts 雷达图的容器 div。 -->
                         <div id="monthlyNutrientRadarChart" style="width: 450px; height: 240px;"></div>
                     </div>
-
-
-
     <div class="stats-grid">
         <div class="stat-card">
             <!-- 添加 ID，内容将由 JS 动态填充 -->
@@ -983,8 +940,6 @@
         </div>
     </div>
 </div>
-
-
                 <div class="report-section">
                     <div class="section-title">
                         <i class="fas fa-lightbulb"></i> 月度健康洞察
@@ -1190,6 +1145,11 @@
             }, 500);
         });
     });
+  const header = document.querySelector('.app-header');
+  window.addEventListener('scroll', () => {
+    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+    header.style.transform = scrollTop < 100 ? 'translateY(0)' : 'translateY(-100%)';
+  });
 </script>
 
     <script>
