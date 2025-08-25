@@ -4,6 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <title>智慧餐饮 - 报告</title>
     <link rel="stylesheet" href="../static/css/all.min.css">
     <script src="../static/js/chart.js"></script>
@@ -2035,8 +2038,20 @@
                 } else {
                     // 合并所有周报数据请求
                     const [summaryResponse, nutrientResponse] = await Promise.all([
-                        fetch('/weekly-summary-data/'),
-                        fetch('/weekly-nutrient-analysis-data/')
+                        fetch('/weekly-summary-data/', {
+                            headers: {
+                                'Cache-Control': 'no-cache, no-store, must-revalidate',
+                                'Pragma': 'no-cache',
+                                'Expires': '0'
+                            }
+                        }),
+                        fetch('/weekly-nutrient-analysis-data/', {
+                            headers: {
+                                'Cache-Control': 'no-cache, no-store, must-revalidate',
+                                'Pragma': 'no-cache',
+                                'Expires': '0'
+                            }
+                        })
                     ]);
                     const [summaryData, nutrientData] = await Promise.all([
                         summaryResponse.json(),
@@ -2085,8 +2100,20 @@
                 } else {
                     // 合并所有月报数据请求
                     const [summaryResponse, calorieResponse] = await Promise.all([
-                        fetch('/monthly-summary-data/'),
-                        fetch('/monthly-calorie-data/')
+                        fetch('/monthly-summary-data/', {
+                            headers: {
+                                'Cache-Control': 'no-cache, no-store, must-revalidate',
+                                'Pragma': 'no-cache',
+                                'Expires': '0'
+                            }
+                        }),
+                        fetch('/monthly-calorie-data/', {
+                            headers: {
+                                'Cache-Control': 'no-cache, no-store, must-revalidate',
+                                'Pragma': 'no-cache',
+                                'Expires': '0'
+                            }
+                        })
                     ]);
                     const [summaryData, calorieData] = await Promise.all([
                         summaryResponse.json(),
@@ -2129,7 +2156,13 @@
                 const cacheKey = 'weekly_nutrient_' + new Date().toISOString().slice(0, 10);
                 localStorage.removeItem(cacheKey);
                 
-                const response = await fetch('/weekly-nutrient-analysis-data/');
+                const response = await fetch('/weekly-nutrient-analysis-data/', {
+                    headers: {
+                        'Cache-Control': 'no-cache, no-store, must-revalidate',
+                        'Pragma': 'no-cache',
+                        'Expires': '0'
+                    }
+                });
                 console.log("API响应状态:", response.status);
                 
                 if (!response.ok) {
@@ -2475,6 +2508,50 @@
                 window.location.href = targetUrl;
             }
         });
+    });
+</script>
+
+<!-- 强制刷新和缓存控制脚本 -->
+<script>
+    // 页面加载时强制刷新缓存
+    window.addEventListener('load', function() {
+        // 清除 localStorage 中的缓存数据
+        const cacheKeys = [
+            'weekly_summary_' + new Date().toISOString().slice(0, 10),
+            'monthly_summary_' + new Date().toISOString().slice(0, 10),
+            'weekly_nutrient_' + new Date().toISOString().slice(0, 10)
+        ];
+        
+        cacheKeys.forEach(key => {
+            localStorage.removeItem(key);
+        });
+        
+        // 强制重新加载数据
+        setTimeout(() => {
+            updateWeeklySummary();
+            updateMonthlySummaryReport();
+            updateWeeklyNutrientAnalysis();
+        }, 100);
+    });
+    
+    // 添加页面可见性变化监听，当页面重新获得焦点时刷新数据
+    document.addEventListener('visibilitychange', function() {
+        if (!document.hidden) {
+            // 清除缓存并重新加载数据
+            const cacheKeys = [
+                'weekly_summary_' + new Date().toISOString().slice(0, 10),
+                'monthly_summary_' + new Date().toISOString().slice(0, 10),
+                'weekly_nutrient_' + new Date().toISOString().slice(0, 10)
+            ];
+            
+            cacheKeys.forEach(key => {
+                localStorage.removeItem(key);
+            });
+            
+            updateWeeklySummary();
+            updateMonthlySummaryReport();
+            updateWeeklyNutrientAnalysis();
+        }
     });
 </script>
 
