@@ -1,0 +1,1195 @@
+<!-- 调试信息: 第一个菜品的蛋白质是 {{ dishes.0.total_protein }} 克 -->
+<!DOCTYPE html>
+{% load static %}
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>智慧餐饮 - 点餐</title>
+   <link rel="stylesheet" href="../static/css/all.min.css">
+   <style>
+        /* ===== 深蓝专业主题配色方案 ===== */
+        :root {
+            --primary-deep: #1a5f9e;     /* 主深蓝 - 专业沉稳 */
+            --primary-dark: #0d3a6b;     /* 深海军蓝 - 强调区域 */
+            --primary-light: #2c72b5;    /* 浅蓝色 - 次要元素 */
+            --secondary: #2c3e50;        /* 中性深灰 - 文字主色 */
+            --surface: #ffffff;          /* 纯白背景 */
+            --surface-soft: #f8fafc;     /* 柔和背景 - 卡片内衬 */
+            --surface-hover: #eef5fc;    /* 悬停背景 - 交互反馈 */
+            --text-primary: #2c3e50;     /* 主要文字 */
+            --text-secondary: #546e7a;   /* 次要文字 */
+            --text-muted: #78909c;       /* 辅助文字 */
+            --accent: #3498db;          /* 点缀蓝 - 重要交互 */
+            --success: #27ae60;         /* 成功色 - 进度完成 */
+            --warning: #f39c12;         /* 警告色 - 提醒信息 */
+            --shadow-soft: 0 2px 8px rgba(26, 95, 158, 0.08);
+            --shadow-card: 0 4px 16px rgba(26, 95, 158, 0.12);
+            --shadow-hover: 0 8px 24px rgba(26, 95, 158, 0.15);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'PingFang SC', 'Helvetica Neue', Arial, sans-serif;
+        }
+
+        html, body {
+            height: 100%;
+            overflow: hidden;
+        }
+
+        body {
+            background: linear-gradient(145deg, #eef5fc 0%, #e6f2ff 100%);
+            color: var(--text-primary);
+            font-size: 15px;
+            line-height: 1.6;
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 100%;
+            height: 100vh;
+            padding-top: 60px;
+            padding-bottom: 70px;
+            background: transparent;
+            position: relative;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+        .main-container { 
+            padding: 15px; 
+        }
+
+        .section-title { 
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--primary-deep);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-title i { 
+            color: var(--primary-light); 
+        }
+
+        .recommendation-banner { 
+            background: linear-gradient(135deg, var(--primary-deep) 0%, var(--primary-dark) 100%);
+            color: white;
+            border-radius: 20px;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: var(--shadow-card);
+            margin-bottom: 20px;
+            border: 1px solid rgba(26, 95, 158, 0.08);
+        }
+
+        .ai-tag { 
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-size: 0.75rem;
+            backdrop-filter: blur(5px);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .ai-tag i { 
+            color: #ffd600; 
+        }
+
+        .recommend-title { 
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            max-width: 75%;
+        }
+
+        .recommend-desc { 
+            font-size: 0.85rem;
+            opacity: 0.9;
+            margin-bottom: 12px;
+            max-width: 85%;
+        }
+
+        .recommend-dish { 
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(255, 255, 255, 0.15);
+            padding: 12px;
+            border-radius: 15px;
+            margin-top: 12px;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .dish-info { 
+            flex: 1; 
+        }
+
+        .dish-name { 
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .dish-nutrition { 
+            display: flex;
+            gap: 10px;
+            font-size: 0.8rem;
+            opacity: 0.9;
+            flex-wrap: wrap;
+        }
+
+        .dish-price { 
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .add-btn { 
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: white;
+            color: var(--primary-deep);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            cursor: pointer;
+            box-shadow: 0 3px 8px rgba(26, 95, 158, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .add-btn:hover {
+            background: var(--surface-hover);
+            transform: scale(1.05);
+        }
+
+        .menu-list { 
+            margin-top: 25px; 
+        }
+
+        .menu-grid { 
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .food-card { 
+            background: var(--surface);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: var(--shadow-card);
+            border: 1px solid rgba(26, 95, 158, 0.08);
+            transition: all 0.3s ease;
+        }
+
+        .food-card:hover { 
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-hover);
+            border-color: var(--primary-light);
+        }
+
+        .food-image { 
+            height: 120px;
+            background: linear-gradient(to bottom right, var(--surface-soft), #e6f2ff);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-deep);
+            font-size: 2.5rem;
+        }
+
+        .food-image img { 
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+        }
+
+        .food-info { 
+            padding: 12px; 
+        }
+
+        .food-name { 
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--primary-deep);
+            margin-bottom: 6px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .food-desc { 
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-bottom: 10px;
+            height: 36px;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
+
+        .food-nutrition { 
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+        }
+
+        .nutrition-value { 
+            font-weight: 600;
+            color: var(--primary-light);
+        }
+
+        .food-footer { 
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .food-price { 
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        .add-to-cart { 
+            background: var(--primary-light);
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 15px;
+            cursor: pointer;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.85rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 3px 8px rgba(26, 95, 158, 0.3);
+        }
+
+        .add-to-cart:hover { 
+            background: var(--primary-deep);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(26, 95, 158, 0.4);
+        }
+
+        .cart-overlay { 
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            display: flex;
+            justify-content: flex-end;
+            flex-direction: column;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .cart-overlay.active { 
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .cart-section { 
+            background: var(--surface);
+            border-radius: 25px 25px 0 0;
+            padding: 20px 15px;
+            max-height: 85vh;
+            overflow-y: auto;
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+            box-shadow: var(--shadow-hover);
+        }
+
+        .cart-overlay.active .cart-section { 
+            transform: translateY(0); 
+        }
+
+        .cart-header { 
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            position: sticky;
+            top: 0;
+            background: var(--surface);
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(26, 95, 158, 0.1);
+            z-index: 10;
+        }
+
+        .close-cart { 
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--surface-hover);
+            color: var(--primary-deep);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .close-cart:hover {
+            background: var(--primary-light);
+            color: white;
+        }
+
+        .cart-items { 
+            margin-bottom: 20px;
+            max-height: 40vh;
+            overflow-y: auto;
+        }
+
+        .cart-item { 
+            display: flex;
+            gap: 12px;
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(26, 95, 158, 0.1);
+        }
+
+        .cart-item:last-child { 
+            border-bottom: none; 
+        }
+
+        .cart-item-info { 
+            flex: 1; 
+        }
+
+        .item-name { 
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: var(--primary-deep);
+            font-size: 0.95rem;
+        }
+
+        .item-details { 
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .item-price { 
+            font-weight: 600;
+            color: var(--accent);
+            font-size: 0.95rem;
+        }
+
+        .item-controls { 
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .quantity-btn { 
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            border: 1px solid var(--primary-light);
+            background: transparent;
+            color: var(--primary-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.3s ease;
+        }
+
+        .quantity-btn:hover {
+            background: var(--primary-light);
+            color: white;
+        }
+
+        .quantity { 
+            width: 26px;
+            text-align: center;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .cart-summary { 
+            background: rgba(26, 95, 158, 0.06);
+            border-radius: 20px;
+            padding: 20px;
+            margin-top: 10px;
+            border: 1px solid rgba(26, 95, 158, 0.08);
+        }
+
+        .summary-row { 
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+        }
+
+        .summary-title { 
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        .summary-value { 
+            font-weight: 600;
+            color: var(--primary-deep);
+        }
+
+        .total-row { 
+            font-size: 1rem;
+            padding-top: 10px;
+            border-top: 2px dashed var(--primary-light);
+        }
+
+        .total-row .summary-title {
+            color: var(--primary-deep);
+            font-weight: 700;
+        }
+
+        .total-row .summary-value {
+            color: var(--accent);
+            font-weight: 700;
+        }
+
+        .checkout-btn { 
+            background: linear-gradient(135deg, var(--primary-deep), var(--primary-dark));
+            color: white;
+            border: none;
+            width: 100%;
+            padding: 14px;
+            border-radius: 15px;
+            font-size: 1rem;
+            font-weight: 600;
+            margin-top: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow-card);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .checkout-btn:hover { 
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .cart-indicator { 
+            position: fixed;
+            bottom: 100px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent), var(--primary-light));
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            box-shadow: var(--shadow-card);
+            z-index: 80;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .cart-indicator:hover {
+            transform: scale(1.05);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .cart-indicator .cart-count {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: var(--warning);
+            color: white;
+            font-size: 0.65rem;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            border: 2px solid white;
+        }
+
+        /* ===== 顶部栏样式 ===== */
+        .top-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 60px;
+            background: linear-gradient(135deg, var(--primary-deep), var(--primary-dark));
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            z-index: 100;
+            box-shadow: var(--shadow-card);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header-logo {
+            width: 36px;
+            height: 36px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .header-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header-icon {
+            width: 36px;
+            height: 36px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .header-icon:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: scale(1.05);
+        }
+
+        /* ===== 底部导航栏样式 ===== */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 70px;
+            background: var(--surface);
+            border-top: 1px solid rgba(26, 95, 158, 0.08);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            z-index: 100;
+            box-shadow: 0 -4px 16px rgba(26, 95, 158, 0.12);
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 8px 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-radius: 12px;
+            min-width: 60px;
+        }
+
+        .nav-item:hover {
+            background: var(--surface-hover);
+            transform: translateY(-2px);
+        }
+
+        .nav-item.active {
+            background: linear-gradient(135deg, rgba(26, 95, 158, 0.1), rgba(26, 95, 158, 0.05));
+            border: 1px solid rgba(26, 95, 158, 0.2);
+        }
+
+        .nav-icon {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-item.active .nav-icon {
+            color: var(--primary-deep);
+            transform: scale(1.1);
+        }
+
+        .nav-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .nav-item.active .nav-label {
+            color: var(--primary-deep);
+            font-weight: 600;
+        }
+
+        /* ===== 滚动条样式 ===== */
+        .container::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .container::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .container::-webkit-scrollbar-thumb {
+            background: rgba(26, 95, 158, 0.3);
+            border-radius: 2px;
+        }
+
+        .container::-webkit-scrollbar-thumb:hover {
+            background: rgba(26, 95, 158, 0.5);
+        }
+
+        /* 全屏适配 */
+        @media screen and (orientation: portrait) {
+            .container {
+                height: 100vh;
+            }
+        }
+
+        @media screen and (orientation: landscape) {
+            .container {
+                height: 100vh;
+            }
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 420px) { 
+            .menu-grid { 
+                grid-template-columns: 1fr; 
+            } 
+            .food-image { 
+                height: 140px; 
+            } 
+            .recommend-desc { 
+                max-width: 100%; 
+            }
+            .main-container {
+                padding: 10px;
+            }
+        }
+
+        /* 动画效果 - 与profile.html统一 */
+        @keyframes slideInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.6s ease forwards;
+        }
+
+        .slide-in-up {
+            animation: slideInUp 0.6s ease forwards;
+        }
+
+        /* 为主要内容区域添加动画 */
+        .recommendation-banner {
+            animation: slideInUp 0.6s ease forwards;
+        }
+
+        .menu-list {
+            animation: fadeIn 0.6s ease forwards;
+        }
+
+        .food-card {
+            animation: fadeIn 0.6s ease forwards;
+        }
+
+        .cart-indicator {
+            animation: fadeIn 0.6s ease forwards;
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部栏 -->
+    <div class="top-header">
+        <div class="header-left">
+            <div class="header-logo">
+                <i class="fas fa-utensils"></i>
+            </div>
+            <div class="header-title">智慧点餐</div>
+        </div>
+        <div class="header-right">
+            <div class="header-icon">
+                <i class="fas fa-search"></i>
+            </div>
+            <div class="header-icon">
+                <i class="fas fa-filter"></i>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+
+        <!-- 主内容区 -->
+        <div class="main-container">
+            <!-- AI推荐区域 -->
+            <div class="recommendation-banner" data-dish-id="99">
+                <div class="ai-tag"><i class="fas fa-robot"></i> AI智能推荐</div>
+                <div class="recommend-title">您可能喜欢的菜品</div>
+                <div class="recommend-desc">根据您的口味偏好和健康数据精选推荐</div>
+                <div class="recommend-dish">
+                    <div class="dish-info">
+                        <div class="dish-name">黄焖鸡米饭</div>
+                        <div class="dish-nutrition">
+                            <span>热量: <span style="color: #ffffff; font-weight: 600;">&nbsp;650 kcal</span></span>
+                            <span>蛋白: <span style="color: #ffffff; font-weight: 600;">&nbsp;55.60g</span></span>
+                        </div>
+                    </div>
+                    <div class="dish-price">¥12.25</div>
+                    <div class="add-btn"><i class="fas fa-plus"></i></div>
+                </div>
+            </div>
+
+            <!-- 菜品列表 -->
+            <div class="menu-list">
+                <h2 class="section-title">
+                    <i class="fas fa-utensils"></i> 今日菜单
+                </h2>
+                <div class="menu-grid">
+                   {% for dish in dishes %}
+                    <div class="food-card" data-dish-id="{{dish.dish_id}}">
+                        <div class="food-image">
+                            <!-- 这里用后端确保dish.image_url为完整静态路径 -->
+                            <img src="{% static dish.image_url %}" alt="{{ dish.name }}" width="120" height="90">
+                        </div>
+                        <div class="food-info">
+    <div class="food-name">{{ dish.name }}</div>
+    <div class="food-desc">{{ dish.description }}</div>
+
+    <!-- 修改这里 -->
+<div class="nutrition">
+    <span class="nutrition-value" data-type="calorie">卡路里：{{ dish.total_calorie }} kcal</span></br>
+    <span class="nutrition-value" data-type="protein">蛋白质：{{ dish.total_protein }}g</span>
+</div>
+
+
+    <div class="food-footer">
+        <div class="food-price">¥{{ dish.price }}</div>
+        <button class="add-to-cart">
+            <i class="fas fa-plus"></i>
+        </button>
+    </div>
+</div>
+                    </div>
+                   {% endfor %}
+                </div>
+            </div>
+
+            <!-- 购物车悬浮按钮 -->
+            <div class="cart-indicator" id="openCart2" style="display:none;">
+                <i class="fas fa-shopping-cart"></i>
+                <div class="cart-count">0</div>
+            </div>
+        </div>
+
+        <!-- 购物车弹出层 -->
+        <div class="cart-overlay" id="cartOverlay">
+            <div class="cart-section">
+                <div class="cart-header">
+                    <h2 class="section-title"><i class="fas fa-shopping-cart"></i> 我的购物车</h2>
+                    <div class="close-cart" id="closeCart"><i class="fas fa-times"></i></div>
+                </div>
+                <div class="cart-items"></div>
+                <div class="cart-summary">
+                    <div class="summary-row">
+                        <div class="summary-title">菜品总价</div>
+                        <div class="summary-value">¥0.00</div>
+                    </div>
+                    <div class="summary-row">
+                        <div class="summary-title">总热量</div>
+                        <div class="summary-value">0 kcal</div>
+                    </div>
+                    <div class="summary-row">
+                        <div class="summary-title">总蛋白质</div>
+                        <div class="summary-value">0g</div>
+                    </div>
+                    <div class="summary-row">
+                        <div class="summary-title">总碳水</div>
+                        <div class="summary-value">0g</div>
+                    </div>
+                    <div class="summary-row total-row">
+                        <div class="summary-title">总计</div>
+                        <div class="summary-value">¥0.00</div>
+                    </div>
+                    <button class="checkout-btn" id="checkoutBtn">
+                        <i class="fas fa-check"></i> 去结算
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const cartOverlay = document.getElementById('cartOverlay');
+        const openCartButtons = document.querySelectorAll('#openCart2');
+        const closeCartButton = document.getElementById('closeCart');
+        const cartItemsContainer = document.querySelector('.cart-items');
+        const checkoutBtn = document.getElementById('checkoutBtn');
+        const cartIndicator = document.getElementById('openCart2');
+
+        openCartButtons.forEach(btn => btn.addEventListener('click', () => cartOverlay.classList.add('active')));
+        closeCartButton.addEventListener('click', () => cartOverlay.classList.remove('active'));
+
+        // 事件委托绑定加号按钮，支持动态新增按钮
+document.addEventListener('click', function(event) {
+    const target = event.target;
+    // 监听“添加到购物车”或“推荐菜品的加号”按钮的点击
+    if (target.closest('.add-to-cart') || target.closest('.add-btn')) {
+        event.stopPropagation(); // 阻止事件冒泡
+
+        const btn = target.closest('.add-to-cart, .add-btn');
+        const foodCard = btn.closest('.food-card, .recommendation-banner');
+
+        // 如果找不到父级菜品卡片，则退出
+        if (!foodCard) return;
+
+        const dishId = foodCard.getAttribute('data-dish-id');
+        if (!dishId) return;
+
+        // --- 数据提取 ---
+        const foodName = foodCard.querySelector('.food-name, .dish-name').textContent.trim();
+        const foodPriceText = foodCard.querySelector('.food-price, .dish-price').textContent.trim();
+        const foodPrice = parseFloat(foodPriceText.replace('¥', ''));
+
+        // 【核心修改部分】
+        // 1. 分别获取热量、蛋白质和碳水的DOM元素
+        //    使用 :nth-of-type(n) 按顺序选择第n个class为.nutrition-value的元素
+        const calorieSpan = foodCard.querySelector('.nutrition-value:nth-of-type(1)');
+        const proteinSpan = foodCard.querySelector('.nutrition-value:nth-of-type(2)');
+        const carbohydrateSpan = foodCard.querySelector('.nutrition-value:nth-of-type(3)'); // 新增：获取碳水元素
+
+        // 2. 将元素的文本内容转换为数字。
+        //    使用 ?. (可选链操作符) 和 || 0 来安全地处理，如果元素不存在(null)也不会报错，并默认值为0。
+        const getNutritionValue = (type) => {
+    const span = foodCard.querySelector(`.nutrition-value[data-type="${type}"]`);
+    if (!span) {
+        console.warn(`⚠️ 未找到 ${type} 的 DOM 节点`);
+        return 0;
+    }
+    const text = span.textContent.replace(/[^\d.]/g, ''); // 去除单位如 kcal、g
+    const value = parseFloat(text);
+    return isNaN(value) ? 0 : value;
+};
+
+const calorie = getNutritionValue("calorie");
+const protein = getNutritionValue("protein");
+const carbohydrate = getNutritionValue("carbohydrate");
+
+
+        // --- UI反馈 ---
+        btn.innerHTML = '<i class="fas fa-check"></i>';
+        setTimeout(() => { btn.innerHTML = '<i class="fas fa-plus"></i>'; }, 1000);
+
+        showNotification(`${foodName} 已添加`);
+
+        // --- 更新购物车 ---
+        // 将读取到的所有正确数据传递给购物车处理函数
+        addOrUpdateCartItem({
+            id: dishId,
+            name: foodName,
+            price: foodPrice,
+            calorie: calorie,
+            protein: protein,
+            carbohydrate: carbohydrate // 现在传递的是从HTML读取到的真实值
+        });
+    }
+});
+
+        checkoutBtn.addEventListener('click', function() {
+            const cartItemsElements = document.querySelectorAll('.cart-item');
+            if (cartItemsElements.length === 0) {
+                alert('您的购物车是空的，请先添加菜品！');
+                return;
+            }
+
+            const cartData = { items: [] };
+            cartItemsElements.forEach(item => {
+                cartData.items.push({
+                    id: item.getAttribute('data-dish-id'),
+                    quantity: parseInt(item.querySelector('.quantity').textContent)
+                });
+            });
+
+            this.disabled = true;
+            this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 处理中...';
+
+            fetch('/submit-order/', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(cartData)
+            })
+            .then(response => {
+                if (!response.ok) { throw new Error(`HTTP error ${response.status}`); }
+                return response.json();
+            })
+            .then(data => {
+                if (data.status === 'success') {
+                    alert('订单提交成功! 订单号: ' + data.order_id);
+                    cartItemsContainer.innerHTML = '';
+                    updateCartTotal();
+                    updateCartCount();
+                    cartOverlay.classList.remove('active');
+                    
+                    window.location.href = "/get_order_status?order_id="+data.order_id;
+                } else {
+                    alert('订单提交失败: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('订单提交时发生网络错误，请稍后重试。');
+            })
+            .finally(() => {
+                this.disabled = false;
+                this.innerHTML = '<i class="fas fa-check"></i> 去结算';
+            });
+        });
+
+        function addOrUpdateCartItem(dish) {
+            const existingItem = document.querySelector(`.cart-item[data-dish-id="${dish.id}"]`);
+
+            if (existingItem) {
+                const quantityElement = existingItem.querySelector('.quantity');
+                quantityElement.textContent = parseInt(quantityElement.textContent) + 1;
+            } else {
+                const cartItemHTML = `
+                    <div class="cart-item-info">
+                        <div class="item-name">${dish.name}</div>
+                        <div class="item-price">¥${dish.price.toFixed(2)}</div>
+                    </div>
+                    <div class="item-controls">
+                        <button class="quantity-btn minus-btn"><i class="fas fa-minus"></i></button>
+                        <span class="quantity">1</span>
+                        <button class="quantity-btn plus-btn"><i class="fas fa-plus"></i></button>
+                    </div>`;
+                const newCartItem = document.createElement('div');
+                newCartItem.className = 'cart-item';
+                newCartItem.setAttribute('data-dish-id', dish.id);
+                newCartItem.setAttribute('data-price', dish.price);
+                newCartItem.setAttribute('data-calorie', dish.calorie);
+                newCartItem.setAttribute('data-protein', dish.protein);
+                newCartItem.setAttribute('data-carbohydrate', dish.carbohydrate);
+                newCartItem.innerHTML = cartItemHTML;
+                cartItemsContainer.appendChild(newCartItem);
+                addEventListenersToControls(newCartItem);
+            }
+            updateCartTotal();
+            updateCartCount();
+        }
+
+        function addEventListenersToControls(item) {
+            const minusBtn = item.querySelector('.minus-btn');
+            const plusBtn = item.querySelector('.plus-btn');
+
+            minusBtn.addEventListener('click', () => {
+                const quantityElement = item.querySelector('.quantity');
+                let quantity = parseInt(quantityElement.textContent);
+                if (quantity > 1) {
+                    quantityElement.textContent = quantity - 1;
+                } else {
+                    item.remove();
+                }
+                updateCartTotal();
+                updateCartCount();
+            });
+
+            plusBtn.addEventListener('click', () => {
+                const quantityElement = item.querySelector('.quantity');
+                quantityElement.textContent = parseInt(quantityElement.textContent) + 1;
+                updateCartTotal();
+                updateCartCount();
+            });
+        }
+
+        function updateCartTotal() {
+            let totalPrice = 0, totalCalorie = 0, totalProtein = 0, totalCarbohydrate = 0;
+
+            document.querySelectorAll('.cart-item').forEach(item => {
+                const price = parseFloat(item.getAttribute('data-price'));
+                const calorie = parseFloat(item.getAttribute('data-calorie'));
+                const protein = parseFloat(item.getAttribute('data-protein'));
+                const carbohydrate = parseFloat(item.getAttribute('data-carbohydrate'));
+                const quantity = parseInt(item.querySelector('.quantity').textContent);
+
+                totalPrice += price * quantity;
+                totalCalorie += calorie * quantity;
+                totalProtein += protein * quantity;
+                totalCarbohydrate += carbohydrate * quantity;
+            });
+
+            const summaryValues = document.querySelectorAll('.cart-summary .summary-value');
+
+            summaryValues[0].textContent = `¥${totalPrice.toFixed(2)}`;
+            summaryValues[1].textContent = `${totalCalorie.toFixed(2)} kcal`;
+            summaryValues[2].textContent = `${totalProtein.toFixed(2)}g`;
+            summaryValues[3].textContent = `${totalCarbohydrate.toFixed(2)}g`;
+            summaryValues[4].textContent = `¥${totalPrice.toFixed(2)}`;
+        }
+
+        function updateCartCount() {
+            const totalItems = Array.from(document.querySelectorAll('.cart-item .quantity'))
+                .reduce((sum, el) => sum + parseInt(el.textContent), 0);
+            const cartCountElements = document.querySelectorAll('.cart-count');
+
+            cartCountElements.forEach(el => {
+                el.textContent = totalItems;
+                el.style.display = totalItems > 0 ? 'flex' : 'none';
+            });
+
+            if (cartIndicator) {
+                cartIndicator.style.display = totalItems > 0 ? 'flex' : 'none';
+            }
+        }
+
+        function showNotification(message) {
+             const notification = document.createElement('div');
+             notification.innerHTML = `<i class="fas fa-check-circle"></i> ${message}`;
+             notification.style.cssText = `
+                position: fixed; 
+                top: 20px; 
+                left: 50%; 
+                transform: translateX(-50%); 
+                background: linear-gradient(135deg, #1a5f9e, #0d3a6b); 
+                color: white; 
+                padding: 12px 20px; 
+                border-radius: 25px; 
+                z-index: 2000; 
+                display: flex; 
+                align-items: center; 
+                gap: 10px; 
+                font-size: 0.9rem;
+                box-shadow: 0 4px 16px rgba(26, 95, 158, 0.3);
+                border: 1px solid rgba(255, 255, 255, 0.2);
+                backdrop-filter: blur(10px);
+             `;
+             document.body.appendChild(notification);
+             setTimeout(() => notification.remove(), 2000);
+        }
+
+        updateCartCount(); // 初始化时隐藏角标
+    });
+    </script>
+
+    <!-- 底部导航栏 -->
+    <div class="bottom-nav">
+        <div class="nav-item" data-target="index">
+            <div class="nav-icon">
+                <i class="fas fa-home"></i>
+            </div>
+            <div class="nav-label">主页</div>
+        </div>
+        <div class="nav-item active" data-target="orders">
+            <div class="nav-icon">
+                <i class="fas fa-utensils"></i>
+            </div>
+            <div class="nav-label">点餐</div>
+        </div>
+        <div class="nav-item" data-target="repo">
+            <div class="nav-icon">
+                <i class="fas fa-chart-line"></i>
+            </div>
+            <div class="nav-label">报告</div>
+        </div>
+        <div class="nav-item" data-target="ai-assistant">
+            <div class="nav-icon">
+                <i class="fas fa-robot"></i>
+            </div>
+            <div class="nav-label">AI助手</div>
+        </div>
+    </div>
+
+    <script>
+        // 底部导航点击跳转
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', function() {
+                const target = this.getAttribute('data-target');
+                let targetUrl = '';
+                switch(target) {
+                    case 'index':
+                        targetUrl = "/";
+                        break;
+                    case 'orders':
+                        targetUrl = "/orders/";
+                        break;
+                    case 'repo':
+                        targetUrl = "/repo/";
+                        break;
+                    case 'ai-assistant':
+                        targetUrl = "/ai_health_advisor/";
+                        break;
+                }
+                if (targetUrl) {
+                    window.location.href = targetUrl;
+                }
+            });
+        });
+    </script>
+</body>
+</html>

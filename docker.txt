@@ -1,0 +1,1 @@
+docker run -it -d --name ds -p 8100:8000 -v C:\Docker\dashboard:/app ds:v1.0
