@@ -72,6 +72,7 @@ def submit_order(request):
 
 
 #登录api
+@csrf_exempt
 def login_v(request):
     if request.method == 'POST':
         try:

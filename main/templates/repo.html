@@ -1484,50 +1484,7 @@
             monthlyCalorieChartDom.innerHTML = `<p style="color: red;">获取月报热量数据失败: ${error.message || error}</p>`;
         }
     }
-    document.addEventListener('DOMContentLoaded', function () {
-        console.log('DOM加载完成');
-        var chartDom = document.getElementById('weeklyCalorieChart');
-        if (!chartDom) {
-            console.error('找不到图表容器');
-            return;
-        }
-        console.log('找到图表容器', chartDom);
-        var myChart = echarts.init(chartDom);
-        console.log('图表初始化成功', myChart);
-        fetch('/calorie-data/')
-            .then(res => res.json())
-            .then(data => {
-                console.log('获取数据成功:', data);
-                var option = {
-                    title: {
-                        text: '本周热量摄入趋势',
-                        left: 'center',
-                        textStyle: { fontSize: 14 }
-                    },
-                    tooltip: { trigger: 'axis' },
-                    xAxis: {
-                        type: 'category', data: data.x_data,
-                        axisLabel: {
-                            rotate: 45,  // 标签旋转45度
-                            interval: 0  // 强制显示所有标签
-                        }
-                    },
-                    yAxis: { type: 'value', name: '千卡(kcal)' },
-                    series: [{
-                        name: '热量',
-                        type: 'line',
-                        data: data.y_data,
-                        smooth: true,
-                        lineStyle: { width: 3, color: '#5470C6' },
-                        itemStyle: { color: '#91cc75' },
-                        areaStyle: { color: 'rgba(84,112,198,0.2)' }
-                    }]
-                };
-                myChart.setOption(option);
-                window.addEventListener('resize', () => myChart.resize());
-            })
-            .catch(e => console.error('获取数据失败:', e));
-    });
+    // 删除重复的 DOMContentLoaded 事件监听器，所有代码将统一在下面的一个事件监听器中处理
     // 所有的 JavaScript 代码都应该放在这一个 DOMContentLoaded 事件监听器内部
     document.addEventListener('DOMContentLoaded', function () {
         console.log("DOM加载完成，开始初始化所有图表和数据更新。");
@@ -2119,7 +2076,7 @@
                         summaryResponse.json(),
                         calorieResponse.json()
                     ]);
-                    data = { ...summaryData, calorieData };
+                    data = { ...summaryData, ...calorieData };
                     localStorage.setItem(cacheKey, JSON.stringify(data));
                 }
                 console.log("获取到月报概览数据:", data);
@@ -2194,9 +2151,9 @@
             }
         }
         // 在 DOM 加载完成后立即调用所有更新函数，以显示初始数据
-        updateWeeklySummary();
-        updateMonthlySummaryReport();
-        updateWeeklyNutrientAnalysis(); // 新增：调用周报营养素分析更新函数
+        if (typeof updateWeeklySummary === 'function') updateWeeklySummary();
+        if (typeof updateMonthlySummaryReport === 'function') updateMonthlySummaryReport();
+        if (typeof updateWeeklyNutrientAnalysis === 'function') updateWeeklyNutrientAnalysis(); // 新增：调用周报营养素分析更新函数
         // 如果你需要定期更新数据，可以取消注释下面的行
         // setInterval(updateWeeklySummary, 60000);
         // setInterval(updateMonthlySummaryReport, 60000);
@@ -2513,31 +2470,11 @@
 
 <!-- 强制刷新和缓存控制脚本 -->
 <script>
-    // 页面加载时强制刷新缓存
-    window.addEventListener('load', function() {
-        // 清除 localStorage 中的缓存数据
-        const cacheKeys = [
-            'weekly_summary_' + new Date().toISOString().slice(0, 10),
-            'monthly_summary_' + new Date().toISOString().slice(0, 10),
-            'weekly_nutrient_' + new Date().toISOString().slice(0, 10)
-        ];
-        
-        cacheKeys.forEach(key => {
-            localStorage.removeItem(key);
-        });
-        
-        // 强制重新加载数据
-        setTimeout(() => {
-            updateWeeklySummary();
-            updateMonthlySummaryReport();
-            updateWeeklyNutrientAnalysis();
-        }, 100);
-    });
-    
-    // 添加页面可见性变化监听，当页面重新获得焦点时刷新数据
-    document.addEventListener('visibilitychange', function() {
-        if (!document.hidden) {
-            // 清除缓存并重新加载数据
+    // 在 DOMContentLoaded 事件中设置缓存控制和事件监听
+    document.addEventListener('DOMContentLoaded', function() {
+        // 页面加载时强制刷新缓存
+        window.addEventListener('load', function() {
+            // 清除 localStorage 中的缓存数据
             const cacheKeys = [
                 'weekly_summary_' + new Date().toISOString().slice(0, 10),
                 'monthly_summary_' + new Date().toISOString().slice(0, 10),
@@ -2548,10 +2485,33 @@
                 localStorage.removeItem(key);
             });
             
-            updateWeeklySummary();
-            updateMonthlySummaryReport();
-            updateWeeklyNutrientAnalysis();
-        }
+            // 强制重新加载数据
+            setTimeout(() => {
+                if (typeof updateWeeklySummary === 'function') updateWeeklySummary();
+                if (typeof updateMonthlySummaryReport === 'function') updateMonthlySummaryReport();
+                if (typeof updateWeeklyNutrientAnalysis === 'function') updateWeeklyNutrientAnalysis();
+            }, 100);
+        });
+        
+        // 添加页面可见性变化监听，当页面重新获得焦点时刷新数据
+        document.addEventListener('visibilitychange', function() {
+            if (!document.hidden) {
+                // 清除缓存并重新加载数据
+                const cacheKeys = [
+                    'weekly_summary_' + new Date().toISOString().slice(0, 10),
+                    'monthly_summary_' + new Date().toISOString().slice(0, 10),
+                    'weekly_nutrient_' + new Date().toISOString().slice(0, 10)
+                ];
+                
+                cacheKeys.forEach(key => {
+                    localStorage.removeItem(key);
+                });
+                
+                if (typeof updateWeeklySummary === 'function') updateWeeklySummary();
+                if (typeof updateMonthlySummaryReport === 'function') updateMonthlySummaryReport();
+                if (typeof updateWeeklyNutrientAnalysis === 'function') updateWeeklyNutrientAnalysis();
+            }
+        });
     });
 </script>
 

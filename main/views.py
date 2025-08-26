@@ -604,17 +604,16 @@ def monthly_summary_data(request):
         query_end_date = min(end_date, current_date) if current_month_flag else end_date
         # 基础查询条件
         base_query = Q(order__order_time__date__range=[start_date, query_end_date])
-        if user["user_id"]:
+        if user and user.get("user_id"):
             base_query &= Q(order__user_id=user["user_id"])
 
         records = OrderItems.objects.filter(base_query).aggregate(
         total_calories=Sum(F('dish__total_calorie') * F('quantity')),
         total_protein=Sum(F('dish__total_protein') * F('quantity')),
         total_fat=Sum(F('dish__total_fat') * F('quantity')),
-        # 注意：新表结构缺少以下字段，如需使用需要添加到Dishes模型
-        # total_fiber=Sum(F('dish__total_fiber') * F('quantity')),
-        # total_calcium=Sum(F('dish__total_calcium') * F('quantity')),
-        # total_vitamin_c=Sum(F('dish__total_vitamin_c') * F('quantity')),
+        total_fiber=Sum(F('dish__total_fiber') * F('quantity')),
+        total_calcium=Sum(F('dish__calcium') * F('quantity')),
+        total_vitamin_c=Sum(F('dish__vitamin_c') * F('quantity')),
         # total_sugar_added=Sum(F('dish__total_sugar_added') * F('quantity')),
     )
 
@@ -623,9 +622,9 @@ def monthly_summary_data(request):
         day_calories=Sum(F('dish__total_calorie') * F('quantity')),
         day_protein=Sum(F('dish__total_protein') * F('quantity')),
         day_fat=Sum(F('dish__total_fat') * F('quantity')),
-        # day_fiber=Sum(F('dish__total_fiber') * F('quantity')),
-        # day_calcium=Sum(F('dish__total_calcium') * F('quantity')),
-        # day_vitamin_c=Sum(F('dish__total_vitamin_c') * F('quantity')),
+        day_fiber=Sum(F('dish__total_fiber') * F('quantity')),
+        day_calcium=Sum(F('dish__calcium') * F('quantity')),
+        day_vitamin_c=Sum(F('dish__vitamin_c') * F('quantity')),
         # day_sugar_added=Sum(F('dish__total_sugar_added') * F('quantity')),
     ).order_by('date')
 
@@ -646,17 +645,17 @@ def monthly_summary_data(request):
 
             day_cal = float(entry['day_calories'] or 0)
             day_protein = float(entry['day_protein'] or 0)
-            # day_fiber = float(entry['day_fiber'] or 0)
-            # day_calcium = float(entry['day_calcium'] or 0)
-            # day_vitamin_c = float(entry['day_vitamin_c'] or 0)
+            day_fiber = float(entry['day_fiber'] or 0)
+            day_calcium = float(entry['day_calcium'] or 0)
+            day_vitamin_c = float(entry['day_vitamin_c'] or 0)
             day_fat = float(entry['day_fat'] or 0)
             # day_sugar_added = float(entry['day_sugar_added'] or 0)
 
             total_calories += day_cal
             total_protein += day_protein
-            # total_fiber += day_fiber
-            # total_calcium += day_calcium
-            # total_vitamin_c += day_vitamin_c
+            total_fiber += day_fiber
+            total_calcium += day_calcium
+            total_vitamin_c += day_vitamin_c
             total_fat += day_fat
             # total_sugar_added += day_sugar_added
 

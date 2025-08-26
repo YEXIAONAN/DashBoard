@@ -6,7 +6,7 @@ from django.utils.deprecation import MiddlewareMixin
 class AuthMiddleWare(MiddlewareMixin):
     def process_request(self,request):
         #  排除不需要登录运行访问的界面
-        if request.path_info in ['/login/','/api/login/']:
+        if request.path_info in ['/login/','/api/login/','/monthly-summary-data/']:
             return
         # 1.读取当前访问的用户的session信息，如果能读到，说明已登陆过，就可以继续向后走
         info_dict = request.session.get("user")
