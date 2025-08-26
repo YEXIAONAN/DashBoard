@@ -712,7 +712,7 @@ def monthly_summary_data(request):
             'monthly_goal_achievement_percentage': monthly_goal_achievement_percentage,
             'health_index': health_score,
             'new_dishes_tried': new_dishes_tried,
-            'monthly_calorie_deficit_kcal': round(max(0, monthly_tdee_total - total_calories), 2),
+            'monthly_calorie_deficit_kcal': round(monthly_tdee_total - total_calories, 2),
             'days_goal_achieved': days_goal_achieved,
             'avg_fiber_intake': avg_fiber_intake,
             'avg_fat_intake': avg_fat_intake,

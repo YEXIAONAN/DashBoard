@@ -1386,7 +1386,7 @@
     }
     function updateMonthlySummaryUI(data) {
         document.getElementById('monthlyAvgCalorieStatValue').textContent = `${data.monthly_avg_calories.toLocaleString()} kcal`;
-        document.getElementById('monthlyTotalCalorieDeficitValue').textContent = `${data.monthly_calorie_deficit_kcal.toLocaleString()} kcal`;
+        updateStatCardWithNestedChange('monthlyTotalCalorieDeficitValue', data.monthly_calorie_deficit_kcal, 'kcal');
         document.getElementById('monthlyGoalAchievementStatValue').textContent = `${data.monthly_goal_achievement_percentage}%`;
         document.getElementById('daysGoalAchievedValue').textContent = `${data.days_goal_achieved}天`;
         document.getElementById('monthlyFiberIntake').textContent = `${data.fiber_intake_this_month.toFixed(1)}g`;
@@ -1939,7 +1939,20 @@
                 }
                 
                 valueElement.innerHTML = ''; // 清空现有内容
-                const valueText = document.createTextNode(`${value}${unit}`);
+                let displayText = '';
+                
+                // 特殊处理月度热量缺口，负值显示为盈余
+                if (valueElementId === 'monthlyTotalCalorieDeficitValue') {
+                    if (value < 0) {
+                        displayText = `${Math.abs(value)}${unit} (盈余)`;
+                    } else {
+                        displayText = `${value}${unit}`;
+                    }
+                } else {
+                    displayText = `${value}${unit}`;
+                }
+                
+                const valueText = document.createTextNode(displayText);
                 valueElement.appendChild(valueText);
                 
                 // 检查 change_percentage 是否为有效数值
