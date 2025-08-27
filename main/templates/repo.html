@@ -606,7 +606,9 @@
             margin-bottom: 10px;
             display: -webkit-box;
             -webkit-line-clamp: 2;
+            line-clamp: 2;
             -webkit-box-orient: vertical;
+            box-orient: vertical;
             overflow: hidden;
         }
 
@@ -1559,7 +1561,7 @@
         // === 月报营养雷达图 (monthlyNutrientRadarChart) ===
         (function initRadar() {
             const domId = "monthlyNutrientRadarChart";
-            const url = "/get_nutrient_radar_data/";
+            const url = "/get_weekly_nutrient_radar_data/";
             const dom = document.getElementById(domId);
             if (!dom) {
                 console.error(`❌ 找不到容器 #${domId}`);
@@ -1588,7 +1590,7 @@
                     chart.setOption({
                         tooltip: { trigger: "item" },
                         legend: {
-                            data: ["本月", "上月"],
+                            data: ["本周", "上周"],
                             top: 0, // 保持在顶部，可以根据需要微调
                             padding: [0, 0]
                         },
@@ -1615,8 +1617,8 @@
                             name: "营养对比",  // 展示2
                             type: "radar",
                             data: [
-                                { value: data.this_month.map(x => Number(x) || 0), name: "本月", itemStyle: { color: 'rgba(26, 95, 158, 0.8)' }, areaStyle: { opacity: 0.2 } },
-                                { value: data.last_month.map(x => Number(x) || 0), name: "上月", itemStyle: { color: 'rgba(255, 107, 107, 0.7)' }, areaStyle: { opacity: 0.2 } }
+                                { value: data.this_month.map(x => Number(x) || 0), name: "本周", itemStyle: { color: 'rgba(26, 95, 158, 0.8)' }, areaStyle: { opacity: 0.2 } },
+                                { value: data.last_month.map(x => Number(x) || 0), name: "上周", itemStyle: { color: 'rgba(255, 107, 107, 0.7)' }, areaStyle: { opacity: 0.2 } }
                             ]
                         }]
                     });
