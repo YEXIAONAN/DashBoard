@@ -788,19 +788,19 @@
         <!-- 主内容区 -->
         <div class="main-container">
             <!-- AI推荐区域 -->
-            <div class="recommendation-banner" data-dish-id="99">
+            <div class="recommendation-banner" data-dish-id="{{ recommended_dish.dish_id }}">
                 <div class="ai-tag"><i class="fas fa-robot"></i> AI智能推荐</div>
                 <div class="recommend-title">您可能喜欢的菜品</div>
                 <div class="recommend-desc">根据您的口味偏好和健康数据精选推荐</div>
                 <div class="recommend-dish">
                     <div class="dish-info">
-                        <div class="dish-name">黄焖鸡米饭</div>
+                        <div class="dish-name">{{ recommended_dish.name }}</div>
                         <div class="dish-nutrition">
-                            <span>热量: <span style="color: #ffffff; font-weight: 600;">&nbsp;650 kcal</span></span>
-                            <span>蛋白: <span style="color: #ffffff; font-weight: 600;">&nbsp;55.60g</span></span>
+                            <span>热量: <span style="color: #ffffff; font-weight: 600;">&nbsp;{{ recommended_dish.total_calorie }} kcal</span></span>
+                            <span>蛋白: <span style="color: #ffffff; font-weight: 600;">&nbsp;{{ recommended_dish.total_protein }}g</span></span>
                         </div>
                     </div>
-                    <div class="dish-price">¥12.25</div>
+                    <div class="dish-price">¥{{ recommended_dish.price }}</div>
                     <div class="add-btn"><i class="fas fa-plus"></i></div>
                 </div>
             </div>
