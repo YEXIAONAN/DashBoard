@@ -1367,18 +1367,17 @@
                             </div>
                             <div class="stat-card">
                                 <!-- 添加 ID，内容将由 JS 动态填充 -->
-                                <div class="value" id="daysGoalAchievedValue">27天 <span
-                                        class="comparison positive">+4天</span></div>
+                                <div class="value" id="daysGoalAchievedValue">27天</div>
                                 <div class="label">目标达成天数</div>
                             </div>
                             <div class="stat-card">
                                 <!-- 添加 ID -->
-                                <div class="value" id="healthIndexStatValue">82分 <span class="comparison positive">+6.0%</span></div>
+                                <div class="value" id="healthIndexStatValue">82分</div>
                                 <div class="label">健康指数</div>
                             </div>
                             <div class="stat-card">
                                 <!-- 添加 ID -->
-                                <div class="value" id="newDishesTriedStatValue">12种 <span class="comparison positive">+20%</span></div>
+                                <div class="value" id="newDishesTriedStatValue">12种</div>
                                 <div class="label">新尝试菜品</div>
                             </div>
                         </div>
@@ -1426,11 +1425,11 @@
                                 </p>
                                 <div class="stats-grid" style="margin-top: 15px;">
                                     <div class="stat-card">
-                                        <div class="value">82分 <span class="comparison positive">+6分</span></div>
+                                        <div class="value">82分</div>
                                         <div class="label">健康指数评分</div>
                                     </div>
                                     <div class="stat-card">
-                                        <div class="value">77% <span class="comparison positive">+12%</span></div>
+                                        <div class="value">77%</div>
                                         <div class="label">饮食多样性</div>
                                     </div>
                                 </div>
@@ -2338,34 +2337,9 @@
                 }
                 valueElement.textContent = `${formattedValue}${unit}`;
             }
-            if (changeElement) {
-                changeElement.innerHTML = ''; // 清空旧内容
-                const changeIcon = document.createElement('i');
-                const changeText = document.createTextNode(` ${Math.abs(change_percentage)}%`);
-                let changeClass = 'comparison-change';
-                if (change_percentage > 0) {
-                    changeIcon.className = 'fas fa-arrow-up';
-                    changeClass += ' change-positive';
-                } else if (change_percentage < 0) {
-                    changeIcon.className = 'fas fa-arrow-down';
-                    changeClass += ' change-negative';
-                } else {
-                    changeIcon.className = 'fas fa-arrows-alt-h';
-                }
-                // 特殊处理分数类指标，例如健康指数，通常是越高越好
-                if (is_score) { // 如果是分数，下降是负面，上升是正面
-                    if (change_percentage < 0) {
-                        changeClass = 'comparison-change change-negative';
-                        changeIcon.className = 'fas fa-arrow-down';
-                    } else if (change_percentage > 0) {
-                        changeClass = 'comparison-change change-positive';
-                        changeIcon.className = 'fas fa-arrow-up';
-                    }
-                }
-                changeElement.className = changeClass;
-                changeElement.appendChild(changeIcon);
-                changeElement.appendChild(changeText);
-            }
+            // 注释：不再显示变化百分比span元素
+            // 原来的代码会创建包含comparison类的span元素来显示百分比变化
+            // 现在只更新主要数值，不显示比较百分比
         }
         // --- 辅助函数：更新下方 stats-grid 的卡片 (只更新值，没有变化百分比的独立 div) ---
         function updateStatCardValue(elementId, value, unit = '') {
@@ -2404,33 +2378,8 @@
                     return; // 如果没有变化数据，只显示值
                 }
                 
-                const comparisonSpan = document.createElement('span');
-                comparisonSpan.className = 'comparison';
-                const changeIcon = document.createElement('i');
-                let changeTextContent = '';
-                
-                if (change_percentage > 0) {
-                    changeIcon.className = 'fas fa-arrow-up';
-                    changeTextContent = `+${Math.abs(change_percentage)}%`; // 确保显示正号
-                } else if (change_percentage < 0) {
-                    changeIcon.className = 'fas fa-arrow-down';
-                    changeTextContent = `${change_percentage}%`;
-                } else {
-                    changeIcon.className = 'fas fa-arrows-alt-h';
-                    changeTextContent = `0%`;
-                }
-                
-                // 始终根据变化方向调整颜色类：上升绿色，下降红色
-                if (change_percentage > 0) { // 上升
-                    comparisonSpan.classList.add('positive');
-                } else if (change_percentage < 0) { // 下降
-                    comparisonSpan.classList.add('negative');
-                }
-                
-                comparisonSpan.appendChild(document.createTextNode(' ')); // 值与百分比之间的空格
-                comparisonSpan.appendChild(changeIcon);
-                comparisonSpan.appendChild(document.createTextNode(` ${changeTextContent}`));
-                valueElement.appendChild(comparisonSpan);
+                // 注释：不再显示变化百分比span元素
+                // 原来的代码会创建包含comparison类的span元素来显示百分比变化
             }
         }
         // --- 优化周报数据获取 - 合并请求并添加缓存 ---
