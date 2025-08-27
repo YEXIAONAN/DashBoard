@@ -67,11 +67,30 @@ def profile(request):
     """
     渲染个人中心页面
     """
-    user = request.session.get("user")
+    user_session = request.session.get("user")
+    user_greeting = ""
+    
+    if user_session:
+        try:
+            user = Users.objects.get(user_id=user_session["user_id"])
+            if user.name:
+                if user.gender == "男":
+                    user_greeting = f"{user.name}先生，您好！"
+                elif user.gender == "女":
+                    user_greeting = f"{user.name}女士，您好！"
+                else:
+                    user_greeting = f"{user.name}，您好！"
+            else:
+                user_greeting = "您好！"
+        except Users.DoesNotExist:
+            user_greeting = "您好！"
+    else:
+        user_greeting = "您好！"
+    
     # 2. 今日营养汇总
     today = timezone.localdate()
 
-    orders = Orders.objects.filter(user_id=user["user_id"], order_time__date=today)
+    orders = Orders.objects.filter(user_id=user_session["user_id"], order_time__date=today)
     order_items = OrderItems.objects.filter(order__in=orders)
 
     totals = (
@@ -86,21 +105,22 @@ def profile(request):
     )
     # 获取该用户最近的两个订单项（按 order_item_id 降序）
     recent_order_items = OrderItems.objects.filter(
-        order__user_id=user["user_id"] # 通过订单关联用户
+        order__user_id=user_session["user_id"] # 通过订单关联用户
     ).order_by('-order_item_id')[:2]
 
     # 获取这两个订单项关联的菜品
     recent_dishes = [item.dish for item in recent_order_items]
-    if user["phone"] and len(user["phone"]) >= 4:
-        phone =  user["phone"][-4:]
+    if user_session["phone"] and len(user_session["phone"]) >= 4:
+        phone =  user_session["phone"][-4:]
     else:
         phone =  8686
     return render(request, 'profile.html',{
-        "user":user,
+        "user":user_session,
         "dishes" :recent_dishes,
         'today': today,
         'phone': phone,
-        'today_total': totals,})
+        'today_total': totals,
+        'user_name': user_greeting})
 
 def order_history(request):
     user = request.session.get("user")
