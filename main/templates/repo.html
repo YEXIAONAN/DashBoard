@@ -4,12 +4,103 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <title>智慧餐饮 - 报告</title>
-    <link rel="stylesheet" href="../static/css/all.min.css">
-    <script src="../static/js/chart.js"></script>
-    <script src="../static/js/echarts.min.js"></script>
-    <script src="../static/js/marked.min.js"></script>
-    <script src="../static/js/html2pdf.bundle.min.js"></script>
+    {% load static %}
+    <script>
+        // 激进的缓存破坏机制
+        (function() {
+            'use strict';
+            
+            // 立即执行的缓存破坏
+            function destroyCache() {
+                try {
+                    // 清除所有可能的缓存存储
+                    localStorage.clear();
+                    sessionStorage.clear();
+                    
+                    // 清除Service Worker缓存
+                    if ('caches' in window) {
+                        caches.keys().then(function(cacheNames) {
+                            return Promise.all(
+                                cacheNames.map(function(cacheName) {
+                                    return caches.delete(cacheName);
+                                })
+                            );
+                        });
+                    }
+                    
+                    // 清除Application Cache
+                    if (window.applicationCache) {
+                        window.applicationCache.swapCache();
+                    }
+                    
+                    // 强制重新加载页面
+                    var reloadUrl = window.location.href.split('?')[0];
+                    var timestamp = Date.now();
+                    var random = Math.floor(Math.random() * 1000000);
+                    var newUrl = reloadUrl + '?_t=' + timestamp + '_r=' + random;
+                    
+                    // 检查是否已经刷新过
+                    var lastReload = sessionStorage.getItem('last_cache_destroy');
+                    if (!lastReload || (timestamp - parseInt(lastReload) > 1000)) {
+                        sessionStorage.setItem('last_cache_destroy', timestamp.toString());
+                        window.location.replace(newUrl);
+                        return;
+                    }
+                } catch (e) {
+                    console.error('Cache destruction failed:', e);
+                }
+            }
+            
+            // 检查URL参数
+            function getUrlParameter(name) {
+                var url = window.location.search;
+                name = name.replace(/[\[\]]/g, '\\$&');
+                var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)');
+                var results = regex.exec(url);
+                if (!results) return null;
+                if (!results[2]) return '';
+                return decodeURIComponent(results[2].replace(/\+/g, ' '));
+            }
+            
+            // 检查是否需要强制刷新
+            var forceReload = getUrlParameter('forceReload');
+            var cacheBust = getUrlParameter('_t');
+            var now = Date.now();
+            
+            // 如果有forceReload参数或者没有时间戳参数，则强制破坏缓存
+            if (forceReload || !cacheBust) {
+                destroyCache();
+                return;
+            }
+            
+            // 检查时间戳是否过期（超过1分钟）
+            if (cacheBust && (now - parseInt(cacheBust) > 60000)) {
+                destroyCache();
+                return;
+            }
+            
+            // 定期检查缓存（每30秒）
+            setInterval(function() {
+                var lastCheck = sessionStorage.getItem('last_cache_check');
+                if (!lastCheck || (now - parseInt(lastCheck) > 30000)) {
+                    sessionStorage.setItem('last_cache_check', now.toString());
+                    // 轻微刷新，不重新加载页面
+                    var img = new Image();
+                    img.src = '/static/cache-bust.png?' + now;
+                }
+            }, 30000);
+            
+        })();
+    </script>
+    <link rel="stylesheet" href="{% static 'css/all.min.css' %}?v={{ settings.STATIC_VERSION }}&t={{ settings.STATIC_VERSION }}_{{ timestamp }}">
+    <script src="{% static 'js/chart.js' %}?v={{ settings.STATIC_VERSION }}&t={{ settings.STATIC_VERSION }}_{{ timestamp }}"></script>
+    <script src="{% static 'js/echarts.min.js' %}?v={{ settings.STATIC_VERSION }}&t={{ settings.STATIC_VERSION }}_{{ timestamp }}"></script>
+    <script src="{% static 'js/marked.min.js' %}?v={{ settings.STATIC_VERSION }}&t={{ settings.STATIC_VERSION }}_{{ timestamp }}"></script>
+    <script src="{% static 'js/html2pdf.bundle.min.js' %}?v={{ settings.STATIC_VERSION }}&t={{ settings.STATIC_VERSION }}_{{ timestamp }}"></script>
     <style>
         * {
             margin: 0;

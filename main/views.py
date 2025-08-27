@@ -1,6 +1,7 @@
 import json
 import random
 import pandas as pd
+import time
 from django.contrib.auth.decorators import login_required
 from django.core import serializers
 from django.db.models import Sum, Value, DecimalField, Prefetch, F, Q, Count
@@ -172,6 +173,7 @@ def repo(request):
     """
     渲染报告页面
     """
+    from django.conf import settings
     user = getUserSession(request)
     user_id = user["user_id"]
     # 1. 推荐菜品（最多 4 条）
@@ -212,6 +214,8 @@ def repo(request):
         'today': today,
         'phone': phone,
         'today_total': totals,
+        'settings': settings,
+        'timestamp': int(time.time()),
     })
 
 def ai_health_advisor(request):

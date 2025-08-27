@@ -140,3 +140,9 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "main/static"),
     BASE_DIR / "main" / "static",
 ]
+
+# 缓存控制设置
+STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
+
+# 静态文件版本控制
+STATIC_VERSION = '1.0.0'  # 每次更新时修改这个版本号
