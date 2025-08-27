@@ -2331,7 +2331,12 @@
             const valueElement = document.getElementById(valueElementId);
             const changeElement = document.getElementById(changeElementId);
             if (valueElement) {
-                valueElement.textContent = `${value}${unit}`;
+                // 格式化数值，限制为小数点后两位
+                let formattedValue = value;
+                if (typeof value === 'number' && !isNaN(value)) {
+                    formattedValue = parseFloat(value.toFixed(2));
+                }
+                valueElement.textContent = `${formattedValue}${unit}`;
             }
             if (changeElement) {
                 changeElement.innerHTML = ''; // 清空旧内容
@@ -2366,7 +2371,12 @@
         function updateStatCardValue(elementId, value, unit = '') {
             const element = document.getElementById(elementId);
             if (element) {
-                element.textContent = `${value}${unit}`;
+                // 格式化数值，限制为小数点后两位
+                let formattedValue = value;
+                if (typeof value === 'number' && !isNaN(value)) {
+                    formattedValue = parseFloat(value.toFixed(2));
+                }
+                element.textContent = `${formattedValue}${unit}`;
             }
         }
         // --- 新增辅助函数：更新带有嵌套变化百分比的 stat-card (用于营养结构变化和周报营养素分析) ---
@@ -2379,8 +2389,14 @@
                     return;
                 }
                 
+                // 格式化数值，限制为小数点后两位
+                let formattedValue = value;
+                if (typeof value === 'number' && !isNaN(value)) {
+                    formattedValue = parseFloat(value.toFixed(2));
+                }
+                
                 valueElement.innerHTML = ''; // 清空现有内容
-                const valueText = document.createTextNode(`${value}${unit}`);
+                const valueText = document.createTextNode(`${formattedValue}${unit}`);
                 valueElement.appendChild(valueText);
                 
                 // 检查 change_percentage 是否为有效数值
