@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>AI健康顾问 - 语音助手</title>
+    <title>AI健康顾问 - 智能助手</title>
      <link rel="stylesheet" href="../static/css/all.min.css">
+     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
         /* ===== 顶部栏样式 ===== */
         .top-header {
@@ -273,6 +274,13 @@
             border-radius: 18px;
             box-shadow: var(--shadow-soft);
             animation: slideInUp 0.3s ease;
+        }
+        
+        /* 消息内容容器 */
+        .message-content {
+            width: 100%;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
         }
 
         .message.user {
@@ -1057,8 +1065,8 @@
         }
 
         .welcome-message {
-            text-align: center;
-            padding: 40px 20px;
+            text-align: left;
+            padding: 5px 15px;
             color: var(--text-muted);
         }
 
@@ -1108,6 +1116,179 @@
             padding: 8px 0 0 0;
             border-top: 1px solid rgba(99, 102, 241, 0.1);
         }
+        
+        /* ===== Markdown样式支持 ===== */
+        .message h1, .message h2, .message h3, .message h4, .message h5, .message h6 {
+            margin: 8px 0;
+            color: inherit;
+            font-weight: 600;
+            line-height: 1.4;
+        }
+        
+        .message h1 { font-size: 1.4em; }
+        .message h2 { font-size: 1.3em; }
+        .message h3 { font-size: 1.2em; }
+        .message h4 { font-size: 1.1em; }
+        .message h5 { font-size: 1.05em; }
+        .message h6 { font-size: 1em; }
+        
+        .message p {
+            margin: 6px 0;
+            line-height: 1.5;
+        }
+        
+        .message ul, .message ol {
+            margin: 6px 0;
+            padding-left: 20px;
+        }
+        
+        .message li {
+            margin: 3px 0;
+            line-height: 1.4;
+        }
+        
+        .message blockquote {
+            margin: 8px 0;
+            padding: 8px 12px;
+            border-left: 3px solid var(--primary-light);
+            background: rgba(26, 95, 158, 0.05);
+            border-radius: 0 8px 8px 0;
+            font-style: italic;
+        }
+        
+        .message code {
+            background: rgba(26, 95, 158, 0.1);
+            padding: 2px 4px;
+            border-radius: 4px;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 0.9em;
+            color: var(--primary-deep);
+        }
+        
+        .message pre {
+            background: rgba(26, 95, 158, 0.05);
+            border: 1px solid rgba(26, 95, 158, 0.2);
+            border-radius: 8px;
+            padding: 12px;
+            margin: 8px 0;
+            overflow-x: auto;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 0.85em;
+            line-height: 1.4;
+        }
+        
+        .message pre code {
+            background: none;
+            padding: 0;
+            color: inherit;
+        }
+        
+        .message table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 8px 0;
+            font-size: 0.9em;
+        }
+        
+        .message th, .message td {
+            border: 1px solid rgba(26, 95, 158, 0.2);
+            padding: 6px 8px;
+            text-align: left;
+        }
+        
+        .message th {
+            background: rgba(26, 95, 158, 0.1);
+            font-weight: 600;
+        }
+        
+        .message tr:nth-child(even) {
+            background: rgba(26, 95, 158, 0.02);
+        }
+        
+        .message a {
+            color: var(--primary-light);
+            text-decoration: none;
+            border-bottom: 1px dotted transparent;
+            transition: all 0.3s ease;
+        }
+        
+        .message a:hover {
+            border-bottom-color: var(--primary-light);
+            text-decoration: underline;
+        }
+        
+        .message strong {
+            font-weight: 600;
+            color: inherit;
+        }
+        
+        .message em {
+            font-style: italic;
+            color: inherit;
+        }
+        
+        .message hr {
+            border: none;
+            height: 1px;
+            background: rgba(26, 95, 158, 0.2);
+            margin: 12px 0;
+        }
+        
+        .message img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin: 8px 0;
+        }
+        
+        /* 用户消息中的Markdown样式调整 */
+        .message.user h1, .message.user h2, .message.user h3, 
+        .message.user h4, .message.user h5, .message.user h6 {
+            color: rgba(255, 255, 255, 0.95);
+        }
+        
+        .message.user blockquote {
+            border-left-color: rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .message.user code {
+            background: rgba(255, 255, 255, 0.2);
+            color: rgba(255, 255, 255, 0.95);
+        }
+        
+        .message.user pre {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+        
+        .message.user pre code {
+            color: rgba(255, 255, 255, 0.95);
+        }
+        
+        .message.user th, .message.user td {
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+        
+        .message.user th {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .message.user tr:nth-child(even) {
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        .message.user a {
+            color: rgba(255, 255, 255, 0.9);
+        }
+        
+        .message.user a:hover {
+            border-bottom-color: rgba(255, 255, 255, 0.9);
+        }
+        
+        .message.user hr {
+            background: rgba(255, 255, 255, 0.3);
+        }
 
 
     </style>
@@ -1144,8 +1325,20 @@
 
             <!-- 对话区域 -->
             <div class="conversation-area" id="conversationArea">
-                <div class="message ai">
-                    <div>您好，我是您的AI健康顾问，请问有什么帮助您的吗</div>
+                <div class="message ai welcome-message">
+                    <div class="message-content">**您好！我是您的 AI营养顾问**
+
+请问我有什么可以帮到您的吗？
+
+我可以为您提供以下服务：
+
+🥗 **营养咨询** - 个性化饮食建议     
+
+📊 **健康分析** - 基于数据的健康评估         
+
+💪 **健身指导** - 科学运动方案
+
+🍽️ **食谱推荐** - 健康美味菜谱</div>
                     <div class="message-time">刚刚</div>
                     
                     <!-- 快捷按钮区域 -->
@@ -1453,7 +1646,21 @@
 
             const messageDiv = document.createElement('div');
             messageDiv.className = `message ${isUser ? 'user' : 'ai'}`;
-            messageDiv.textContent = text;
+            
+            // 创建消息内容容器
+            const messageContent = document.createElement('div');
+            messageContent.className = 'message-content';
+            
+            // 使用marked.js解析Markdown内容
+            try {
+                messageContent.innerHTML = marked.parse(text);
+            } catch (error) {
+                console.error('Markdown解析错误:', error);
+                // 如果解析失败，回退到纯文本显示
+                messageContent.textContent = text;
+            }
+            
+            messageDiv.appendChild(messageContent);
             
             // 添加时间戳
             const timeDiv = document.createElement('div');
@@ -2815,6 +3022,17 @@
             }).catch(error => {
                 log(`Opus解码器预加载失败: ${error.message}，将在需要时重试`, 'warning');
             });
+
+            // 解析欢迎消息的Markdown内容
+            const welcomeMessageContent = document.querySelector('.welcome-message .message-content');
+            if (welcomeMessageContent) {
+                try {
+                    const originalText = welcomeMessageContent.textContent;
+                    welcomeMessageContent.innerHTML = marked.parse(originalText);
+                } catch (error) {
+                    log(`欢迎消息Markdown解析失败: ${error.message}`, 'warning');
+                }
+            }
 
             // 自动连接到服务器
             setTimeout(() => {
