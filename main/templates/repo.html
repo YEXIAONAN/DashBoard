@@ -4,9 +4,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <meta http-equiv="Pragma" content="no-cache">
-    <meta http-equiv="Expires" content="0">
     <title>智慧餐饮 - 报告</title>
     <link rel="stylesheet" href="../static/css/all.min.css">
     <script src="../static/js/chart.js"></script>
@@ -913,29 +910,54 @@
         /* ===== 按钮统一样式 ===== */
         .report-button,
         #ai-feedback-btn {
-            background: var(--ai-primary);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #f5576c 75%, #ffa751 100%);
+            background-size: 300% 300%;
             color: #fff;
-            padding: 10px 20px;
+            padding: 12px 24px;
             border: none;
-            border-radius: 6px;
+            border-radius: 25px;
             cursor: pointer;
             font-size: 15px;
-            font-weight: 500;
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+            font-weight: 600;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            animation: gradientShift 3s ease-in-out infinite;
+            text-transform: none;
+            letter-spacing: 0.5px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .report-button:hover,
         #ai-feedback-btn:hover {
-            background: var(--ai-hover);
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
+            filter: brightness(1.1);
         }
 
         .report-button:active,
         #ai-feedback-btn:active {
-            transform: translateY(0);
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            transform: translateY(0) scale(0.98);
+            box-shadow: 0 2px 10px rgba(102, 126, 234, 0.4);
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* ===== AI按钮图标动画 ===== */
+        #ai-feedback-btn i {
+            color: #ffffff;
+            font-size: 1.1rem;
+            animation: iconPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes iconPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
         }
 
         /* ===== 加载动画优化 ===== */
@@ -1026,45 +1048,44 @@
                             </div>
                         </div>
                     </div>
-                    <div class="report-section">
-                        <!-- 展示4 -->
-                        <div class="section-title">
-                            <i class="fas fa-balance-scale"></i> 营养素分析
+                        <div class="report-section">
+                            <div class="section-title">
+                                <i class="fas fa-balance-scale"></i> 营养结构变化
+                            </div>
+                            <div class="chart-container">
+                                <!-- 这是 ECharts 雷达图的容器 div。 -->
+                                <div id="monthlyNutrientRadarChart" style="width:100%;height:220px;"></div>
+                            </div>
+                            <div class="stats-grid">
+                                <div class="stat-card">
+                                    <!-- 添加 ID，内容将由 JS 动态填充 -->
+                                    <div class="value" id="monthlyFiberIntake"></div>
+                                    <div class="label">膳食纤维摄入</div>
+                                </div>
+                                <div class="stat-card">
+                                    <!-- 添加 ID，内容将由 JS 动态填充 -->
+                                    <div class="value" id="monthlyFatIntake"></div>
+                                    <div class="label">脂肪摄入</div> <!-- 更改为“脂肪摄入”，因为数据库只有总脂肪 -->
+                                </div>
+                                <div class="stat-card">
+                                    <!-- 添加 ID，内容将由 JS 动态填充 -->
+                                    <div class="value" id="monthlyCalciumGoalAchievement"></div>
+                                    <div class="label">钙摄入达标率</div>
+                                </div>
+                                <div class="stat-card">
+                                    <!-- 添加 ID，内容将由 JS 动态填充 -->
+                                    <div class="value" id="monthlyVitaminCIntake"></div>
+                                    <div class="label">维生素C摄入</div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="chart-container">
-                            <div id="weeklyNutrientChart" style="width:100%;height:220px;"></div>
-                            <!-- 展示4 -->
-                        </div>
-                        <div class="stats-grid">
-                            <div class="stat-card">
-                                <!-- 添加 ID，内容将由 JS 动态填充 -->
-                                <div class="value" id="weeklyCarbRatio"></div>
-                                <div class="label">碳水占比</div>
-                            </div>
-                            <div class="stat-card">
-                                <!-- 添加 ID，内容将由 JS 动态填充 -->
-                                <div class="value" id="weeklyProteinRatio"></div>
-                                <div class="label">蛋白质占比</div>
-                            </div>
-                            <div class="stat-card">
-                                <!-- 添加 ID，内容将由 JS 动态填充 -->
-                                <div class="value" id="weeklyFatRatio"></div>
-                                <div class="label">脂肪占比</div>
-                            </div>
-                            <div class="stat-card">
-                                <!-- 添加 ID，内容将由 JS 动态填充 -->
-                                <div class="value" id="weeklyAvgAddedSugar"></div>
-                                <div class="label">日均添加糖</div>
-                            </div>
-                        </div>
-                    </div>
                     <!-- 新增的 AI 分析反馈和建议部分 -->
                     <div class="report-section">
                         <div class="section-title">
                             <i class="fas fa-robot"></i> AI 智能分析
                         </div>
                         <button id="ai-feedback-btn" class="report-button">
-                             AI 饮食分析与优化建议
+                             <i class="fas fa-robot"></i> AI 饮食分析与优化建议
                         </button>
                         <div id="ai-output-container" style="display:none;">
                             <div id="ai-output"></div> <!-- 改为 div 以支持 HTML 渲染 -->
@@ -1226,37 +1247,41 @@
                                 <div class="label">目标达成天数</div>
                             </div>
                         </div>
-                        <div class="report-section">
-                            <div class="section-title">
-                                <i class="fas fa-balance-scale"></i> 营养结构变化
+
+
+                    <div class="report-section">
+                        <!-- 展示4 -->
+                        <div class="section-title">
+                            <i class="fas fa-balance-scale"></i> 营养素分析
+                        </div>
+                        <div class="chart-container">
+                            <div id="weeklyNutrientChart" style="width:450px;height:240px;"></div>
+                            <!-- 展示4 -->
+                        </div>
+                        <div class="stats-grid">
+                            <div class="stat-card">
+                                <!-- 添加 ID，内容将由 JS 动态填充 -->
+                                <div class="value" id="weeklyCarbRatio"></div>
+                                <div class="label">碳水占比</div>
                             </div>
-                            <div class="chart-container">
-                                <!-- 这是 ECharts 雷达图的容器 div。 -->
-                                <div id="monthlyNutrientRadarChart" style="width: 450px; height: 240px;"></div>
+                            <div class="stat-card">
+                                <!-- 添加 ID，内容将由 JS 动态填充 -->
+                                <div class="value" id="weeklyProteinRatio"></div>
+                                <div class="label">蛋白质占比</div>
                             </div>
-                            <div class="stats-grid">
-                                <div class="stat-card">
-                                    <!-- 添加 ID，内容将由 JS 动态填充 -->
-                                    <div class="value" id="monthlyFiberIntake"></div>
-                                    <div class="label">膳食纤维摄入</div>
-                                </div>
-                                <div class="stat-card">
-                                    <!-- 添加 ID，内容将由 JS 动态填充 -->
-                                    <div class="value" id="monthlyFatIntake"></div>
-                                    <div class="label">脂肪摄入</div> <!-- 更改为“脂肪摄入”，因为数据库只有总脂肪 -->
-                                </div>
-                                <div class="stat-card">
-                                    <!-- 添加 ID，内容将由 JS 动态填充 -->
-                                    <div class="value" id="monthlyCalciumGoalAchievement"></div>
-                                    <div class="label">钙摄入达标率</div>
-                                </div>
-                                <div class="stat-card">
-                                    <!-- 添加 ID，内容将由 JS 动态填充 -->
-                                    <div class="value" id="monthlyVitaminCIntake"></div>
-                                    <div class="label">维生素C摄入</div>
-                                </div>
+                            <div class="stat-card">
+                                <!-- 添加 ID，内容将由 JS 动态填充 -->
+                                <div class="value" id="weeklyFatRatio"></div>
+                                <div class="label">脂肪占比</div>
+                            </div>
+                            <div class="stat-card">
+                                <!-- 添加 ID，内容将由 JS 动态填充 -->
+                                <div class="value" id="weeklyAvgAddedSugar"></div>
+                                <div class="label">日均添加糖</div>
                             </div>
                         </div>
+                    </div>
+
                         <div class="report-section">
                             <div class="section-title">
                                 <i class="fas fa-lightbulb"></i> 月度健康洞察
@@ -1386,7 +1411,7 @@
     }
     function updateMonthlySummaryUI(data) {
         document.getElementById('monthlyAvgCalorieStatValue').textContent = `${data.monthly_avg_calories.toLocaleString()} kcal`;
-        updateStatCardWithNestedChange('monthlyTotalCalorieDeficitValue', data.monthly_calorie_deficit_kcal, 'kcal');
+        document.getElementById('monthlyTotalCalorieDeficitValue').textContent = `${data.monthly_calorie_deficit_kcal.toLocaleString()} kcal`;
         document.getElementById('monthlyGoalAchievementStatValue').textContent = `${data.monthly_goal_achievement_percentage}%`;
         document.getElementById('daysGoalAchievedValue').textContent = `${data.days_goal_achieved}天`;
         document.getElementById('monthlyFiberIntake').textContent = `${data.fiber_intake_this_month.toFixed(1)}g`;
@@ -1484,7 +1509,50 @@
             monthlyCalorieChartDom.innerHTML = `<p style="color: red;">获取月报热量数据失败: ${error.message || error}</p>`;
         }
     }
-    // 删除重复的 DOMContentLoaded 事件监听器，所有代码将统一在下面的一个事件监听器中处理
+    document.addEventListener('DOMContentLoaded', function () {
+        console.log('DOM加载完成');
+        var chartDom = document.getElementById('weeklyCalorieChart');
+        if (!chartDom) {
+            console.error('找不到图表容器');
+            return;
+        }
+        console.log('找到图表容器', chartDom);
+        var myChart = echarts.init(chartDom);
+        console.log('图表初始化成功', myChart);
+        fetch('/calorie-data/')
+            .then(res => res.json())
+            .then(data => {
+                console.log('获取数据成功:', data);
+                var option = {
+                    title: {
+                        text: '本周热量摄入趋势',
+                        left: 'center',
+                        textStyle: { fontSize: 14 }
+                    },
+                    tooltip: { trigger: 'axis' },
+                    xAxis: {
+                        type: 'category', data: data.x_data,
+                        axisLabel: {
+                            rotate: 45,  // 标签旋转45度
+                            interval: 0  // 强制显示所有标签
+                        }
+                    },
+                    yAxis: { type: 'value', name: '千卡(kcal)' },
+                    series: [{
+                        name: '热量',
+                        type: 'line',
+                        data: data.y_data,
+                        smooth: true,
+                        lineStyle: { width: 3, color: '#5470C6' },
+                        itemStyle: { color: '#91cc75' },
+                        areaStyle: { color: 'rgba(84,112,198,0.2)' }
+                    }]
+                };
+                myChart.setOption(option);
+                window.addEventListener('resize', () => myChart.resize());
+            })
+            .catch(e => console.error('获取数据失败:', e));
+    });
     // 所有的 JavaScript 代码都应该放在这一个 DOMContentLoaded 事件监听器内部
     document.addEventListener('DOMContentLoaded', function () {
         console.log("DOM加载完成，开始初始化所有图表和数据更新。");
@@ -1527,11 +1595,8 @@
                         radar: {
                             indicator: [
                                 { name: "蛋白质", max: 100 },
-                                { name: "膳食纤维", max: 5 },
-                                { name: "钙", max: 60 },
-                                { name: "维生素C", max: 10 },
-                                { name: "铁", max: 10 },
-                                { name: "健康脂肪", max: 60 }
+                                { name: "脂肪", max: 60 },
+                                { name: "碳水化合物", max: 150 }
                             ],
                             radius: 70, // 保持缩小半径
                             splitNumber: 5,
@@ -1939,20 +2004,7 @@
                 }
                 
                 valueElement.innerHTML = ''; // 清空现有内容
-                let displayText = '';
-                
-                // 特殊处理月度热量缺口，负值显示为盈余
-                if (valueElementId === 'monthlyTotalCalorieDeficitValue') {
-                    if (value < 0) {
-                        displayText = `${Math.abs(value)}${unit} (盈余)`;
-                    } else {
-                        displayText = `${value}${unit}`;
-                    }
-                } else {
-                    displayText = `${value}${unit}`;
-                }
-                
-                const valueText = document.createTextNode(displayText);
+                const valueText = document.createTextNode(`${value}${unit}`);
                 valueElement.appendChild(valueText);
                 
                 // 检查 change_percentage 是否为有效数值
@@ -2008,20 +2060,8 @@
                 } else {
                     // 合并所有周报数据请求
                     const [summaryResponse, nutrientResponse] = await Promise.all([
-                        fetch('/weekly-summary-data/', {
-                            headers: {
-                                'Cache-Control': 'no-cache, no-store, must-revalidate',
-                                'Pragma': 'no-cache',
-                                'Expires': '0'
-                            }
-                        }),
-                        fetch('/weekly-nutrient-analysis-data/', {
-                            headers: {
-                                'Cache-Control': 'no-cache, no-store, must-revalidate',
-                                'Pragma': 'no-cache',
-                                'Expires': '0'
-                            }
-                        })
+                        fetch('/weekly-summary-data/'),
+                        fetch('/weekly-nutrient-analysis-data/')
                     ]);
                     const [summaryData, nutrientData] = await Promise.all([
                         summaryResponse.json(),
@@ -2070,26 +2110,14 @@
                 } else {
                     // 合并所有月报数据请求
                     const [summaryResponse, calorieResponse] = await Promise.all([
-                        fetch('/monthly-summary-data/', {
-                            headers: {
-                                'Cache-Control': 'no-cache, no-store, must-revalidate',
-                                'Pragma': 'no-cache',
-                                'Expires': '0'
-                            }
-                        }),
-                        fetch('/monthly-calorie-data/', {
-                            headers: {
-                                'Cache-Control': 'no-cache, no-store, must-revalidate',
-                                'Pragma': 'no-cache',
-                                'Expires': '0'
-                            }
-                        })
+                        fetch('/monthly-summary-data/'),
+                        fetch('/monthly-calorie-data/')
                     ]);
                     const [summaryData, calorieData] = await Promise.all([
                         summaryResponse.json(),
                         calorieResponse.json()
                     ]);
-                    data = { ...summaryData, ...calorieData };
+                    data = { ...summaryData, calorieData };
                     localStorage.setItem(cacheKey, JSON.stringify(data));
                 }
                 console.log("获取到月报概览数据:", data);
@@ -2126,13 +2154,7 @@
                 const cacheKey = 'weekly_nutrient_' + new Date().toISOString().slice(0, 10);
                 localStorage.removeItem(cacheKey);
                 
-                const response = await fetch('/weekly-nutrient-analysis-data/', {
-                    headers: {
-                        'Cache-Control': 'no-cache, no-store, must-revalidate',
-                        'Pragma': 'no-cache',
-                        'Expires': '0'
-                    }
-                });
+                const response = await fetch('/weekly-nutrient-analysis-data/');
                 console.log("API响应状态:", response.status);
                 
                 if (!response.ok) {
@@ -2164,9 +2186,9 @@
             }
         }
         // 在 DOM 加载完成后立即调用所有更新函数，以显示初始数据
-        if (typeof updateWeeklySummary === 'function') updateWeeklySummary();
-        if (typeof updateMonthlySummaryReport === 'function') updateMonthlySummaryReport();
-        if (typeof updateWeeklyNutrientAnalysis === 'function') updateWeeklyNutrientAnalysis(); // 新增：调用周报营养素分析更新函数
+        updateWeeklySummary();
+        updateMonthlySummaryReport();
+        updateWeeklyNutrientAnalysis(); // 新增：调用周报营养素分析更新函数
         // 如果你需要定期更新数据，可以取消注释下面的行
         // setInterval(updateWeeklySummary, 60000);
         // setInterval(updateMonthlySummaryReport, 60000);
@@ -2476,53 +2498,6 @@
             }
             if (targetUrl) {
                 window.location.href = targetUrl;
-            }
-        });
-    });
-</script>
-
-<!-- 强制刷新和缓存控制脚本 -->
-<script>
-    // 在 DOMContentLoaded 事件中设置缓存控制和事件监听
-    document.addEventListener('DOMContentLoaded', function() {
-        // 页面加载时强制刷新缓存
-        window.addEventListener('load', function() {
-            // 清除 localStorage 中的缓存数据
-            const cacheKeys = [
-                'weekly_summary_' + new Date().toISOString().slice(0, 10),
-                'monthly_summary_' + new Date().toISOString().slice(0, 10),
-                'weekly_nutrient_' + new Date().toISOString().slice(0, 10)
-            ];
-            
-            cacheKeys.forEach(key => {
-                localStorage.removeItem(key);
-            });
-            
-            // 强制重新加载数据
-            setTimeout(() => {
-                if (typeof updateWeeklySummary === 'function') updateWeeklySummary();
-                if (typeof updateMonthlySummaryReport === 'function') updateMonthlySummaryReport();
-                if (typeof updateWeeklyNutrientAnalysis === 'function') updateWeeklyNutrientAnalysis();
-            }, 100);
-        });
-        
-        // 添加页面可见性变化监听，当页面重新获得焦点时刷新数据
-        document.addEventListener('visibilitychange', function() {
-            if (!document.hidden) {
-                // 清除缓存并重新加载数据
-                const cacheKeys = [
-                    'weekly_summary_' + new Date().toISOString().slice(0, 10),
-                    'monthly_summary_' + new Date().toISOString().slice(0, 10),
-                    'weekly_nutrient_' + new Date().toISOString().slice(0, 10)
-                ];
-                
-                cacheKeys.forEach(key => {
-                    localStorage.removeItem(key);
-                });
-                
-                if (typeof updateWeeklySummary === 'function') updateWeeklySummary();
-                if (typeof updateMonthlySummaryReport === 'function') updateMonthlySummaryReport();
-                if (typeof updateWeeklyNutrientAnalysis === 'function') updateWeeklyNutrientAnalysis();
             }
         });
     });
