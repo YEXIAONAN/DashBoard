@@ -1085,13 +1085,13 @@
                             <i class="fas fa-robot"></i> AI 智能分析
                         </div>
                         <button id="ai-feedback-btn" class="report-button">
-                             <i class="fas fa-robot"></i> AI 饮食分析与优化建议
+                              AI 饮食分析与优化建议
                         </button>
                         <div id="ai-output-container" style="display:none;">
                             <div id="ai-output"></div> <!-- 改为 div 以支持 HTML 渲染 -->
                             <div id="ai-loading" class="ai-loading" style="display:none;">
                                 <div class="spinner"></div>
-                                <span> AI 正在思考中...</span>
+                                <!-- <span> AI 正在思考中...</span> -->
                             </div>
                         </div>
                     </div>
@@ -2214,7 +2214,7 @@
                 aiLoading.style.display = 'flex';
                 aiOutput.style.display = 'none';
                 aiButton.disabled = true;
-                aiButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 分析中...';
+                aiButton.innerHTML = 'AI 正在思考中...';
 
                 try {
                     // 构建系统提示
@@ -2302,7 +2302,7 @@
                 } finally {
                     // 恢复按钮状态
                     aiButton.disabled = false;
-                    aiButton.innerHTML = '<i class="fas fa-robot"></i> 生成个性化建议';
+                    aiButton.innerHTML = 'AI 饮食分析与优化建议';
                 }
             });
         }
