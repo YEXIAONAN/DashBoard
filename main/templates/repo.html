@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>智慧餐饮 - 报告</title>
     <link rel="stylesheet" href="../static/css/all.min.css">
     <script src="../static/js/chart.js"></script>
@@ -19,11 +19,10 @@
             font-family: 'Segoe UI', 'PingFang SC', 'Helvetica Neue', Arial, sans-serif;
         }
 
-        html,
-        body {
+        html, body {
             height: 100%;
-            overflow-x: hidden;
-        }   
+            overflow: hidden;
+        }
 
         :root {
             --primary: #1a5f9e;
@@ -52,16 +51,24 @@
             font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
             background: linear-gradient(145deg, #dcebf9 0%, #e6f2ff 100%);
             color: #2c3e50;
+            font-size: 15px;
             line-height: 1.6;
-            padding: 0;
-            min-height: 100vh;
-            overflow-x: hidden;
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
         }
 
         .container {
-            max-width: 100%;
-            margin: 0 auto;
-            padding: 0 15px;
+            width: 100%;
+            height: 100vh;
+            padding-top: 60px;
+            padding-bottom: 70px;
+            background: transparent;
+            position: relative;
+            overflow-y: auto;
+            overflow-x: hidden;
         }
 
         /* ===== 顶部栏样式 ===== */
@@ -196,13 +203,22 @@
             border-bottom: 5px solid rgba(0, 0, 0, 0.8);
         }
 
-        /* 为页面内容添加顶部间距 */
-        .main-content {
-            padding-top: calc(70px + env(safe-area-inset-top));
-            padding-left: env(safe-area-inset-left);
-            padding-right: env(safe-area-inset-right);
-            min-height: 100vh;
-            min-height: 100dvh;
+        /* ===== 滚动条样式 ===== */
+        .container::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .container::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .container::-webkit-scrollbar-thumb {
+            background: rgba(26, 95, 158, 0.2);
+            border-radius: 2px;
+        }
+
+        .container::-webkit-scrollbar-thumb:hover {
+            background: rgba(26, 95, 158, 0.3);
         }
 
         /* ===== 底部导航栏样式 ===== */
@@ -277,14 +293,8 @@
             font-weight: 600;
         }
 
-        /* 为页面内容添加底部间距 */
         .main-content {
-            padding-top: calc(70px + env(safe-area-inset-top));
-            padding-bottom: calc(80px + env(safe-area-inset-bottom));
-            padding-left: env(safe-area-inset-left);
-            padding-right: env(safe-area-inset-right);
-            min-height: 100vh;
-            min-height: 100dvh;
+            padding: 0 15px;
         }
 
         /* 报告切换标签 */
@@ -693,7 +703,9 @@
         /* 响应式调整 */
         @media (min-width: 768px) {
             .container {
-                max-width: 750px;
+                max-width: 100%;
+                padding-left: 20px;
+                padding-right: 20px;
             }
 
             .stats-grid {
@@ -711,11 +723,22 @@
 
         @media (min-width: 992px) {
             .container {
-                max-width: 970px;
+                max-width: 100%;
+                padding-left: 40px;
+                padding-right: 40px;
             }
 
             .menu-container {
                 grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        @media (min-width: 1400px) {
+            .container {
+                max-width: 1400px;
+                margin: 0 auto;
+                padding-left: 60px;
+                padding-right: 60px;
             }
         }
 
@@ -1078,6 +1101,16 @@
                                     <!-- 添加 ID，内容将由 JS 动态填充 -->
                                     <div class="value" id="monthlyVitaminCIntake"></div>
                                     <div class="label">维生素C摄入</div>
+                                </div>
+                                <div class="stat-card">
+                                    <!-- 添加 ID，内容将由 JS 动态填充 -->
+                                    <div class="value" id="monthlyProteinIntake"></div>
+                                    <div class="label">蛋白质摄入</div>
+                                </div>
+                                <div class="stat-card">
+                                    <!-- 添加 ID，内容将由 JS 动态填充 -->
+                                    <div class="value" id="monthlyIronIntake"></div>
+                                    <div class="label">铁摄入</div>
                                 </div>
                             </div>
                         </div>
@@ -1584,7 +1617,7 @@
                 })
                 .then(data => {
                     console.log(`📥 ${domId} 返回:`, data);
-                    if (!Array.isArray(data.this_month) || !Array.isArray(data.last_month)) {
+                    if (!Array.isArray(data.this_week) || !Array.isArray(data.last_week)) {
                         throw new Error("返回值不是两个数组");
                     }
                     chart.setOption({
@@ -1598,7 +1631,11 @@
                             indicator: [
                                 { name: "蛋白质", max: 100 },
                                 { name: "脂肪", max: 60 },
-                                { name: "碳水化合物", max: 150 }
+                                { name: "碳水化合物", max: 150 },
+                                { name: "纤维", max: 30 },
+                                { name: "钙", max: 1000 },
+                                { name: "维生素C", max: 100 },
+                                { name: "铁", max: 20 }
                             ],
                             radius: 70, // 保持缩小半径
                             splitNumber: 5,
@@ -1617,8 +1654,8 @@
                             name: "营养对比",  // 展示2
                             type: "radar",
                             data: [
-                                { value: data.this_month.map(x => Number(x) || 0), name: "本周", itemStyle: { color: 'rgba(26, 95, 158, 0.8)' }, areaStyle: { opacity: 0.2 } },
-                                { value: data.last_month.map(x => Number(x) || 0), name: "上周", itemStyle: { color: 'rgba(255, 107, 107, 0.7)' }, areaStyle: { opacity: 0.2 } }
+                                { value: data.this_week.map(x => Number(x) || 0), name: "本周", itemStyle: { color: 'rgba(26, 95, 158, 0.8)' }, areaStyle: { opacity: 0.2 } },
+                                { value: data.last_week.map(x => Number(x) || 0), name: "上周", itemStyle: { color: 'rgba(255, 107, 107, 0.7)' }, areaStyle: { opacity: 0.2 } }
                             ]
                         }]
                     });
@@ -1691,7 +1728,12 @@
                     legend: {
                         data: ['本周', '上周'],
                         top: 'top',
-                        textStyle: { color: '#333' }
+                        textStyle: { color: '#333' },
+                        itemWidth: 25,
+                        itemHeight: 14,
+                        itemGap: 25,
+                        selectedMode: true,
+                        inactiveColor: '#999'
                     },
                     xAxis: { type: 'category', data: data.x_data },
                     yAxis: { type: 'value', name: '热量 (kcal)' },
@@ -1711,7 +1753,7 @@
                             data: data.last_week_data,
                             smooth: true,
                             areaStyle: { opacity: 0.1, color: '#ff6b6b' },
-                            lineStyle: { width: 2, type: 'dashed', color: '#ff6b6b' },
+                            lineStyle: { width: 2, color: '#ff6b6b' },
                             emphasis: { focus: 'series' }
                         }
                     ]
@@ -1839,7 +1881,12 @@
                         legend: { 
                             data: ['本周', '上周'], 
                             top: 'top', 
-                            textStyle: { color: '#333' } 
+                            textStyle: { color: '#333' },
+                            itemWidth: 25,
+                            itemHeight: 14,
+                            itemGap: 25,
+                            selectedMode: true,
+                            inactiveColor: '#999'
                         },
                         grid: { 
                             left: '8%', 
@@ -1939,7 +1986,16 @@
                     console.log("获取到月报热量数据:", data);
                     const option = {
                         tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
-                        legend: { data: ['本月', '上月'], top: 'top', textStyle: { color: '#333' } },
+                        legend: { 
+                            data: ['本月', '上月'], 
+                            top: 'top', 
+                            textStyle: { color: '#333' },
+                            itemWidth: 25,
+                            itemHeight: 14,
+                            itemGap: 25,
+                            selectedMode: true,
+                            inactiveColor: '#999'
+                        },
                         grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
                         xAxis: { type: 'category', data: data.labels, axisLabel: { color: '#333' } },
                         yAxis: {
@@ -2161,6 +2217,9 @@
                 updateStatCardWithNestedChange('monthlyFatIntake', data.fat_intake_this_month, data.fat_intake_change, 'g', false);
                 updateStatCardWithNestedChange('monthlyCalciumGoalAchievement', data.calcium_goal_achievement_this_month, data.calcium_goal_change, '%', true);
                 updateStatCardWithNestedChange('monthlyVitaminCIntake', data.vitamin_c_intake_this_month, data.vitamin_c_change, 'mg', true);
+                // 添加蛋白质和铁摄入数据的更新
+                updateStatCardWithNestedChange('monthlyProteinIntake', data.protein_intake_this_month, data.protein_intake_change, 'g', true);
+                updateStatCardWithNestedChange('monthlyIronIntake', data.iron_intake_this_month, data.iron_intake_change, 'mg', true);
             } catch (error) {
                 console.error('获取月报概览数据失败:', error);
                 // 错误处理保持不变...
