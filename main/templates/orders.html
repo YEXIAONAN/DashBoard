@@ -99,19 +99,39 @@
             position: absolute;
             top: 15px;
             right: 15px;
-            background: rgba(255, 255, 255, 0.2);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #f5576c 75%, #ffa751 100%);
+            background-size: 300% 300%;
             padding: 6px 12px;
-            border-radius: 15px;
+            border-radius: 20px;
             font-size: 0.75rem;
-            backdrop-filter: blur(5px);
+            font-weight: 600;
+            color: white;
+            backdrop-filter: blur(10px);
             display: flex;
             align-items: center;
             gap: 6px;
             border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            animation: gradientShift 3s ease-in-out infinite;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
 
         .ai-tag i { 
-            color: #ffd600; 
+            color: #ffffff; 
+            font-size: 0.9rem;
+            animation: iconPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes iconPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
         }
 
         .recommend-title { 
@@ -789,7 +809,7 @@
         <div class="main-container">
             <!-- AI推荐区域 -->
             <div class="recommendation-banner" data-dish-id="{{ recommended_dish.dish_id }}">
-                <div class="ai-tag"><i class="fas fa-robot"></i> AI智能推荐</div>
+                <div class="ai-tag"> AI 智能推荐</div>
                 <div class="recommend-title">您可能喜欢的菜品</div>
                 <div class="recommend-desc">根据您的口味偏好和健康数据精选推荐</div>
                 <div class="recommend-dish">
