@@ -1167,8 +1167,8 @@
         <div class="main-content">
             <!-- 报告切换标签 -->
             <div class="report-tabs">
-                <div class="tab active" data-report="weekly">健康周报</div>
-                <div class="tab" data-report="monthly">健康月报</div>
+                <div class="tab active" data-report="weekly">健康月报</div>
+                <div class="tab" data-report="monthly">健康周报</div>
             </div>
 
             <!-- 周报 -->
@@ -1179,7 +1179,7 @@
                             <div class="report-icon">
                                 <i class="fas fa-chart-line"></i>
                             </div>
-                            <h2>本周健康报告</h2>
+                            <h2>本月健康报告</h2>
                         </div>
                         <div class="time-range">7月20日 - 7月26日</div>
                     </div>
@@ -1331,7 +1331,7 @@
                             <div class="report-icon">
                                 <i class="fas fa-chart-bar"></i>
                             </div>
-                            <h2>本月健康报告</h2>
+                            <h2>本周健康报告</h2>
                         </div>
                         <div class="time-range" id="monthlyTimeRange">11月1日 - 11月30日</div>
                     </div>
@@ -1341,7 +1341,7 @@
                     </div>
                     <div class="report-section">
                         <div class="section-title">
-                            <i class="fas fa-fire"></i> 月度热量趋势
+                            <i class="fas fa-fire"></i> 周报热量趋势
                         </div>
                         <div class="chart-container">
                             <div id="monthlyCalorieChart" style="width: 450px; height: 240px;"></div>
@@ -1416,9 +1416,60 @@
                         </div>
                     </div>
 
-                        <div class="report-section">
+<!-- 周报健康洞察 -->
+<div class="report-section">
+    <div class="section-title">
+        <i class="fas fa-lightbulb"></i> 本周健康洞察
+    </div>
+    <div class="feedback">
+        <p>
+            本周您的饮食健康指数评分为 <strong>82分</strong>（满分100），较上周提升 <strong>6分</strong>！
+            最大的进步是饱和脂肪摄入量明显降低，这得益于您减少了油炸食品的选择。
+            蛋白质摄入稳定性仍需关注，特别是工作日午餐的蛋白质摄入波动较大。
+            值得表扬的是，您本周尝试了 <strong>12种新菜品</strong>，饮食多样性得分提升了 <strong>15%</strong>。
+        </p>
+        <div class="stats-grid" style="margin-top: 15px;">
+            <div class="stat-card">
+                <div class="value">82分</div>
+                <div class="label">健康指数评分</div>
+            </div>
+            <div class="stat-card">
+                <div class="value">77%</div>
+                <div class="label">饮食多样性</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 本周健康建议 -->
+<div class="report-section">
+    <div class="section-title">
+        <i class="fas fa-clipboard-list"></i> 本周健康建议
+    </div>
+    <div class="recommendation">
+        <h4><i class="fas fa-check-circle"></i> 本周膳食优化方案</h4>
+        <ul>
+            <li>蛋白质摄入计划：每日蛋白质摄入目标为 75g</li>
+            <li>钙质补充策略：每周至少 3 次乳制品和深绿色蔬菜</li>
+            <li>饮食多样性：每周尝试 5 种以上不同菜品</li>
+            <li>健康习惯养成：固定午餐时间，避免过晚进食</li>
+        </ul>
+    </div>
+    <div class="recommendation">
+        <h4><i class="fas fa-trophy"></i> 本周健康成就</h4>
+        <ul>
+            <li>连续 7 天控制添加糖摄入在标准范围内</li>
+            <li>膳食纤维摄入量达到推荐标准的 92%</li>
+            <li>钠摄入量控制在安全范围内</li>
+            <li>每周进行 3 次以上“彩虹饮食”</li>
+        </ul>
+    </div>
+</div>
+
+
+                        <!-- <div class="report-section">
                             <div class="section-title">
-                                <i class="fas fa-lightbulb"></i> 月度健康洞察
+                                <i class="fas fa-lightbulb"></i> 周报健康洞察
                             </div>
                             <div class="feedback">
                                 <p>本月您的饮食健康指数评分为82分（满分100），较上月提升6分！最大的进步是饱和脂肪摄入量明显降低，这得益于您减少了油炸食品的选择。蛋白质摄入稳定性仍需关注，特别是工作日午餐的蛋白质摄入波动较大。值得表扬的是，您本月尝试了12种新菜品，饮食多样性得分提升了15%。
@@ -1458,7 +1509,7 @@
                                 </ul>
                             </div>
                         </div>
-                    </div>
+                    </div> -->
                     <!-- 推荐菜单 -->
                     <div class="menu-section">
                         <div class="section-header">
@@ -1745,10 +1796,10 @@
                     chart.setOption({
                         tooltip: { trigger: "item" },
                         legend: {
-                            data: ["本周", "上周"],
-                            top: 0, // 保持在顶部，可以根据需要微调
-                            padding: [0, 0]
-                        },
+                                data: ["本月", "上月"],
+                                top: 0, // 保持在顶部，可以根据需要微调
+                                padding: [0, 0]
+                            },
                         radar: {
                             indicator: [
                                 { name: "蛋白质", max: 80 },
@@ -1776,8 +1827,8 @@
                             name: "营养对比",  // 展示2
                             type: "radar",
                             data: [
-                                { value: data.this_week.map(x => Number(x) || 0), name: "本周", itemStyle: { color: 'rgba(26, 95, 158, 1.0)' }, areaStyle: { opacity: 0.2 } },
-                                { value: data.last_week.map(x => Number(x) || 0), name: "上周", itemStyle: { color: 'rgba(255, 107, 107, 1.0)' }, areaStyle: { opacity: 0.2 } }
+                                { value: data.this_week.map(x => Number(x) || 0), name: "本月", itemStyle: { color: 'rgba(26, 95, 158, 1.0)' }, areaStyle: { opacity: 0.2 } },
+                                { value: data.last_week.map(x => Number(x) || 0), name: "上月", itemStyle: { color: 'rgba(255, 107, 107, 1.0)' }, areaStyle: { opacity: 0.2 } }
                             ]
                         }]
                     });
@@ -1868,7 +1919,7 @@
                         }
                     },
                     legend: {
-                        data: ['本周', '上周'],
+                        data: ['本月', '上月'],
                         top: isSmallMobile ? 'auto' : 'top',
                         bottom: isSmallMobile ? 0 : 'auto',
                         textStyle: { 
@@ -1918,7 +1969,7 @@
                     },
                     series: [
                         {
-                            name: '本周',
+                            name: '本月',
                             type: 'line',
                             data: data.this_week_data,
                             smooth: true,
@@ -1927,7 +1978,7 @@
                             emphasis: { focus: 'series' }
                         },
                         {
-                            name: '上周',
+                            name: '上月',
                             type: 'line',
                             data: data.last_week_data,
                             smooth: true,
@@ -2236,7 +2287,7 @@
                             } : {})
                         },
                         legend: {
-                            data: ['本月1', '上月1'],
+                            data: ['本周', '上周'],
                             top: 'top',
                             textStyle: { 
                                 color: '#333',
@@ -2304,12 +2355,12 @@
                         },
                         series: [
                             {
-                                name: '本月1', type: 'line', data: data.this_month_data, smooth: true,
+                                name: '本周', type: 'line', data: data.this_month_data, smooth: true,
                                 lineStyle: { width: 3, color: '#1a5f9e' },
                                 areaStyle: { opacity: 0.1, color: '#1a5f9e' }, emphasis: { focus: 'series' }
                             },
                             {
-                                name: '上月1', type: 'line', data: data.last_month_data, smooth: true,
+                                name: '上周', type: 'line', data: data.last_month_data, smooth: true,
                                 lineStyle: { width: 2, type: 'dashed', color: '#ff6b6b' },
                                 areaStyle: { opacity: 0.1, color: '#ff6b6b' }, emphasis: { focus: 'series' }
                             }
