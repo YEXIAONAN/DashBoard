@@ -1772,9 +1772,6 @@
                     const messages = conversationDiv.querySelectorAll('.message:not(.welcome-message)');
                     messages.forEach(msg => msg.remove());
                     
-                    // 显示成功消息
-                    addMessageToUI('聊天记录已清空', false, false);
-                    
                     console.log('聊天记录清空成功:', result.message);
                 } else {
                     console.error('清空聊天记录失败:', result.message);
