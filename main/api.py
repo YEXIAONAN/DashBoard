@@ -72,7 +72,6 @@ def submit_order(request):
 
 
 #登录api
-@csrf_exempt
 def login_v(request):
     if request.method == 'POST':
         try:
@@ -156,17 +155,12 @@ def logout (request):
     })
 
 
-
-
-
-
-
 def init_mechanical_arm():
     lebai_sdk.init()
     nest_asyncio.apply()
 
     try:
-        robot_ip = "192.168.101.147"
+        robot_ip = "192.168.1.2"
         print(f"尝试连接机器人 {robot_ip}...")
 
         lebai = lebai_sdk.connect(robot_ip, False)
@@ -265,7 +259,7 @@ def detect_dish_with_yolo(dish_name, timeout=5):
         # 映射菜品名到YOLO类别
         target_class = YOLO_CLASS_MAPPING.get(dish_name)
         if not target_class:
-            print(f"未找到{dish_name}对应的YOLO类别")
+            print(f'找不到{dish_name}')
             return False
 
         # 实际调用YOLOv11检测接口
@@ -275,7 +269,7 @@ def detect_dish_with_yolo(dish_name, timeout=5):
         start_time = time.time()
 
         # 尝试连接到YOLO检测服务
-        yolo_url = "http://localhost:5000/detect"
+        yolo_url = "http://192.168.1.102:5000/detect"
  
         while time.time() - start_time < timeout:
             try:
@@ -284,8 +278,8 @@ def detect_dish_with_yolo(dish_name, timeout=5):
 
                 if response.status_code == 200:
                     result = response.json()
-                    if result.get('detected', False):
-                        print(f"检测到{dish_name}")
+                    if result.get('detected',False):
+                        print(f'识别到{dish_name}')
                         return True
 
                 # 等待0.5秒后重试
@@ -363,9 +357,10 @@ def move_to_detection_area():
     global global_lebai
     try:
         # 菜品识别区域的目标位姿关节数据参数
-        detection_pose = [-2.825688485084594, -1.8804686983493104, -1.208872734653128, -4.217488428693085, -1.4187404811957325, 0.4315279703920794]
-        a = 5  # 关节加速度 (rad/s2)
-        v = 1  # 关节速度 (rad/s)
+        detection_pose = [-2.7816824112321243, -1.653727163139964, -1.4043594113093043, -4.244045471083355, -1.390457710419091, 0.3760170406304678]
+
+        a = 3  # 关节加速度 (rad/s2)
+        v = 0.5  # 关节速度 (rad/s)
         t = 0  # 运动时间 (s)
         r = 0.5  # 交融半径 (m)
 
@@ -391,8 +386,8 @@ def execute_meat_dish_placement():
         # 肉类菜品放置位置的目标位姿关节数据参数
         meat_placement_pose = [-1.082798688648777, -2.1748012620248676, -1.989956577084648, -2.281125305385191,
                                -0.9109928404055851, 0.13997574689456477]
-        a = 5  # 关节加速度 (rad/s2) - int类型
-        v = 1  # 关节速度 (rad/s) - int类型（修复：从1.5改为1）
+        a = 3  # 关节加速度 (rad/s2)
+        v = 0.5  # 关节速度 (rad/s)
         t = 0  # 运动时间 (s)
         r = 0.5  # 交融半径 (m)
 
@@ -454,10 +449,9 @@ def execute_vegetable_dish_placement():
     global global_lebai
     try:
         # 素菜菜品放置位置
-        vegetable_placement_pose = [-1.5985997285753235, -2.136259994729241, -2.0316616797552887, -2.293684773086005,
-                                    -1.3938132933925906, 0.01265534150005654]  # 需要填写实际坐标
-        a = 5  # 关节加速度 (rad/s2) - int类型
-        v = 1  # 关节速度 (rad/s) - int类型（修复：从1.5改为1）
+        vegetable_placement_pose = [-1.4868108786581578, -2.1268643624034413, -1.9606191945163352, -2.447658094670026, -1.2613157028389683, 0.0466905402312692]
+        a = 3  # 关节加速度 (rad/s2)
+        v = 0.5  # 关节速度 (rad/s)
         t = 0  # 运动时间 (s)
         r = 0.5  # 交融半径 (m)
 
@@ -506,8 +500,8 @@ def execute_vegetable_dish_placement():
             raise Exception(f"移动到更安全位置失败，运动状态: {move_state}")
 
         # 移动至米饭识别区域
-        rice_detection_pose = [-0.2552160535844735, -2.03405852473636, -1.4311082012980605, -4.424767582656132,
-                               -1.5800960853214532, 0.038637141094869584]  # 需要填写实际坐标
+        rice_detection_pose = [-0.24236896448593132, -2.0918704256798004, -0.7890413677686767, -4.941047991578893, -1.6037769137344378, -0.09328520666329557]
+
         motion_id = global_lebai.movej(rice_detection_pose, a, v, t, r)
         global_lebai.wait_move(motion_id)
 
@@ -530,8 +524,8 @@ def execute_staple_dish_placement():
         # 主食菜品放置位置的笛卡尔坐标参数（使用实际坐标而非零坐标）
         staple_placement_pose = [-1.0432986833607216, -1.9819031779482483, -2.423881392457799, -2.12849421699057,
                                  -0.8266238970718749, 0.1564660403643354]  # 需要填写实际坐标
-        a = 5  # 关节加速度 (rad/s2) - int类型
-        v = 1  # 关节速度 (rad/s) - int类型（修复：从1.5改为1）
+        a = 3  # 关节加速度 (rad/s2)
+        v = 0.5  # 关节速度 (rad/s)
         t = 0  # 运动时间 (s)
         r = 0.5  # 交融半径 (m)
 
