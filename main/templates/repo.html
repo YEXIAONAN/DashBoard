@@ -1181,7 +1181,7 @@
                             </div>
                             <h2>本月健康报告</h2>
                         </div>
-                        <div class="time-range">7月20日 - 7月26日</div>
+
                     </div>
                     <div class="report-section">
                         <div class="section-title">
@@ -1333,7 +1333,7 @@
                             </div>
                             <h2>本周健康报告</h2>
                         </div>
-                        <div class="time-range" id="monthlyTimeRange">11月1日 - 11月30日</div>
+
                     </div>
                     <div class="comparison-grid">
 
@@ -1595,15 +1595,32 @@
         }
     }
     function updateWeeklySummaryUI(data) {
-        document.getElementById('monthlyAvgCalorieStatValue').textContent = `${data.daily_avg_calories.toLocaleString()} kcal`;
-        document.getElementById('monthlyTotalCalorieDeficitValue').textContent = `${(data.accumulated_deficit_kg || 0).toLocaleString()} kg`;
-        document.getElementById('monthlyGoalAchievementStatValue').textContent = `${Math.min(data.goal_achievement_percentage, 100)}%`;
-        document.getElementById('daysGoalAchievedValue').textContent = `${Math.min(Math.floor(data.goal_achievement_percentage / 20), 7)}天`;
-        document.getElementById('monthlyFiberIntake').textContent = `${(data.fiber_intake_this_month || 7).toFixed(1)}g`;
-        document.getElementById('monthlyFatIntake').textContent = `${(data.fat_intake_this_month || 37).toFixed(1)}g`;
-        document.getElementById('monthlyCalciumGoalAchievement').textContent = `${(data.calcium_goal_achievement_this_month || 7.38)}%`;
-        document.getElementById('monthlyVitaminCIntake').textContent = `${(data.vitamin_c_intake_this_month || 9.4).toFixed(1)}mg`;
-        document.getElementById('monthlyTimeRange').textContent = `${data.week_start_date} - ${data.week_end_date}`;
+        const monthlyAvgCalorieStatValue = document.getElementById('monthlyAvgCalorieStatValue');
+        if (monthlyAvgCalorieStatValue) monthlyAvgCalorieStatValue.textContent = `${data.daily_avg_calories.toLocaleString()} kcal`;
+        
+        const monthlyTotalCalorieDeficitValue = document.getElementById('monthlyTotalCalorieDeficitValue');
+        if (monthlyTotalCalorieDeficitValue) monthlyTotalCalorieDeficitValue.textContent = `${(data.accumulated_deficit_kg || 0).toLocaleString()} kg`;
+        
+        const monthlyGoalAchievementStatValue = document.getElementById('monthlyGoalAchievementStatValue');
+        if (monthlyGoalAchievementStatValue) monthlyGoalAchievementStatValue.textContent = `${Math.min(data.goal_achievement_percentage, 100)}%`;
+        
+        const daysGoalAchievedValue = document.getElementById('daysGoalAchievedValue');
+        if (daysGoalAchievedValue) daysGoalAchievedValue.textContent = `${Math.min(Math.floor(data.goal_achievement_percentage / 20), 7)}天`;
+        
+        const monthlyFiberIntake = document.getElementById('monthlyFiberIntake');
+        if (monthlyFiberIntake) monthlyFiberIntake.textContent = `${(data.fiber_intake_this_month || 7).toFixed(1)}g`;
+        
+        const monthlyFatIntake = document.getElementById('monthlyFatIntake');
+        if (monthlyFatIntake) monthlyFatIntake.textContent = `${(data.fat_intake_this_month || 37).toFixed(1)}g`;
+        
+        const monthlyCalciumGoalAchievement = document.getElementById('monthlyCalciumGoalAchievement');
+        if (monthlyCalciumGoalAchievement) monthlyCalciumGoalAchievement.textContent = `${(data.calcium_goal_achievement_this_month || 7.38)}%`;
+        
+        const monthlyVitaminCIntake = document.getElementById('monthlyVitaminCIntake');
+        if (monthlyVitaminCIntake) monthlyVitaminCIntake.textContent = `${(data.vitamin_c_intake_this_month || 9.4).toFixed(1)}mg`;
+        
+        const monthlyTimeRange = document.getElementById('monthlyTimeRange');
+        if (monthlyTimeRange) monthlyTimeRange.textContent = `${data.week_start_date} - ${data.week_end_date}`;
     }
     document.querySelectorAll('.tab').forEach(tab => {
         tab.addEventListener('click', function () {
