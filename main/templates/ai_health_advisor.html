@@ -676,6 +676,72 @@
             border-left: 3px solid rgba(231, 76, 60, 0.3);
         }
 
+        /* 麦克风教程样式 */
+        .mic-tutorial {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(52, 152, 219, 0.05);
+            border-radius: 12px;
+            border: 1px solid rgba(52, 152, 219, 0.2);
+        }
+
+        .mic-tutorial h4 {
+            color: var(--primary-deep);
+            font-size: 1rem;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .mic-tutorial .problem-item {
+            margin-bottom: 15px;
+            padding: 10px;
+            background: var(--surface);
+            border-radius: 8px;
+            border-left: 3px solid var(--warning);
+        }
+
+        .mic-tutorial .problem-title {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 6px;
+            font-size: 0.9rem;
+        }
+
+        .mic-tutorial .solution {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            line-height: 1.5;
+        }
+
+        .mic-tutorial .solution ol {
+            margin-left: 20px;
+            margin-top: 5px;
+        }
+
+        .mic-tutorial .solution li {
+            margin-bottom: 4px;
+        }
+
+        .mic-status-btn {
+            display: inline-block;
+            padding: 6px 12px;
+            background: var(--primary-light);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            margin-top: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .mic-status-btn:hover {
+            background: var(--primary-deep);
+            transform: translateY(-1px);
+        }
+
         /* ===== 底部导航栏样式 ===== */
         .bottom-nav {
             position: fixed;
@@ -1477,6 +1543,82 @@
                 </div>
                 <div class="setting-description">
                     此操作将清空所有聊天记录。操作不可撤销！！
+                </div>
+            </div>
+
+            <div class="setting-group">
+                <h3><i class="fas fa-microphone"></i> 麦克风使用教程</h3>
+                <div class="mic-tutorial">
+                    <h4><i class="fas fa-question-circle"></i> 常见问题与解决方案</h4>
+                    
+                    <div class="problem-item">
+                        <div class="problem-title">问题1：点击录音按钮没有反应</div>
+                        <div class="solution">
+                            <ol>
+                                <li>检查浏览器是否支持WebRTC API（现代浏览器都支持）</li>
+                                <li>确保网站是通过HTTPS协议访问的（HTTP环境下麦克风功能受限）</li>
+                                <li>检查浏览器地址栏是否有麦克风权限请求图标</li>
+                                <li>尝试刷新页面后重新授权</li>
+                            </ol>
+                        </div>
+                    </div>
+                    
+                    <div class="problem-item">
+                        <div class="problem-title">问题2：浏览器拒绝麦克风权限</div>
+                        <div class="solution">
+                            <ol>
+                                <li>点击浏览器地址栏左侧的锁形图标或信息图标</li>
+                                <li>在网站设置中找到"麦克风"选项</li>
+                                <li>将权限设置为"允许"</li>
+                                <li>刷新页面重新尝试</li>
+                                <li>如果被永久阻止，需要在浏览器设置中清除网站数据</li>
+                            </ol>
+                        </div>
+                    </div>
+                    
+                    <div class="problem-item">
+                        <div class="problem-title">问题3：麦克风没有声音或声音很小</div>
+                        <div class="solution">
+                            <ol>
+                                <li>检查系统音量设置，确保麦克风音量不是静音</li>
+                                <li>检查物理麦克风是否连接正常</li>
+                                <li>在系统声音设置中测试麦克风</li>
+                                <li>尝试使用其他麦克风设备</li>
+                                <li>检查是否有其他应用正在占用麦克风</li>
+                            </ol>
+                        </div>
+                    </div>
+                    
+                    <div class="problem-item">
+                        <div class="problem-title">问题4：录音时出现杂音或回声</div>
+                        <div class="solution">
+                            <ol>
+                                <li>确保环境安静，远离噪音源</li>
+                                <li>调整麦克风位置，避免对着扬声器</li>
+                                <li>使用耳机避免回声</li>
+                                <li>在系统设置中启用麦克风降噪功能</li>
+                                <li>尝试降低麦克风增益</li>
+                            </ol>
+                        </div>
+                    </div>
+                    
+                    <div class="problem-item">
+                        <div class="problem-title">问题5：移动端麦克风问题</div>
+                        <div class="solution">
+                            <ol>
+                                <li>确保iOS设备上使用Safari浏览器（其他浏览器可能不支持）</li>
+                                <li>Android设备建议使用Chrome浏览器</li>
+                                <li>检查手机是否静音模式</li>
+                                <li>确保手机麦克风没有被物理遮挡</li>
+                                <li>关闭其他可能使用麦克风的应用</li>
+                            </ol>
+                        </div>
+                    </div>
+                    
+                    <button class="mic-status-btn" onclick="testMicrophone()">
+                        <i class="fas fa-microphone-alt"></i> 测试麦克风
+                    </button>
+                    <div id="micTestResult" style="margin-top: 10px; font-size: 0.85rem; color: var(--text-secondary);"></div>
                 </div>
             </div>
         </div>
@@ -2423,14 +2565,84 @@
 
         // 停止录音
         function stopRecording() {
-            if (!isRecording) return;
+            if (!isRecording) {
+                // 如果状态显示未在录音，但UI显示正在录音，强制重置状态
+                if (recordButton.classList.contains('recording')) {
+                    log('检测到状态不一致，强制重置录音状态', 'warning');
+                    forceResetRecordingState();
+                }
+                return;
+            }
 
             try {
                 // 使用直接PCM录音停止
-                stopDirectRecording();
+                const result = stopDirectRecording();
+                
+                // 确保状态被正确重置
+                if (result !== true) {
+                    log('停止录音返回失败，强制重置状态', 'warning');
+                    forceResetRecordingState();
+                }
+                
+                // 额外确保状态重置
+                setTimeout(() => {
+                    if (isRecording) {
+                        log('检测到录音状态未正确重置，强制重置', 'warning');
+                        forceResetRecordingState();
+                    }
+                }, 100);
             } catch (error) {
                 log(`停止录音错误: ${error.message}`, 'error');
+                // 出现错误时强制重置状态
+                forceResetRecordingState();
             }
+        }
+        
+        // 强制重置录音状态
+        function forceResetRecordingState() {
+            isRecording = false;
+            
+            // 清除录音计时器
+            if (window.recordingTimer) {
+                clearInterval(window.recordingTimer);
+                window.recordingTimer = null;
+            }
+            
+            // 停止音频处理器
+            if (audioProcessor) {
+                try {
+                    if (audioProcessorType === 'worklet' && audioProcessor.port) {
+                        audioProcessor.port.postMessage({ command: 'stop' });
+                    }
+                    audioProcessor.disconnect();
+                } catch (e) {
+                    log('停止音频处理器时出错: ' + e.message, 'error');
+                }
+                audioProcessor = null;
+            }
+            
+            // 断开音频源
+            if (audioSource) {
+                try {
+                    audioSource.disconnect();
+                } catch (e) {
+                    log('断开音频源时出错: ' + e.message, 'error');
+                }
+                audioSource = null;
+            }
+            
+            // 停止可视化
+            if (visualizationRequest) {
+                cancelAnimationFrame(visualizationRequest);
+                visualizationRequest = null;
+            }
+            
+            // 重置UI
+            recordButton.innerHTML = '<span style="font-size: 0.75rem;">开始</span>';
+            recordButton.classList.remove('recording');
+            recordButton.disabled = false;
+            
+            log('录音状态已强制重置', 'info');
         }
 
         // 连接WebSocket服务器
@@ -2897,11 +3109,37 @@
                 }
             });
 
+            // 添加防抖处理
+            let recordClickDebounce = false;
+            
             recordButton.addEventListener('click', () => {
-                if (isRecording) {
-                    stopRecording();
-                } else {
-                    startRecording();
+                // 防抖处理，防止快速多次点击
+                if (recordClickDebounce) {
+                    log('点击过于频繁，请稍候', 'warning');
+                    return;
+                }
+                
+                recordClickDebounce = true;
+                
+                try {
+                    if (isRecording) {
+                        log('停止录音...', 'info');
+                        stopRecording();
+                    } else {
+                        log('开始录音...', 'info');
+                        startRecording();
+                    }
+                } catch (error) {
+                    log(`录音按钮点击错误: ${error.message}`, 'error');
+                    // 出现错误时强制重置状态
+                    if (typeof forceResetRecordingState === 'function') {
+                        forceResetRecordingState();
+                    }
+                } finally {
+                    // 300ms后重置防抖状态
+                    setTimeout(() => {
+                        recordClickDebounce = false;
+                    }, 300);
                 }
             });
 
@@ -3734,7 +3972,118 @@
             }, { passive: true });
         }
 
-
+        // 测试麦克风功能
+        async function testMicrophone() {
+            const resultDiv = document.getElementById('micTestResult');
+            resultDiv.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 正在测试麦克风...';
+            
+            try {
+                // 检查浏览器支持
+                if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                    throw new Error('您的浏览器不支持麦克风功能');
+                }
+                
+                // 请求麦克风权限
+                const stream = await navigator.mediaDevices.getUserMedia({ 
+                    audio: {
+                        echoCancellation: true,
+                        noiseSuppression: true,
+                        autoGainControl: true
+                    } 
+                });
+                
+                // 获取音频轨道
+                const audioTracks = stream.getAudioTracks();
+                if (audioTracks.length > 0) {
+                    const track = audioTracks[0];
+                    const settings = track.getSettings();
+                    
+                    // 显示成功信息
+                    resultDiv.innerHTML = `
+                        <div style="color: #4CAF50;">
+                            <i class="fas fa-check-circle"></i> 麦克风测试成功！<br>
+                            <small>
+                                设备: ${track.label || '未知设备'}<br>
+                                采样率: ${settings.sampleRate || '未知'} Hz<br>
+                                通道: ${settings.channelCount || '未知'}<br>
+                                回声消除: ${settings.echoCancellation ? '已启用' : '未启用'}<br>
+                                降噪: ${settings.noiseSuppression ? '已启用' : '未启用'}
+                            </small>
+                        </div>
+                    `;
+                    
+                    // 播放测试音频（可选）
+                    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                    const source = audioContext.createMediaStreamSource(stream);
+                    const analyser = audioContext.createAnalyser();
+                    
+                    source.connect(analyser);
+                    
+                    // 简单的音量检测
+                    const dataArray = new Uint8Array(analyser.frequencyBinCount);
+                    
+                    function checkVolume() {
+                        analyser.getByteFrequencyData(dataArray);
+                        const average = dataArray.reduce((a, b) => a + b) / dataArray.length;
+                        
+                        if (average > 10) {
+                            resultDiv.innerHTML += '<br><small style="color: #4CAF50;"><i class="fas fa-volume-up"></i> 检测到声音输入</small>';
+                            stream.getTracks().forEach(track => track.stop());
+                            return;
+                        }
+                        
+                        if (average < 5) {
+                            resultDiv.innerHTML += '<br><small style="color: #FF9800;"><i class="fas fa-volume-mute"></i> 请对着麦克风说话</small>';
+                        }
+                        
+                        setTimeout(checkVolume, 100);
+                    }
+                    
+                    setTimeout(checkVolume, 1000);
+                    
+                    // 10秒后自动停止
+                    setTimeout(() => {
+                        stream.getTracks().forEach(track => track.stop());
+                        if (resultDiv.innerHTML.indexOf('检测到声音输入') === -1) {
+                            resultDiv.innerHTML += '<br><small style="color: #FF5722;"><i class="fas fa-exclamation-triangle"></i> 未检测到声音输入，请检查麦克风</small>';
+                        }
+                    }, 10000);
+                    
+                } else {
+                    throw new Error('未找到音频设备');
+                }
+                
+            } catch (error) {
+                let errorMessage = '';
+                
+                switch (error.name) {
+                    case 'NotAllowedError':
+                    case 'PermissionDeniedError':
+                        errorMessage = '麦克风权限被拒绝。请在浏览器设置中允许麦克风权限。';
+                        break;
+                    case 'NotFoundError':
+                    case 'DevicesNotFoundError':
+                        errorMessage = '未找到麦克风设备。请确保麦克风已连接。';
+                        break;
+                    case 'NotReadableError':
+                    case 'TrackStartError':
+                        errorMessage = '麦克风被其他应用占用。请关闭其他使用麦克风的应用。';
+                        break;
+                    case 'OverconstrainedError':
+                    case 'ConstraintNotSatisfiedError':
+                        errorMessage = '麦克风不满足要求的约束条件。';
+                        break;
+                    default:
+                        errorMessage = `麦克风测试失败: ${error.message}`;
+                }
+                
+                resultDiv.innerHTML = `
+                    <div style="color: #F44336;">
+                        <i class="fas fa-times-circle"></i> ${errorMessage}
+                    </div>
+                `;
+            }
+        }
 
     </script>
 
