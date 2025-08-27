@@ -818,6 +818,7 @@
                         <div class="dish-nutrition">
                             <span>热量: <span style="color: #ffffff; font-weight: 600;">&nbsp;{{ recommended_dish.total_calorie }} kcal</span></span>
                             <span>蛋白: <span style="color: #ffffff; font-weight: 600;">&nbsp;{{ recommended_dish.total_protein }}g</span></span>
+                            <span>碳水: <span style="color: #ffffff; font-weight: 600;">&nbsp;{{ recommended_dish.total_carbohydrate }}g</span></span>
                         </div>
                     </div>
                     <div class="dish-price">¥{{ recommended_dish.price }}</div>
@@ -844,7 +845,8 @@
     <!-- 修改这里 -->
 <div class="nutrition">
     <span class="nutrition-value" data-type="calorie">卡路里：{{ dish.total_calorie }} kcal</span></br>
-    <span class="nutrition-value" data-type="protein">蛋白质：{{ dish.total_protein }}g</span>
+    <span class="nutrition-value" data-type="protein">蛋白质：{{ dish.total_protein }}g</span></br>
+    <span class="nutrition-value" data-type="carbohydrate">碳水：{{ dish.total_carbohydrate }}g</span>
 </div>
 
 
