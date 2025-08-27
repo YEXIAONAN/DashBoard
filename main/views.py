@@ -1378,6 +1378,15 @@ def personalized(user_id):
                 filtered_menu = filtered_menu[filtered_menu['total_carbohydrate'] < 50]  # 高血糖要低碳水
         return filtered_menu
 
+    # 过滤米饭类菜品
+    def filter_rice_dishes(filtered_materials):
+        # 定义米饭类菜品关键词
+        rice_keywords = ['米饭', '炒饭', '黄焖鸡米饭', '蛋炒饭', '虾仁炒饭']
+        # 过滤掉包含米饭关键词的菜品
+        filtered_menu = filtered_materials[~filtered_materials['name'].apply(
+            lambda x: any(keyword in str(x) for keyword in rice_keywords))]
+        return filtered_menu
+
 
     # 计算适配得分
     def calc_fit_score(customer, food):
@@ -1410,6 +1419,7 @@ def personalized(user_id):
     def generate_recommendations(customer, materials_df):
         filter_materials = filter_allergic_food(customer, materials_df);
         filter_materials = filter_by_health_condition(customer, filter_materials);
+        filter_materials = filter_rice_dishes(filter_materials);
         # 根据适配得分排序
         filter_materials['适配得分'] = filter_materials.apply(lambda x: calc_fit_score(customer, x), axis=1)
         recommended_dishes = filter_materials.nlargest(5, '适配得分')
