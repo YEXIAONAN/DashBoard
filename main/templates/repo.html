@@ -507,6 +507,21 @@
             height: 220px;
             margin: 15px 0;
         }
+        
+        /* 移动端图表容器响应式调整 */
+        @media (max-width: 768px) {
+            .chart-container {
+                height: 180px;
+                margin: 10px 0;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .chart-container {
+                height: 160px;
+                margin: 8px 0;
+            }
+        }
 
         .stats-grid {
             display: grid;
@@ -1787,20 +1802,59 @@
                 console.log('上周数据:', data.last_week_data);
                 console.log('日期标签:', data.x_data);
                 
+                // 响应式配置
+                const isMobile = window.innerWidth <= 768;
+                const isSmallMobile = window.innerWidth <= 480;
+                
                 const option = {
-                    tooltip: { trigger: 'axis' },
+                    tooltip: { 
+                        trigger: 'axis',
+                        confine: true,
+                        textStyle: {
+                            fontSize: isSmallMobile ? 10 : 12
+                        }
+                    },
                     legend: {
                         data: ['本周', '上周'],
-                        top: 'top',
-                        textStyle: { color: '#333' },
-                        itemWidth: 25,
-                        itemHeight: 14,
-                        itemGap: 25,
+                        top: isSmallMobile ? '2%' : 'top',
+                        textStyle: { 
+                            color: '#333',
+                            fontSize: isSmallMobile ? 10 : 12
+                        },
+                        itemWidth: isSmallMobile ? 20 : 25,
+                        itemHeight: isSmallMobile ? 10 : 14,
+                        itemGap: isSmallMobile ? 15 : 25,
                         selectedMode: true,
                         inactiveColor: '#999'
                     },
-                    xAxis: { type: 'category', data: data.x_data },
-                    yAxis: { type: 'value', name: '热量 (kcal)' },
+                    grid: {
+                        left: isSmallMobile ? '10%' : isMobile ? '8%' : '6%',
+                        right: isSmallMobile ? '10%' : isMobile ? '8%' : '6%',
+                        bottom: isSmallMobile ? '20%' : '15%',
+                        top: isSmallMobile ? '25%' : '20%',
+                        containLabel: true
+                    },
+                    xAxis: { 
+                        type: 'category', 
+                        data: data.x_data,
+                        axisLabel: {
+                            color: '#333',
+                            fontSize: isSmallMobile ? 10 : 12,
+                            rotate: isSmallMobile ? 45 : 0,
+                            interval: isSmallMobile ? 0 : 'auto'
+                        }
+                    },
+                    yAxis: { 
+                        type: 'value', 
+                        name: '热量 (kcal)',
+                        nameTextStyle: {
+                            fontSize: isSmallMobile ? 10 : 12
+                        },
+                        axisLabel: {
+                            color: '#333',
+                            fontSize: isSmallMobile ? 10 : 12
+                        }
+                    },
                     series: [
                         {
                             name: '本周',
@@ -1930,10 +1984,18 @@
                         throw new Error('营养数据格式不正确');
                     }
                     
+                    // 响应式配置
+                    const isMobile = window.innerWidth <= 768;
+                    const isSmallMobile = window.innerWidth <= 480;
+                    
                     const option = {
                         tooltip: { 
                             trigger: 'axis', 
                             axisPointer: { type: 'shadow' },
+                            confine: true,
+                            textStyle: {
+                                fontSize: isSmallMobile ? 10 : 12
+                            },
                             formatter: function(params) {
                                 let result = params[0].name + '<br/>';
                                 params.forEach(param => {
@@ -1944,19 +2006,22 @@
                         },
                         legend: { 
                             data: ['本周', '上周'], 
-                            top: 'top', 
-                            textStyle: { color: '#333' },
-                            itemWidth: 25,
-                            itemHeight: 14,
-                            itemGap: 25,
+                            top: isSmallMobile ? '2%' : 'top', 
+                            textStyle: { 
+                                color: '#333',
+                                fontSize: isSmallMobile ? 10 : 12
+                            },
+                            itemWidth: isSmallMobile ? 20 : 25,
+                            itemHeight: isSmallMobile ? 10 : 14,
+                            itemGap: isSmallMobile ? 15 : 25,
                             selectedMode: true,
                             inactiveColor: '#999'
                         },
                         grid: { 
-                            left: '8%', 
-                            right: '4%', 
-                            bottom: '15%', 
-                            top: '15%',
+                            left: isSmallMobile ? '10%' : isMobile ? '8%' : '6%', 
+                            right: isSmallMobile ? '10%' : isMobile ? '8%' : '6%', 
+                            bottom: isSmallMobile ? '20%' : '15%', 
+                            top: isSmallMobile ? '25%' : '15%',
                             containLabel: true 
                         },
                         xAxis: {
@@ -1964,9 +2029,9 @@
                             data: data.labels,
                             axisLabel: { 
                                 color: '#333', 
-                                rotate: 45, 
+                                rotate: isSmallMobile ? 45 : 45, 
                                 interval: 0,
-                                fontSize: 12
+                                fontSize: isSmallMobile ? 10 : 12
                             },
                             axisLine: { lineStyle: { color: '#ddd' } },
                             axisTick: { lineStyle: { color: '#ddd' } }
@@ -1978,11 +2043,11 @@
                             axisLabel: { 
                                 formatter: '{value}g', 
                                 color: '#333',
-                                fontSize: 12
+                                fontSize: isSmallMobile ? 10 : 12
                             },
                             nameTextStyle: { 
                                 color: '#333',
-                                fontSize: 12
+                                fontSize: isSmallMobile ? 10 : 12
                             },
                             axisLine: { lineStyle: { color: '#ddd' } },
                             axisTick: { lineStyle: { color: '#ddd' } },
@@ -2048,24 +2113,60 @@
                 })
                 .then(data => {
                     console.log("获取到月报热量数据:", data);
+                    // 响应式配置
+                    const isMobile = window.innerWidth <= 768;
+                    const isSmallMobile = window.innerWidth <= 480;
+                    
                     const option = {
-                        tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+                        tooltip: { 
+                            trigger: 'axis', 
+                            axisPointer: { type: 'shadow' },
+                            confine: true,
+                            textStyle: {
+                                fontSize: isSmallMobile ? 10 : 12
+                            }
+                        },
                         legend: {
                             data: ['本月1', '上月1'],
-                            top: 'top',
-                            textStyle: { color: '#333' },
-                            itemWidth: 25,
-                            itemHeight: 14,
-                            itemGap: 25,
+                            top: isSmallMobile ? '2%' : 'top',
+                            textStyle: { 
+                                color: '#333',
+                                fontSize: isSmallMobile ? 10 : 12
+                            },
+                            itemWidth: isSmallMobile ? 20 : 25,
+                            itemHeight: isSmallMobile ? 10 : 14,
+                            itemGap: isSmallMobile ? 15 : 25,
                             selectedMode: true,
                             inactiveColor: '#999'
                         },
-                        grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
-                        xAxis: { type: 'category', data: data.labels, axisLabel: { color: '#333' } },
+                        grid: { 
+                            left: isSmallMobile ? '10%' : isMobile ? '8%' : '6%', 
+                            right: isSmallMobile ? '10%' : isMobile ? '8%' : '6%', 
+                            bottom: isSmallMobile ? '15%' : '8%', 
+                            top: isSmallMobile ? '25%' : '12%',
+                            containLabel: true 
+                        },
+                        xAxis: { 
+                            type: 'category', 
+                            data: data.labels, 
+                            axisLabel: { 
+                                color: '#333',
+                                fontSize: isSmallMobile ? 10 : 12,
+                                rotate: isSmallMobile ? 45 : 0,
+                                interval: isSmallMobile ? 0 : 'auto'
+                            } 
+                        },
                         yAxis: {
                             type: 'value', name: '热量 (kcal)', min: 0,
-                            axisLabel: { formatter: '{value} kcal', color: '#333' },
-                            nameTextStyle: { color: '#333' }
+                            axisLabel: { 
+                                formatter: '{value} kcal', 
+                                color: '#333',
+                                fontSize: isSmallMobile ? 10 : 12
+                            },
+                            nameTextStyle: { 
+                                color: '#333',
+                                fontSize: isSmallMobile ? 10 : 12
+                            }
                         },
                         series: [
                             {
@@ -2671,6 +2772,34 @@
                 window.location.href = targetUrl;
             }
         });
+    });
+    
+    // 全局窗口大小改变监听器
+    window.addEventListener('resize', function() {
+        // 防抖处理，避免频繁重绘
+        clearTimeout(window.resizeTimer);
+        window.resizeTimer = setTimeout(function() {
+            // 重新调整所有图表大小
+            if (window.weeklyCalorieChart) {
+                window.weeklyCalorieChart.resize();
+            }
+            if (window.weeklyNutrientChart) {
+                window.weeklyNutrientChart.resize();
+            }
+            if (window.weeklyNutrientRadarChart) {
+                window.weeklyNutrientRadarChart.resize();
+            }
+            if (window.monthlyCalorieChart) {
+                window.monthlyCalorieChart.resize();
+            }
+            
+            // 重新获取数据以应用响应式配置
+            if (typeof updateWeeklySummary === 'function') {
+                updateWeeklySummary();
+            }
+            
+            console.log('窗口大小改变，图表已重新调整');
+        }, 300); // 300ms防抖延迟
     });
 </script>
 
