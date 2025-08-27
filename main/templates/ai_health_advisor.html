@@ -69,6 +69,7 @@
         .header-icon:hover {
             background: rgba(255, 255, 255, 0.25);
             transform: scale(1.05);
+            transition: all 0.3s ease;
         }
 
         /* ===== 深蓝专业主题配色方案 ===== */
@@ -150,6 +151,7 @@
             flex-direction: column;
             padding-top: 60px; /* 添加顶部内边距，避免被顶部栏挡住 */
             padding-bottom: 70px; /* 添加底部内边距，避免被底部导航栏挡住 */
+            animation: fadeIn 0.8s ease forwards;
         }
 
         /* ===== AI对话区域样式 ===== */
@@ -165,6 +167,7 @@
             background-image: linear-gradient(to bottom right, var(--surface), var(--surface-soft));
             overflow: hidden;
             min-height: 0; /* 确保flex子元素可以收缩 */
+            animation: fadeIn 0.6s ease forwards;
         }
 
         .chat-header {
@@ -639,6 +642,7 @@
             padding-bottom: env(safe-area-inset-bottom);
             padding-left: env(safe-area-inset-left);
             padding-right: env(safe-area-inset-right);
+            animation: slideInUp 0.6s ease forwards;
         }
 
         .nav-item {
@@ -654,13 +658,15 @@
         }
 
         .nav-item:hover {
-            background: #eef5fc;
+            background: var(--surface-hover);
             transform: translateY(-2px);
+            transition: all 0.3s ease;
         }
 
         .nav-item.active {
             background: linear-gradient(135deg, rgba(26, 95, 158, 0.1), rgba(26, 95, 158, 0.05));
             border: 1px solid rgba(26, 95, 158, 0.2);
+            transition: all 0.3s ease;
         }
 
         .nav-icon {
@@ -670,7 +676,7 @@
             align-items: center;
             justify-content: center;
             font-size: 1.2rem;
-            color: #78909c;
+            color: var(--text-muted);
             margin-bottom: 4px;
             transition: all 0.3s ease;
         }
@@ -678,11 +684,12 @@
         .nav-item.active .nav-icon {
             color: var(--primary-deep);
             transform: scale(1.1);
+            transition: all 0.3s ease;
         }
 
         .nav-label {
             font-size: 0.75rem;
-            color: #78909c;
+            color: var(--text-muted);
             font-weight: 500;
             transition: all 0.3s ease;
         }
@@ -690,6 +697,7 @@
         .nav-item.active .nav-label {
             color: var(--primary-deep);
             font-weight: 600;
+            transition: all 0.3s ease;
         }
 
         /* 为页面内容添加底部间距 */
@@ -714,6 +722,17 @@
             }
         }
 
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
         @keyframes pulse {
             0%, 100% {
                 opacity: 1;
@@ -721,6 +740,14 @@
             50% {
                 opacity: 0.5;
             }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.6s ease forwards;
+        }
+
+        .slide-in-up {
+            animation: slideInUp 0.6s ease forwards;
         }
 
         /* ===== 响应式设计 ===== */
