@@ -1448,7 +1448,7 @@
             if (this.dataset.report === 'monthly') {
                 if (!monthlyChartInitialized) {
                     // 如果尚未初始化，则初始化图表
-                    initMonthlyCalorieChart();
+                    // initMonthlyCalorieChart();
                     fetchWeeklySummaryData(); // 获取并更新周度统计数据
                     monthlyChartInitialized = true;
                 } else {
@@ -1473,13 +1473,13 @@
         let monthlyCalorieChart = echarts.init(monthlyCalorieChartDom);
         try {
             // 检查缓存
-            const cacheKey = 'monthly_calorie_' + new Date().toISOString().slice(0, 10);
+            const cacheKey = 'monthly_calorie_' + new Date().toISOString().slice(0, 7);
             const cached = localStorage.getItem(cacheKey);
             let data;
             if (cached) {
                 data = JSON.parse(cached);
             } else {
-                const response = await fetch('/get_weekly_nutrient_radar_data/');
+                const response = await fetch('/monthly-calorie-data/');
                 data = await response.json();
                 localStorage.setItem(cacheKey, JSON.stringify(data));
             }
@@ -1487,13 +1487,13 @@
                 tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
                 legend: { data: ['本月', '上月'], top: 'top', textStyle: { color: '#333' } },
                 grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
-                xAxis: { type: 'category', data: data.labels, axisLabel: { color: '#333' } },
+                xAxis: { type: 'category', data: data.labels, axisLabel: { color: '#333', interval: 0 }},
                 yAxis: {
                     type: 'value',
                     name: '热量 (kcal)',
                     min: 0,
                     axisLabel: { formatter: '{value} kcal', color: '#333' },
-                    nameTextStyle: { color: '#333' }
+                    nameTextStyle: { color: '#333' },
                 },
                 series: [
                     {
@@ -1950,7 +1950,7 @@
             }
             monthlyCalorieChart = echarts.init(monthlyCalorieChartDom);
             console.log("月报热量图表初始化成功", monthlyCalorieChart);
-            fetch('/get_weekly_nutrient_radar_data/')
+            fetch('/monthly-calorie-data/')
                 .then(response => {
                     if (!response.ok) { return response.text().then(text => { throw new Error(text) }); }
                     return response.json();
@@ -1959,9 +1959,9 @@
                     console.log("获取到月报热量数据:", data);
                     const option = {
                         tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
-                        legend: { 
-                            data: ['本月', '上月'], 
-                            top: 'top', 
+                        legend: {
+                            data: ['本月1', '上月1'],
+                            top: 'top',
                             textStyle: { color: '#333' },
                             itemWidth: 25,
                             itemHeight: 14,
@@ -1978,12 +1978,12 @@
                         },
                         series: [
                             {
-                                name: '本月', type: 'line', data: data.this_month_data, smooth: true,
+                                name: '本月1', type: 'line', data: data.this_month_data, smooth: true,
                                 lineStyle: { width: 3, color: '#1a5f9e' },
                                 areaStyle: { opacity: 0.1, color: '#1a5f9e' }, emphasis: { focus: 'series' }
                             },
                             {
-                                name: '上月', type: 'line', data: data.last_month_data, smooth: true,
+                                name: '上月1', type: 'line', data: data.last_month_data, smooth: true,
                                 lineStyle: { width: 2, type: 'dashed', color: '#ff6b6b' },
                                 areaStyle: { opacity: 0.1, color: '#ff6b6b' }, emphasis: { focus: 'series' }
                             }
