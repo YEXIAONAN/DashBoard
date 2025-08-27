@@ -1192,15 +1192,15 @@
                         </div>
                         <div class="stats-grid">
                             <div class="stat-card">
-                                <div class="value">1,870 kcal</div>
+                                <div class="value" id="dailyAvgStatCardValue">1,870 kcal</div>
                                 <div class="label">日均摄入热量</div>
                             </div>
                             <div class="stat-card">
-                                <div class="value">78%</div>
+                                <div class="value" id="goalAchievementStatCardValue">78%</div>
                                 <div class="label">热量目标达成</div>
                             </div>
                             <div class="stat-card">
-                                <div class="value" id="accumulatedCalorieDeficitKg">2.1 kg</div> <!-- 添加 id -->
+                                <div class="value" id="accumulatedCalorieDeficitKg">2.1 kg</div>
                                 <div class="label">热量缺口累积</div>
                             </div>
                         </div>
@@ -1426,11 +1426,11 @@
                                 </p>
                                 <div class="stats-grid" style="margin-top: 15px;">
                                     <div class="stat-card">
-                                        <div class="value">82分 <span class="comparison positive">+6分</span></div>
+                                        <div class="value" id="healthIndexFeedbackValue">82分 <span class="comparison positive">+6分</span></div>
                                         <div class="label">健康指数评分</div>
                                     </div>
                                     <div class="stat-card">
-                                        <div class="value">77% <span class="comparison positive">+12%</span></div>
+                                        <div class="value" id="dietDiversityValue">77% <span class="comparison positive">+12%</span></div>
                                         <div class="label">饮食多样性</div>
                                     </div>
                                 </div>
@@ -2458,8 +2458,8 @@
                     }
                 }
                 // 更新下方 stats-grid 的数据
-                const dailyAvgStatCardValue = document.querySelector('.report-section .stats-grid .stat-card:nth-child(1) .value');
-                const goalAchievementStatCardValue = document.querySelector('.report-section .stats-grid .stat-card:nth-child(2) .value');
+                const dailyAvgStatCardValue = document.getElementById('dailyAvgStatCardValue');
+                const goalAchievementStatCardValue = document.getElementById('goalAchievementStatCardValue');
                 if (dailyAvgStatCardValue) { dailyAvgStatCardValue.textContent = `${data.daily_avg_calories} kcal`; }
                 if (goalAchievementStatCardValue) { goalAchievementStatCardValue.textContent = `${data.goal_achievement_percentage}%`; }
             } catch (error) {
