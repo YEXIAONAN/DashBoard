@@ -349,6 +349,24 @@
             }
         }
 
+        /* ===== 输入提示区域样式 ===== */
+        .input-hint-area {
+            padding: 10px 20px 0px 20px;
+            text-align: center;
+        }
+
+        .input-hint {
+            display: inline-block;
+            padding: 6px 16px;
+            background: var(--surface-soft);
+            color: var(--text-muted);
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+            box-shadow: var(--shadow-soft);
+            transition: all 0.3s ease;
+        }
+
         /* ===== 输入区域样式 ===== */
         .input-area {
             padding: 20px;
@@ -1352,6 +1370,11 @@
                 </div>
             </div>
 
+            <!-- 输入提示区域 -->
+            <div class="input-hint-area" id="inputHintArea">
+                <div class="input-hint" id="inputHint">点击文本框输入</div>
+            </div>
+
             <!-- 输入区域 -->
             <div class="input-area">
                 <div class="input-tabs">
@@ -1365,7 +1388,7 @@
 
                 <div class="input-content active" id="textInputContent">
                     <div class="text-input-area">
-                        <textarea class="text-input" id="messageInput" placeholder="输入您的问题..." disabled rows="1"></textarea>
+                        <textarea class="text-input" id="messageInput" placeholder="开始质询 AI 健康顾问..." disabled rows="1"></textarea>
                         <button class="send-button" id="sendTextButton" disabled>
                             <i class="fas fa-paper-plane"></i>
                         </button>
@@ -2700,13 +2723,13 @@
                     const tabName = tab.getAttribute('data-tab');
                     document.getElementById(`${tabName}InputContent`).classList.add('active');
                     
-                    // 更新欢迎消息的提示文本
-                    const welcomeMessage = document.querySelector('.welcome-message p');
-                    if (welcomeMessage) {
+                    // 更新输入提示文本
+                    const inputHint = document.getElementById('inputHint');
+                    if (inputHint) {
                         if (tabName === 'text') {
-                            welcomeMessage.textContent = '点击文本框输入';
+                            inputHint.textContent = '点击文本框输入';
                         } else if (tabName === 'voice') {
-                            welcomeMessage.textContent = '点击麦克风开始对话';
+                            inputHint.textContent = '点击麦克风开始对话';
                         }
                     }
                     
