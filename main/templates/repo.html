@@ -1661,6 +1661,9 @@
                             summaryResponse.json(),
                             nutrientResponse.json()
                         ]);
+                        console.log('获取到的热量数据:', calorieData);
+                        console.log('获取到的概览数据:', summaryData);
+                        console.log('获取到的营养数据:', nutrientData);
                         data = { calorieData, summaryData, nutrientData };
                         localStorage.setItem(cacheKey, JSON.stringify(data));
                     }
@@ -1676,6 +1679,11 @@
                 }
             }
             function updateWeeklyCalorieChart(data) {
+                console.log('更新周报热量图表，数据:', data);
+                console.log('本周数据:', data.this_week_data);
+                console.log('上周数据:', data.last_week_data);
+                console.log('日期标签:', data.x_data);
+                
                 const option = {
                     tooltip: { trigger: 'axis' },
                     legend: {
@@ -1768,6 +1776,17 @@
             setTimeout(() => {
                 loadWeeklyData();
             }, 100);
+            
+            // 添加清除缓存按钮用于调试
+            const debugClearCache = () => {
+                localStorage.removeItem('weekly_data_' + new Date().toISOString().slice(0, 10));
+                console.log('已清除周报数据缓存');
+                loadWeeklyData();
+            };
+            
+            // 在控制台提供清除缓存的方法
+            console.log('使用 clearWeeklyCache() 清除缓存并重新加载数据');
+            window.clearWeeklyCache = debugClearCache;
             window.addEventListener('resize', function () {
                 if (weeklyCalorieChart) weeklyCalorieChart.resize();
             });
