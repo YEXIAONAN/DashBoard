@@ -2407,6 +2407,16 @@
                     tab.classList.add('active');
                     const tabName = tab.getAttribute('data-tab');
                     document.getElementById(`${tabName}InputContent`).classList.add('active');
+                    
+                    // 更新欢迎消息的提示文本
+                    const welcomeMessage = document.querySelector('.welcome-message p');
+                    if (welcomeMessage) {
+                        if (tabName === 'text') {
+                            welcomeMessage.textContent = '点击文本框输入';
+                        } else if (tabName === 'voice') {
+                            welcomeMessage.textContent = '点击麦克风开始对话';
+                        }
+                    }
                 });
             });
 
