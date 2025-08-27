@@ -57,12 +57,42 @@ def orders(request):
     # 查询所有菜品，传给模板
     dishes = Dishes.objects.all()
     
-    # 获取随机推荐菜品（1个）
-    recommended_dish = Dishes.objects.order_by('?').first()
+    # 获取用户会话信息
+    user = getUserSession(request)
+    recommended_dish = None
+    recommendation_reason = ""
     
+    if user:
+        try:
+            # 使用个性化推荐系统获取推荐菜品
+            user_id = user["user_id"]
+            recommendations = personalized(user_id)
+            
+            if recommendations and len(recommendations) > 0:
+                dish_ids = recommendations[0].get("dish_id_arr", [])
+                if dish_ids:
+                    # 获取第一个推荐菜品
+                    recommended_dish = Dishes.objects.filter(dish_id__in=dish_ids).first()
+                    recommendation_reason = recommendations[0].get("推荐理由", "根据您的健康数据智能推荐")
+        except Exception as e:
+            # 如果个性化推荐失败，使用随机推荐作为备选
+            recommended_dish = Dishes.objects.order_by('?').first()
+            recommendation_reason = "今日特别推荐"
+    else:
+        # 用户未登录，使用随机推荐
+        recommended_dish = Dishes.objects.order_by('?').first()
+        recommendation_reason = "今日特别推荐"
     
-    # print(f"--- 调试信息: 正在渲染菜品 '{dishes[0].name}'，其蛋白质为: {dishes[0].total_protein} ---")
-    return render(request, 'orders.html', {'dishes': dishes, 'recommended_dish': recommended_dish})
+    # 如果还是没有推荐菜品，确保有一个默认推荐
+    if not recommended_dish:
+        recommended_dish = Dishes.objects.order_by('?').first()
+        recommendation_reason = "今日特别推荐"
+    
+    return render(request, 'orders.html', {
+        'dishes': dishes, 
+        'recommended_dish': recommended_dish,
+        'recommendation_reason': recommendation_reason
+    })
 
 def profile(request):
     """
