@@ -71,6 +71,29 @@ def submit_order(request):
         return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
 
 
+@csrf_exempt
+@require_http_methods(["POST"])
+def clear_chat_history(request):
+    """清空聊天记录"""
+    try:
+        user = request.session.get("user")
+        if not user:
+            return JsonResponse({'status': 'error', 'message': '用户未登录'}, status=401)
+            
+        # 删除该用户的所有聊天记录
+        deleted_count, _ = ChatHistory.objects.filter(
+            user_id=user["user_id"]
+        ).delete()
+        
+        return JsonResponse({
+            'status': 'success', 
+            'message': f'已成功清空 {deleted_count} 条聊天记录'
+        })
+        
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
+
+
 
 #登录api
 def login_v(request):

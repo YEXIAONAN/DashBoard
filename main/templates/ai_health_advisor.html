@@ -229,24 +229,6 @@
             max-height: calc(var(--vh, 1vh) * 100 - 300px); /* 使用动态视口高度 */
         }
 
-        .conversation-area::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        .conversation-area::-webkit-scrollbar-track {
-            background: var(--surface-soft);
-            border-radius: 3px;
-        }
-
-        .conversation-area::-webkit-scrollbar-thumb {
-            background: rgba(26, 95, 158, 0.3);
-            border-radius: 3px;
-        }
-
-        .conversation-area::-webkit-scrollbar-thumb:hover {
-            background: rgba(26, 95, 158, 0.5);
-        }
-
         /* 移动端滚动条隐藏 */
         @media (max-width: 768px) {
             .conversation-area::-webkit-scrollbar {
@@ -648,6 +630,50 @@
             background: linear-gradient(135deg, var(--primary-light), var(--primary-deep));
             transform: translateY(-2px);
             box-shadow: var(--shadow-hover);
+        }
+
+        /* 清空聊天记录按钮样式 */
+        .clear-chat-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 10px 16px;
+            background: rgba(231, 76, 60, 0.1);
+            color: var(--error);
+            border: 1px solid rgba(231, 76, 60, 0.2);
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        .clear-chat-btn:hover {
+            background: rgba(231, 76, 60, 0.15);
+            border-color: rgba(231, 76, 60, 0.3);
+            transform: translateY(-1px);
+        }
+
+        .clear-chat-btn:active {
+            transform: translateY(0);
+        }
+
+        .clear-chat-btn i {
+            font-size: 0.9rem;
+        }
+
+        /* 设置描述文本样式 */
+        .setting-description {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            line-height: 1.4;
+            margin-top: 8px;
+            padding: 8px 12px;
+            background: rgba(26, 95, 158, 0.05);
+            border-radius: 6px;
+            border-left: 3px solid rgba(231, 76, 60, 0.3);
         }
 
         /* ===== 底部导航栏样式 ===== */
@@ -1449,6 +1475,20 @@
                 </div>
                 <button class="connect-button" id="authTestButton">测试认证</button>
             </div>
+
+            <div class="setting-group">
+                <h3><i class="fas fa-comments"></i> 聊天管理</h3>
+                <div class="setting-item">
+                    <label>清空聊天记录:</label>
+                    <button class="clear-chat-btn" id="clearChatBtn" title="清空所有聊天记录">
+                        <i class="fas fa-trash-alt"></i>
+                        清空聊天记录
+                    </button>
+                </div>
+                <div class="setting-description">
+                    此操作将清空所有聊天记录，但保留欢迎消息。操作不可撤销。
+                </div>
+            </div>
         </div>
     </div>
 
@@ -1706,6 +1746,43 @@
                 }
             } catch (error) {
                 console.error('加载聊天历史时出错:', error);
+            }
+        }
+        
+        // 清空聊天记录
+        async function clearChatHistory() {
+            try {
+                // 显示确认对话框
+                if (!confirm('确定要清空所有聊天记录吗？此操作不可恢复。')) {
+                    return;
+                }
+                
+                const response = await fetch('/api/clear_chat_history/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCsrfToken()
+                    }
+                });
+                
+                const result = await response.json();
+                
+                if (result.status === 'success') {
+                    // 清空当前对话区域（保留欢迎消息）
+                    const messages = conversationDiv.querySelectorAll('.message:not(.welcome-message)');
+                    messages.forEach(msg => msg.remove());
+                    
+                    // 显示成功消息
+                    addMessageToUI('聊天记录已清空', false, false);
+                    
+                    console.log('聊天记录清空成功:', result.message);
+                } else {
+                    console.error('清空聊天记录失败:', result.message);
+                    alert('清空聊天记录失败: ' + result.message);
+                }
+            } catch (error) {
+                console.error('清空聊天记录时出错:', error);
+                alert('清空聊天记录时出错: ' + error.message);
             }
         }
         
@@ -3126,6 +3203,12 @@
                 } catch (error) {
                     log(`欢迎消息Markdown解析失败: ${error.message}`, 'warning');
                 }
+            }
+
+            // 绑定清空聊天记录按钮事件
+            const clearChatBtn = document.getElementById('clearChatBtn');
+            if (clearChatBtn) {
+                clearChatBtn.addEventListener('click', clearChatHistory);
             }
 
             // 自动连接到服务器
