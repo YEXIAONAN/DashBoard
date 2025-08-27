@@ -417,6 +417,7 @@
             .text-input {
                 font-size: 16px; /* 防止iOS缩放 */
                 -webkit-user-select: text;
+                user-select: text;
                 -webkit-touch-callout: default;
             }
         }
@@ -1073,6 +1074,41 @@
             color: var(--text-primary);
         }
 
+        /* ===== 快捷按钮样式 ===== */
+        .quick-button {
+            padding: 6px 12px;
+            border: 1px solid var(--primary-light);
+            border-radius: 16px;
+            background: var(--surface);
+            color: var(--primary-deep);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.8rem;
+            font-weight: 500;
+            box-shadow: none;
+            white-space: nowrap;
+            border: 1px solid rgba(99, 102, 241, 0.3);
+        }
+
+        .quick-button:hover {
+            background: linear-gradient(135deg, var(--primary-light), var(--primary-deep));
+            color: white;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
+        }
+
+        .quick-button:active {
+            transform: translateY(0);
+            box-shadow: none;
+        }
+        
+        /* 消息内的快捷按钮容器 */
+        .message .quick-buttons {
+            margin-top: 12px !important;
+            padding: 8px 0 0 0;
+            border-top: 1px solid rgba(99, 102, 241, 0.1);
+        }
+
 
     </style>
 </head>
@@ -1108,9 +1144,18 @@
 
             <!-- 对话区域 -->
             <div class="conversation-area" id="conversationArea">
-                <div class="welcome-message">
-                    <h3>欢迎使用AI健康顾问</h3>
-                    <p>点击文本框输入</p>
+                <div class="message ai">
+                    <div>您好，我是您的AI健康顾问，请问有什么帮助您的吗</div>
+                    <div class="message-time">刚刚</div>
+                    
+                    <!-- 快捷按钮区域 -->
+                    <div class="quick-buttons" style="margin-top: 15px; display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-start;">
+                        <button class="quick-button" onclick="sendQuickMessage('我想健康增脂')">我想健康增脂</button>
+                        <button class="quick-button" onclick="sendQuickMessage('我想健康减肥')">我想健康减肥</button>
+                        <button class="quick-button" onclick="sendQuickMessage('我想均衡饮食')">我想均衡饮食</button>
+                        <button class="quick-button" onclick="sendQuickMessage('我应该怎么吃')">我应该怎么吃</button>
+                        <button class="quick-button" onclick="sendQuickMessage('从数据库中查询我的饮食习惯')">从数据库中查询我的饮食习惯</button>
+                    </div>
                 </div>
             </div>
 
@@ -2358,6 +2403,33 @@
                 messageInput.value = '';
             } catch (error) {
                 log(`发送消息错误: ${error.message}`, 'error');
+            }
+        }
+
+        // 发送快捷消息
+        function sendQuickMessage(message) {
+            if (!websocket || websocket.readyState !== WebSocket.OPEN) {
+                log('请先连接到服务器', 'error');
+                return;
+            }
+
+            audioBufferQueue = [];
+            isAudioBuffering = false;
+            isAudioPlaying = false;
+
+            try {
+                // 直接发送listen消息
+                const listenMessage = {
+                    type: 'listen',
+                    mode: 'manual',
+                    state: 'detect',
+                    text: message
+                };
+
+                websocket.send(JSON.stringify(listenMessage));
+                log(`发送快捷消息: ${message}`, 'info');
+            } catch (error) {
+                log(`发送快捷消息错误: ${error.message}`, 'error');
             }
         }
 
