@@ -506,13 +506,16 @@
         .chart-container {
             height: 220px;
             margin: 15px 0;
+            position: relative;
+            touch-action: pan-y pinch-zoom;
         }
         
-        /* 移动端图表容器响应式调整 */
+        /* 移动端优化 */
         @media (max-width: 768px) {
             .chart-container {
                 height: 180px;
                 margin: 10px 0;
+                touch-action: pan-x pan-y pinch-zoom;
             }
         }
         
@@ -520,6 +523,24 @@
             .chart-container {
                 height: 160px;
                 margin: 8px 0;
+                touch-action: manipulation;
+            }
+        }
+        
+        /* Canvas移动端触摸优化 */
+        .chart-container canvas {
+            touch-action: none;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        /* 移动端性能优化 */
+        @media (hover: none) and (pointer: coarse) {
+            .chart-container {
+                will-change: transform;
+                transform: translateZ(0);
             }
         }
 
@@ -1576,7 +1597,18 @@
     async function initMonthlyCalorieChart() {
         const monthlyCalorieChartDom = document.getElementById('monthlyCalorieChart');
         if (!monthlyCalorieChartDom) return;
-        let monthlyCalorieChart = echarts.init(monthlyCalorieChartDom);
+        // 移动端优化配置
+        const isMobile = window.innerWidth <= 768;
+        const isSmallMobile = window.innerWidth <= 480;
+        
+        let monthlyCalorieChart = echarts.init(monthlyCalorieChartDom, null, {
+            renderer: 'canvas',
+            useDirtyRect: false,
+            ssr: false,
+            width: 'auto',
+            height: 'auto',
+            devicePixelRatio: isMobile ? Math.min(window.devicePixelRatio || 1, 2) : 1
+        });
         try {
             // 检查缓存
             const cacheKey = 'monthly_calorie_' + new Date().toISOString().slice(0, 7);
@@ -1686,7 +1718,18 @@
                 console.log(`♻️ 已销毁旧实例 #${domId}`);
             }
             // 初始化
-            chart = echarts.init(dom);
+            // 移动端优化配置
+            const isMobile = window.innerWidth <= 768;
+            const isSmallMobile = window.innerWidth <= 480;
+            
+            chart = echarts.init(dom, null, {
+                renderer: 'canvas',
+                useDirtyRect: false,
+                ssr: false,
+                width: 'auto',
+                height: 'auto',
+                devicePixelRatio: isMobile ? Math.min(window.devicePixelRatio || 1, 2) : 1
+            });
             console.log(`✅ 初始化成功 #${domId}`);
             // 拉取数据
             fetch(url)
@@ -1757,7 +1800,18 @@
                 weeklyCalorieChart.dispose();
                 console.log("已销毁旧的周报热量图表实例。");
             }
-            weeklyCalorieChart = echarts.init(weeklyCalorieChartDom);
+            // 移动端优化配置
+            const isMobile = window.innerWidth <= 768;
+            const isSmallMobile = window.innerWidth <= 480;
+            
+            weeklyCalorieChart = echarts.init(weeklyCalorieChartDom, null, {
+                renderer: 'canvas',
+                useDirtyRect: false,
+                ssr: false,
+                width: 'auto',
+                height: 'auto',
+                devicePixelRatio: isMobile ? Math.min(window.devicePixelRatio || 1, 2) : 1
+            });
             console.log("周报热量图表初始化成功", weeklyCalorieChart);
             // 合并周报数据请求
             async function loadWeeklyData() {
@@ -1802,24 +1856,24 @@
                 console.log('上周数据:', data.last_week_data);
                 console.log('日期标签:', data.x_data);
                 
-                // 响应式配置
+                // 移动端响应式配置
                 const isMobile = window.innerWidth <= 768;
                 const isSmallMobile = window.innerWidth <= 480;
                 
                 const option = {
                     tooltip: { 
                         trigger: 'axis',
-                        confine: true,
                         textStyle: {
-                            fontSize: isSmallMobile ? 10 : 12
+                            fontSize: isSmallMobile ? 10 : (isMobile ? 11 : 12)
                         }
                     },
                     legend: {
                         data: ['本周', '上周'],
-                        top: isSmallMobile ? '2%' : 'top',
+                        top: isSmallMobile ? 'auto' : 'top',
+                        bottom: isSmallMobile ? 0 : 'auto',
                         textStyle: { 
                             color: '#333',
-                            fontSize: isSmallMobile ? 10 : 12
+                            fontSize: isSmallMobile ? 10 : (isMobile ? 11 : 12)
                         },
                         itemWidth: isSmallMobile ? 20 : 25,
                         itemHeight: isSmallMobile ? 10 : 14,
@@ -1828,31 +1882,38 @@
                         inactiveColor: '#999'
                     },
                     grid: {
-                        left: isSmallMobile ? '10%' : isMobile ? '8%' : '6%',
-                        right: isSmallMobile ? '10%' : isMobile ? '8%' : '6%',
-                        bottom: isSmallMobile ? '20%' : '15%',
-                        top: isSmallMobile ? '25%' : '20%',
+                        left: isSmallMobile ? '10%' : (isMobile ? '8%' : '6%'),
+                        right: isSmallMobile ? '8%' : (isMobile ? '6%' : '4%'),
+                        bottom: isSmallMobile ? '25%' : (isMobile ? '20%' : '15%'),
+                        top: isSmallMobile ? '15%' : (isMobile ? '12%' : '10%'),
                         containLabel: true
                     },
                     xAxis: { 
                         type: 'category', 
                         data: data.x_data,
                         axisLabel: {
-                            color: '#333',
-                            fontSize: isSmallMobile ? 10 : 12,
-                            rotate: isSmallMobile ? 45 : 0,
-                            interval: isSmallMobile ? 0 : 'auto'
+                            rotate: isSmallMobile ? 45 : (isMobile ? 30 : 0),
+                            interval: 0,
+                            fontSize: isSmallMobile ? 9 : (isMobile ? 10 : 12),
+                            color: '#333'
+                        },
+                        axisLine: {
+                            lineStyle: {
+                                color: '#ddd'
+                            }
                         }
                     },
                     yAxis: { 
                         type: 'value', 
                         name: '热量 (kcal)',
                         nameTextStyle: {
-                            fontSize: isSmallMobile ? 10 : 12
+                            fontSize: isSmallMobile ? 10 : (isMobile ? 11 : 12),
+                            color: '#333'
                         },
                         axisLabel: {
+                            fontSize: isSmallMobile ? 9 : (isMobile ? 10 : 12),
                             color: '#333',
-                            fontSize: isSmallMobile ? 10 : 12
+                            formatter: '{value}'
                         }
                     },
                     series: [
@@ -1965,7 +2026,18 @@
                 weeklyNutrientChart.dispose();
                 console.log("已销毁旧的营养图表实例。");
             }
-            weeklyNutrientChart = echarts.init(weeklyNutrientChartDom);
+            // 移动端优化配置
+            const isMobile = window.innerWidth <= 768;
+            const isSmallMobile = window.innerWidth <= 480;
+            
+            weeklyNutrientChart = echarts.init(weeklyNutrientChartDom, null, {
+                renderer: 'canvas',
+                useDirtyRect: false,
+                ssr: false,
+                width: 'auto',
+                height: 'auto',
+                devicePixelRatio: isMobile ? Math.min(window.devicePixelRatio || 1, 2) : 1
+            });
             console.log("营养图表初始化成功", weeklyNutrientChart);
             fetch('/nutrient-comparison-data/')
                 .then(response => {
@@ -1984,54 +2056,74 @@
                         throw new Error('营养数据格式不正确');
                     }
                     
-                    // 响应式配置
-                    const isMobile = window.innerWidth <= 768;
-                    const isSmallMobile = window.innerWidth <= 480;
-                    
                     const option = {
                         tooltip: { 
                             trigger: 'axis', 
                             axisPointer: { type: 'shadow' },
-                            confine: true,
-                            textStyle: {
-                                fontSize: isSmallMobile ? 10 : 12
-                            },
                             formatter: function(params) {
                                 let result = params[0].name + '<br/>';
                                 params.forEach(param => {
                                     result += param.marker + param.seriesName + ': ' + param.value + 'g<br/>';
                                 });
                                 return result;
-                            }
+                            },
+                            // 移动端响应式tooltip配置
+                            ...(window.innerWidth <= 768 ? {
+                                textStyle: {
+                                    fontSize: 10
+                                }
+                            } : {})
                         },
                         legend: { 
                             data: ['本周', '上周'], 
-                            top: isSmallMobile ? '2%' : 'top', 
+                            top: 'top', 
                             textStyle: { 
                                 color: '#333',
-                                fontSize: isSmallMobile ? 10 : 12
+                                // 移动端响应式legend配置
+                                ...(window.innerWidth <= 768 ? {
+                                    fontSize: 10
+                                } : {})
                             },
-                            itemWidth: isSmallMobile ? 20 : 25,
-                            itemHeight: isSmallMobile ? 10 : 14,
-                            itemGap: isSmallMobile ? 15 : 25,
+                            itemWidth: 25,
+                            itemHeight: 14,
+                            itemGap: 25,
                             selectedMode: true,
-                            inactiveColor: '#999'
+                            inactiveColor: '#999',
+                            // 移动端响应式legend位置和大小
+                            ...(window.innerWidth <= 480 ? {
+                                top: 'bottom',
+                                itemWidth: 20,
+                                itemHeight: 12,
+                                itemGap: 15
+                            } : {})
                         },
                         grid: { 
-                            left: isSmallMobile ? '10%' : isMobile ? '8%' : '6%', 
-                            right: isSmallMobile ? '10%' : isMobile ? '8%' : '6%', 
-                            bottom: isSmallMobile ? '20%' : '15%', 
-                            top: isSmallMobile ? '25%' : '15%',
-                            containLabel: true 
+                            left: '8%', 
+                            right: '4%', 
+                            bottom: '15%', 
+                            top: '15%',
+                            containLabel: true,
+                            // 移动端响应式grid配置
+                            ...(window.innerWidth <= 480 ? {
+                                left: '10%',
+                                right: '10%',
+                                bottom: '20%',
+                                top: '20%'
+                            } : {})
                         },
                         xAxis: {
                             type: 'category',
                             data: data.labels,
                             axisLabel: { 
                                 color: '#333', 
-                                rotate: isSmallMobile ? 45 : 45, 
+                                rotate: 45, 
                                 interval: 0,
-                                fontSize: isSmallMobile ? 10 : 12
+                                fontSize: 12,
+                                // 移动端响应式xAxis配置
+                                ...(window.innerWidth <= 480 ? {
+                                    rotate: 60,
+                                    fontSize: 9
+                                } : {})
                             },
                             axisLine: { lineStyle: { color: '#ddd' } },
                             axisTick: { lineStyle: { color: '#ddd' } }
@@ -2043,11 +2135,19 @@
                             axisLabel: { 
                                 formatter: '{value}g', 
                                 color: '#333',
-                                fontSize: isSmallMobile ? 10 : 12
+                                fontSize: 12,
+                                // 移动端响应式yAxis配置
+                                ...(window.innerWidth <= 480 ? {
+                                    fontSize: 9
+                                } : {})
                             },
                             nameTextStyle: { 
                                 color: '#333',
-                                fontSize: isSmallMobile ? 10 : 12
+                                fontSize: 12,
+                                // 移动端响应式yAxis名称配置
+                                ...(window.innerWidth <= 480 ? {
+                                    fontSize: 9
+                                } : {})
                             },
                             axisLine: { lineStyle: { color: '#ddd' } },
                             axisTick: { lineStyle: { color: '#ddd' } },
@@ -2104,7 +2204,18 @@
                 monthlyCalorieChart.dispose();
                 console.log("已销毁旧的月报热量图表实例。");
             }
-            monthlyCalorieChart = echarts.init(monthlyCalorieChartDom);
+            // 移动端优化配置
+            const isMobile = window.innerWidth <= 768;
+            const isSmallMobile = window.innerWidth <= 480;
+            
+            monthlyCalorieChart = echarts.init(monthlyCalorieChartDom, null, {
+                renderer: 'canvas',
+                useDirtyRect: false,
+                ssr: false,
+                width: 'auto',
+                height: 'auto',
+                devicePixelRatio: isMobile ? Math.min(window.devicePixelRatio || 1, 2) : 1
+            });
             console.log("月报热量图表初始化成功", monthlyCalorieChart);
             fetch('/monthly-calorie-data/')
                 .then(response => {
@@ -2113,59 +2224,82 @@
                 })
                 .then(data => {
                     console.log("获取到月报热量数据:", data);
-                    // 响应式配置
-                    const isMobile = window.innerWidth <= 768;
-                    const isSmallMobile = window.innerWidth <= 480;
-                    
                     const option = {
                         tooltip: { 
                             trigger: 'axis', 
                             axisPointer: { type: 'shadow' },
-                            confine: true,
-                            textStyle: {
-                                fontSize: isSmallMobile ? 10 : 12
-                            }
+                            // 移动端响应式tooltip配置
+                            ...(window.innerWidth <= 768 ? {
+                                textStyle: {
+                                    fontSize: 10
+                                }
+                            } : {})
                         },
                         legend: {
                             data: ['本月1', '上月1'],
-                            top: isSmallMobile ? '2%' : 'top',
+                            top: 'top',
                             textStyle: { 
                                 color: '#333',
-                                fontSize: isSmallMobile ? 10 : 12
+                                // 移动端响应式legend配置
+                                ...(window.innerWidth <= 768 ? {
+                                    fontSize: 10
+                                } : {})
                             },
-                            itemWidth: isSmallMobile ? 20 : 25,
-                            itemHeight: isSmallMobile ? 10 : 14,
-                            itemGap: isSmallMobile ? 15 : 25,
+                            itemWidth: 25,
+                            itemHeight: 14,
+                            itemGap: 25,
                             selectedMode: true,
-                            inactiveColor: '#999'
+                            inactiveColor: '#999',
+                            // 移动端响应式legend位置和大小
+                            ...(window.innerWidth <= 768 ? {
+                                top: window.innerWidth <= 480 ? 'bottom' : 'top',
+                                itemWidth: 20,
+                                itemHeight: 12,
+                                itemGap: 15
+                            } : {})
                         },
                         grid: { 
-                            left: isSmallMobile ? '10%' : isMobile ? '8%' : '6%', 
-                            right: isSmallMobile ? '10%' : isMobile ? '8%' : '6%', 
-                            bottom: isSmallMobile ? '15%' : '8%', 
-                            top: isSmallMobile ? '25%' : '12%',
-                            containLabel: true 
+                            left: '3%', 
+                            right: '4%', 
+                            bottom: '3%', 
+                            containLabel: true,
+                            // 移动端响应式grid配置
+                            ...(window.innerWidth <= 768 ? {
+                                left: '8%',
+                                right: '8%',
+                                bottom: '15%',
+                                top: '15%'
+                            } : {})
                         },
                         xAxis: { 
                             type: 'category', 
                             data: data.labels, 
                             axisLabel: { 
                                 color: '#333',
-                                fontSize: isSmallMobile ? 10 : 12,
-                                rotate: isSmallMobile ? 45 : 0,
-                                interval: isSmallMobile ? 0 : 'auto'
-                            } 
+                                // 移动端响应式xAxis配置
+                                ...(window.innerWidth <= 768 ? {
+                                    rotate: 45,
+                                    interval: 0,
+                                    fontSize: 10
+                                } : {})
+                            }
                         },
                         yAxis: {
                             type: 'value', name: '热量 (kcal)', min: 0,
                             axisLabel: { 
                                 formatter: '{value} kcal', 
                                 color: '#333',
-                                fontSize: isSmallMobile ? 10 : 12
+                                // 移动端响应式yAxis配置
+                                ...(window.innerWidth <= 768 ? {
+                                    fontSize: 10
+                                } : {})
                             },
                             nameTextStyle: { 
                                 color: '#333',
-                                fontSize: isSmallMobile ? 10 : 12
+                                // 移动端响应式yAxis名称配置
+                                ...(window.innerWidth <= 768 ? {
+                                    fontSize: 10
+                                } : {})
                             }
                         },
                         series: [
@@ -2772,34 +2906,6 @@
                 window.location.href = targetUrl;
             }
         });
-    });
-    
-    // 全局窗口大小改变监听器
-    window.addEventListener('resize', function() {
-        // 防抖处理，避免频繁重绘
-        clearTimeout(window.resizeTimer);
-        window.resizeTimer = setTimeout(function() {
-            // 重新调整所有图表大小
-            if (window.weeklyCalorieChart) {
-                window.weeklyCalorieChart.resize();
-            }
-            if (window.weeklyNutrientChart) {
-                window.weeklyNutrientChart.resize();
-            }
-            if (window.weeklyNutrientRadarChart) {
-                window.weeklyNutrientRadarChart.resize();
-            }
-            if (window.monthlyCalorieChart) {
-                window.monthlyCalorieChart.resize();
-            }
-            
-            // 重新获取数据以应用响应式配置
-            if (typeof updateWeeklySummary === 'function') {
-                updateWeeklySummary();
-            }
-            
-            console.log('窗口大小改变，图表已重新调整');
-        }, 300); // 300ms防抖延迟
     });
 </script>
 
