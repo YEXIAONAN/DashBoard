@@ -695,7 +695,6 @@
             padding-bottom: env(safe-area-inset-bottom);
             padding-left: env(safe-area-inset-left);
             padding-right: env(safe-area-inset-right);
-            animation: slideInUp 0.6s ease forwards;
         }
 
         .nav-item {
@@ -705,21 +704,17 @@
             justify-content: center;
             padding: 8px 12px;
             cursor: pointer;
-            transition: all 0.3s ease;
             border-radius: 12px;
             min-width: 60px;
         }
 
         .nav-item:hover {
             background: var(--surface-hover);
-            transform: translateY(-2px);
-            transition: all 0.3s ease;
         }
 
         .nav-item.active {
             background: linear-gradient(135deg, rgba(26, 95, 158, 0.1), rgba(26, 95, 158, 0.05));
             border: 1px solid rgba(26, 95, 158, 0.2);
-            transition: all 0.3s ease;
         }
 
         .nav-icon {
@@ -731,26 +726,21 @@
             font-size: 1.2rem;
             color: var(--text-muted);
             margin-bottom: 4px;
-            transition: all 0.3s ease;
         }
 
         .nav-item.active .nav-icon {
             color: var(--primary-deep);
-            transform: scale(1.1);
-            transition: all 0.3s ease;
         }
 
         .nav-label {
             font-size: 0.75rem;
             color: var(--text-muted);
             font-weight: 500;
-            transition: all 0.3s ease;
         }
 
         .nav-item.active .nav-label {
             color: var(--primary-deep);
             font-weight: 600;
-            transition: all 0.3s ease;
         }
 
         /* 为页面内容添加底部间距 */
