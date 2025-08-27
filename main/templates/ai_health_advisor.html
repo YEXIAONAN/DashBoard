@@ -1110,7 +1110,7 @@
             <div class="conversation-area" id="conversationArea">
                 <div class="welcome-message">
                     <h3>欢迎使用AI健康顾问</h3>
-                    <p>点击麦克风开始对话</p>
+                    <p>点击文本框输入</p>
                 </div>
             </div>
 
@@ -1421,9 +1421,22 @@
         }
 
 
+        // 检查当前输入模式
+        function getCurrentInputMode() {
+            const activeTab = document.querySelector('.input-tab.active');
+            return activeTab ? activeTab.getAttribute('data-tab') : 'voice';
+        }
+
         // 开始音频缓冲过程
         function startAudioBuffering() {
             if (isAudioBuffering || isAudioPlaying) return;
+            
+            // 检查输入模式：文本输入模式下不自动播放音频
+            const currentMode = getCurrentInputMode();
+            if (currentMode === 'text') {
+                log('文本输入模式，不自动播放音频', 'info');
+                return;
+            }
 
             isAudioBuffering = true;
             log("开始音频缓冲...", 'info');
@@ -2417,6 +2430,25 @@
                             welcomeMessage.textContent = '点击麦克风开始对话';
                         }
                     }
+                    
+                    // 如果切换到文本输入模式，清空音频缓冲队列，防止历史语音被播放
+                    if (tabName === 'text') {
+                        if (audioBufferQueue.length > 0) {
+                            log('切换到文本输入模式，清空音频缓冲队列', 'info');
+                            audioBufferQueue = [];
+                        }
+                        // 停止正在播放的音频
+                        if (isAudioPlaying || isAudioBuffering) {
+                            log('切换到文本输入模式，停止音频播放', 'info');
+                            isAudioPlaying = false;
+                            isAudioBuffering = false;
+                            if (streamingContext && streamingContext.source) {
+                                streamingContext.source.stop();
+                                streamingContext.source = null;
+                            }
+                            streamingContext = null;
+                        }
+                    }
                 });
             });
 
@@ -3151,19 +3183,31 @@
                 const opusData = new Uint8Array(arrayBuffer);
 
                 if (opusData.length > 0) {
-                    // 将数据添加到缓冲队列
-                    audioBufferQueue.push(opusData);
+                    // 检查当前输入模式，只有在语音输入模式下才处理音频数据
+                    const currentMode = getCurrentInputMode();
+                    if (currentMode === 'voice') {
+                        // 将数据添加到缓冲队列
+                        audioBufferQueue.push(opusData);
 
-                    // 如果收到的是第一个音频包，开始缓冲过程
-                    if (audioBufferQueue.length === 1 && !isAudioBuffering && !isAudioPlaying) {
-                        startAudioBuffering();
+                        // 如果收到的是第一个音频包，开始缓冲过程
+                        if (audioBufferQueue.length === 1 && !isAudioBuffering && !isAudioPlaying) {
+                            startAudioBuffering();
+                        }
+                    } else {
+                        // 文本输入模式下忽略音频数据
+                        log('文本输入模式，忽略音频数据', 'debug');
                     }
                 } else {
                     log('收到空音频数据帧，可能是结束标志', 'warning');
 
-                    // 如果缓冲队列中有数据且没有在播放，立即开始播放
+                    // 如果缓冲队列中有数据且没有在播放，检查当前输入模式后决定是否播放
                     if (audioBufferQueue.length > 0 && !isAudioPlaying) {
-                        playBufferedAudio();
+                        const currentMode = getCurrentInputMode();
+                        if (currentMode === 'voice') {
+                            playBufferedAudio();
+                        } else {
+                            log('文本输入模式，暂停音频播放', 'info');
+                        }
                     }
 
                     // 如果正在播放，发送结束信号
