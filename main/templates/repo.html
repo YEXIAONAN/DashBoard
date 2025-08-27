@@ -1351,13 +1351,13 @@
                                 <!-- 添加 ID，内容将由 JS 动态填充 -->
                                 <div class="value" id="monthlyAvgCalorieStatValue">1,920 kcal <span
                                         class="comparison positive">-3.2%</span></div>
-                                <div class="label">月均摄入热量</div>
+                                <div class="label">周均摄入热量</div>
                             </div>
                             <div class="stat-card">
                                 <!-- 添加 ID，内容将由 JS 动态填充 -->
                                 <div class="value" id="monthlyTotalCalorieDeficitValue">8,400 kcal <span
                                         class="comparison positive">+18%</span></div>
-                                <div class="label">月度热量缺口</div>
+                                <div class="label">周度热量缺口</div>
                             </div>
                             <div class="stat-card">
                                 <!-- 添加 ID，内容将由 JS 动态填充 -->
@@ -1545,9 +1545,9 @@
     }
     function updateWeeklySummaryUI(data) {
         document.getElementById('monthlyAvgCalorieStatValue').textContent = `${data.daily_avg_calories.toLocaleString()} kcal`;
-        document.getElementById('monthlyTotalCalorieDeficitValue').textContent = `${((data.accumulated_deficit_kg || 0) * 7700).toLocaleString()} kcal`;
-        document.getElementById('monthlyGoalAchievementStatValue').textContent = `${data.goal_achievement_percentage}%`;
-        document.getElementById('daysGoalAchievedValue').textContent = `${Math.floor(data.goal_achievement_percentage / 20)}天`;
+        document.getElementById('monthlyTotalCalorieDeficitValue').textContent = `${(data.accumulated_deficit_kg || 0).toLocaleString()} kg`;
+        document.getElementById('monthlyGoalAchievementStatValue').textContent = `${Math.min(data.goal_achievement_percentage, 100)}%`;
+        document.getElementById('daysGoalAchievedValue').textContent = `${Math.min(Math.floor(data.goal_achievement_percentage / 20), 7)}天`;
         document.getElementById('monthlyFiberIntake').textContent = `${(data.fiber_intake_this_month || 7).toFixed(1)}g`;
         document.getElementById('monthlyFatIntake').textContent = `${(data.fat_intake_this_month || 37).toFixed(1)}g`;
         document.getElementById('monthlyCalciumGoalAchievement').textContent = `${(data.calcium_goal_achievement_this_month || 7.38)}%`;
@@ -1738,6 +1738,7 @@
                 })
                 .then(data => {
                     console.log(`📥 ${domId} 返回:`, data);
+                    console.log(`📊 维生素C数据 - 本周: ${data.this_week[5]}, 上周: ${data.last_week[5]}`);
                     if (!Array.isArray(data.this_week) || !Array.isArray(data.last_week)) {
                         throw new Error("返回值不是两个数组");
                     }
@@ -1750,12 +1751,12 @@
                         },
                         radar: {
                             indicator: [
-                                { name: "蛋白质", max: 50 },
-                                { name: "脂肪", max: 30 },
+                                { name: "蛋白质", max: 80 },
+                                { name: "脂肪", max: 80 },
                                 { name: "碳水化合物", max: 75 },
                                 { name: "纤维", max: 15 },
-                                { name: "钙", max: 500 },
-                                { name: "维生素C", max: 50 },
+                                { name: "钙", max: 90 },
+                                { name: "维生素C", max: 20 },
                                 { name: "铁", max: 10 }
                             ],
                             radius: 90, // 放大雷达图半径
@@ -2330,10 +2331,15 @@
             const valueElement = document.getElementById(valueElementId);
             const changeElement = document.getElementById(changeElementId);
             if (valueElement) {
-                // 格式化数值，限制为小数点后两位
+                // 格式化数值，限制为小数点后两位，添加千位分隔符
                 let formattedValue = value;
                 if (typeof value === 'number' && !isNaN(value)) {
-                    formattedValue = parseFloat(value.toFixed(2));
+                    // 对于大数值，限制范围并添加千位分隔符
+                    if (Math.abs(value) > 10000) {
+                        formattedValue = parseFloat(value.toFixed(0)).toLocaleString();
+                    } else {
+                        formattedValue = parseFloat(value.toFixed(2));
+                    }
                 }
                 valueElement.textContent = `${formattedValue}${unit}`;
             }
@@ -2345,10 +2351,15 @@
         function updateStatCardValue(elementId, value, unit = '') {
             const element = document.getElementById(elementId);
             if (element) {
-                // 格式化数值，限制为小数点后两位
+                // 格式化数值，限制为小数点后两位，添加千位分隔符
                 let formattedValue = value;
                 if (typeof value === 'number' && !isNaN(value)) {
-                    formattedValue = parseFloat(value.toFixed(2));
+                    // 对于大数值，限制范围并添加千位分隔符
+                    if (Math.abs(value) > 10000) {
+                        formattedValue = parseFloat(value.toFixed(0)).toLocaleString();
+                    } else {
+                        formattedValue = parseFloat(value.toFixed(2));
+                    }
                 }
                 element.textContent = `${formattedValue}${unit}`;
             }
@@ -2363,10 +2374,15 @@
                     return;
                 }
                 
-                // 格式化数值，限制为小数点后两位
+                // 格式化数值，限制为小数点后两位，添加千位分隔符
                 let formattedValue = value;
                 if (typeof value === 'number' && !isNaN(value)) {
-                    formattedValue = parseFloat(value.toFixed(2));
+                    // 对于大数值，限制范围并添加千位分隔符
+                    if (Math.abs(value) > 10000) {
+                        formattedValue = parseFloat(value.toFixed(0)).toLocaleString();
+                    } else {
+                        formattedValue = parseFloat(value.toFixed(2));
+                    }
                 }
                 
                 valueElement.innerHTML = ''; // 清空现有内容
@@ -2425,7 +2441,7 @@
                 // 更新下方 stats-grid 的数据
                 const dailyAvgStatCardValue = document.getElementById('dailyAvgStatCardValue');
                 const goalAchievementStatCardValue = document.getElementById('goalAchievementStatCardValue');
-                if (dailyAvgStatCardValue) { dailyAvgStatCardValue.textContent = `${data.daily_avg_calories} kcal`; }
+                if (dailyAvgStatCardValue) { dailyAvgStatCardValue.textContent = `${(data.daily_avg_calories / 7).toFixed(0)} kcal`; }
                 if (goalAchievementStatCardValue) { goalAchievementStatCardValue.textContent = `${data.goal_achievement_percentage}%`; }
             } catch (error) {
                 console.error('获取周报概览数据失败:', error);
@@ -2468,17 +2484,17 @@
                         health_index_change: 5,
                         new_dishes_tried: Math.floor(summaryData.daily_avg_calories / 100),
                         new_dishes_change: 2,
-                        monthly_calorie_deficit_kcal: (summaryData.accumulated_deficit_kg || 0) * 7700, // 转换为kcal
+                        monthly_calorie_deficit_kcal: summaryData.accumulated_deficit_kg || 0, // 直接使用kg值
                         monthly_deficit_change: summaryData.change_percentage,
                         days_goal_achieved: Math.floor(summaryData.goal_achievement_percentage / 20),
                         days_goal_achieved_change: 1,
-                        // 营养素数据从周报雷达数据获取（正确从数组中提取）
+                        // 营养素数据从周报雷达数据获取（正确从数组中提取，与雷达图保持一致）
                         // this_week数组顺序: [protein, fat, carb, fiber, calcium, vitamin_c, iron]
                         fiber_intake_this_month: radarData.this_week[3] || 0,
                         fiber_intake_change: 10,
                         fat_intake_this_month: radarData.this_week[1] || 0,
                         fat_intake_change: -5,
-                        calcium_goal_achievement_this_month: ((radarData.this_week[4] / 8) * 100) || 0,
+                        calcium_goal_achievement_this_month: radarData.this_week[4] || 0, // 修改为与雷达图一致的原始数值
                         calcium_goal_change: 15,
                         vitamin_c_intake_this_month: radarData.this_week[5] || 0,
                         vitamin_c_change: 20,
@@ -2500,14 +2516,14 @@
                 updateComparisonCard('monthlyGoalAchievementValue', 'monthlyGoalAchievementChange', data.goal_achievement_percentage, data.goal_achievement_percentage, '%', true);
                 updateComparisonCard('healthIndexValue', 'healthIndexChange', data.health_index, data.health_index_change, '分', true);
                 updateComparisonCard('newDishesTriedValue', 'newDishesTriedChange', data.new_dishes_tried, data.new_dishes_change, '种', true);
-                // 更新周度统计网格
-                updateStatCardWithNestedChange('monthlyAvgCalorieStatValue', data.daily_avg_calories, data.change_percentage, ' kcal', false);
-                updateStatCardWithNestedChange('monthlyTotalCalorieDeficitValue', (data.accumulated_deficit_kg || 0) * 7700, data.change_percentage, ' kcal', true);
-                updateStatCardWithNestedChange('monthlyGoalAchievementStatValue', data.goal_achievement_percentage, data.goal_achievement_percentage, '%', true);
-                updateStatCardWithNestedChange('daysGoalAchievedValue', Math.floor(data.goal_achievement_percentage / 20), 1, '天', true);
+                // 更新周度统计网格 - 使用周度数据
+                updateStatCardWithNestedChange('monthlyAvgCalorieStatValue', data.daily_avg_calories, data.change_percentage, ' kcal', false); // 周日均摄入热量（不再除以30）
+                updateStatCardWithNestedChange('monthlyTotalCalorieDeficitValue', data.accumulated_deficit_kg || 0, data.change_percentage, ' kg', true); // 周度热量缺口
+                updateStatCardWithNestedChange('monthlyGoalAchievementStatValue', Math.min(data.goal_achievement_percentage, 100), data.goal_achievement_percentage, '%', true); // 周度目标达成
+                updateStatCardWithNestedChange('daysGoalAchievedValue', Math.min(Math.floor(data.goal_achievement_percentage / 20), 7), 1, '天', true); // 周度达成天数（最大7天）
                 updateStatCardWithNestedChange('monthlyFiberIntake', data.fiber_intake_this_month, data.fiber_intake_change, 'g', true);
                 updateStatCardWithNestedChange('monthlyFatIntake', data.fat_intake_this_month, data.fat_intake_change, 'g', false);
-                updateStatCardWithNestedChange('monthlyCalciumGoalAchievement', data.calcium_goal_achievement_this_month, data.calcium_goal_change, '%', true);
+                updateStatCardWithNestedChange('monthlyCalciumGoalAchievement', data.calcium_goal_achievement_this_month, data.calcium_goal_change, 'mg', true);
                 updateStatCardWithNestedChange('monthlyVitaminCIntake', data.vitamin_c_intake_this_month, data.vitamin_c_change, 'mg', true);
                 // 添加蛋白质和铁摄入数据的更新
                 updateStatCardWithNestedChange('monthlyProteinIntake', data.protein_intake_this_month, data.protein_intake_change, 'g', true);
