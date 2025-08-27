@@ -134,6 +134,7 @@ def login_v(request):
                 user_data = {
                     'user_id': user.user_id,
                     'phone': user.phone,
+                    'name': user.name,
                     'age': user.age,
                     'height': float(user.height) if user.height else None,
                     'weight': float(user.weight) if user.weight else None,

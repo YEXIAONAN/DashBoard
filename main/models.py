@@ -107,6 +107,7 @@ class Users(models.Model):
     user_id = models.AutoField(primary_key=True)
     phone = models.CharField(unique=True, max_length=20)
     password = models.CharField(max_length=255)
+    name = models.CharField(max_length=50, blank=True, null=True, verbose_name='姓名')
     age = models.IntegerField(blank=True, null=True)
     height = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True)
     weight = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True)

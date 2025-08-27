@@ -195,7 +195,27 @@ def repo(request):
     })
 
 def ai_health_advisor(request):
-    return render(request, 'ai_health_advisor.html')
+    user_session = request.session.get("user")
+    user_greeting = ""
+    
+    if user_session:
+        try:
+            user = Users.objects.get(user_id=user_session["user_id"])
+            if user.name:
+                if user.gender == "男":
+                    user_greeting = f"{user.name}先生，您好！"
+                elif user.gender == "女":
+                    user_greeting = f"{user.name}女士，您好！"
+                else:
+                    user_greeting = f"{user.name}，您好！"
+            else:
+                user_greeting = "您好！"
+        except Users.DoesNotExist:
+            user_greeting = "您好！"
+    else:
+        user_greeting = "您好！"
+    
+    return render(request, 'ai_health_advisor.html', {'user_name': user_greeting})
 
 def MyOrder(request):
     cutoff = timezone.now() - timedelta(days=3)
