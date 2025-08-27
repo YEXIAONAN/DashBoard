@@ -36,7 +36,7 @@ urlpatterns = [
     path('refresh_recommendation/', views.refresh_recommendation, name='refresh_recommendation'),
     path('login/', views.login, name='login'),
     path('register/', views.register, name='login'),
-
+    path('get_weekly_nutrient_radar_data/', views.get_weekly_nutrient_radar_data, name='get_weekly_nutrient_radar_data'),
     ##api
     path('submit-order/', api.submit_order, name='submit-order'),
     path('execute_task_one/', api.execute_task_one, name='execute_task_one'),
