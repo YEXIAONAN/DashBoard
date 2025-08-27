@@ -1318,3 +1318,52 @@ def personalized(user_id):
     return recommendations
     # personalalized_menu.to_csv('personalized_menu.csv', index=False)
 #----------------------------个性化菜单部分
+
+
+def refresh_recommendation(request):
+    """
+    重新生成推荐菜品并返回JSON响应
+    """
+    user = getUserSession(request)
+    if not user:
+        return JsonResponse({'error': '用户未登录'}, status=401)
+    
+    try:
+        user_id = user["user_id"]
+        # 获取推荐菜品
+        recommendations = personalized(user_id)
+        
+        if recommendations and len(recommendations) > 0:
+            dish_ids = recommendations[0].get("dish_id_arr", [])
+            # 获取菜品详细信息
+            dishes = Dishes.objects.filter(dish_id__in=dish_ids)[:4]
+            
+            dish_data = []
+            for dish in dishes:
+                dish_data.append({
+                    'dish_id': dish.dish_id,
+                    'name': dish.name,
+                    'price': str(dish.price),
+                    'total_calorie': str(dish.total_calorie),
+                    'total_protein': str(dish.total_protein),
+                    'total_fat': str(dish.total_fat),
+                    'total_carbohydrate': str(dish.total_carbohydrate),
+                    'image_url': getattr(dish, 'image_url', None)
+                })
+            
+            return JsonResponse({
+                'success': True,
+                'dishes': dish_data,
+                'recommendations': recommendations
+            })
+        else:
+            return JsonResponse({
+                'success': False,
+                'error': '无法生成推荐菜品'
+            }, status=400)
+            
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'error': f'生成推荐时发生错误: {str(e)}'
+        }, status=500)

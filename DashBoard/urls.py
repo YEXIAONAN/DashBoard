@@ -33,6 +33,7 @@ urlpatterns = [
     path('get_order_status/', views.get_order_status, name='get_order_status'),
     # path('order_status/', views.get_order_status, name='order_status'),
     path('ai_health_advisor/', views.ai_health_advisor, name='ai_health_advisor'),
+    path('refresh_recommendation/', views.refresh_recommendation, name='refresh_recommendation'),
     path('login/', views.login, name='login'),
     path('register/', views.register, name='login'),
 
