@@ -508,6 +508,8 @@ def get_nutrient_sums_for_week(start_date, end_date, request):
 
 def get_weekly_calorie_sums_for_month(year, month,request):
     user = getUserSession(request)
+    if not user:
+        return None, None
     weekly_sums = []
     labels = []
 
@@ -550,6 +552,9 @@ def monthly_calorie_data(request):
     获取本月和上月的每周热量趋势数据。
     """
     current_date = now().date()
+    user = getUserSession(request)
+    if not user:
+        return JsonResponse({'error': '用户未登录'}, status=401)
 
     this_month_year = current_date.year
     this_month_month = current_date.month
@@ -563,6 +568,9 @@ def monthly_calorie_data(request):
 
     this_month_labels, this_month_data = get_weekly_calorie_sums_for_month(this_month_year, this_month_month,request)
     last_month_labels, last_month_data = get_weekly_calorie_sums_for_month(last_month_year, last_month_month,request)
+    
+    if this_month_labels is None or last_month_labels is None:
+        return JsonResponse({'error': '用户未登录'}, status=401)
 
     max_weeks = max(len(this_month_labels), len(last_month_labels))
 
@@ -592,6 +600,8 @@ def monthly_summary_data(request):
     """
     current_date = now().date()
     user = getUserSession(request)
+    if not user:
+        return JsonResponse({'error': '用户未登录'}, status=401)
     # 当前月份的起始和结束日期
     this_month_year = current_date.year
     this_month_month = current_date.month
@@ -659,7 +669,8 @@ def monthly_summary_data(request):
         total_fiber=Sum(F('dish__total_fiber') * F('quantity')),
         total_calcium=Sum(F('dish__calcium') * F('quantity')),
         total_vitamin_c=Sum(F('dish__vitamin_c') * F('quantity')),
-        total_sugar_added=Sum(F('dish__sugar') * F('quantity')),
+        total_sugar_added=Sum(F('dish__total_sugar') * F('quantity')),
+        total_iron=Sum(F('dish__iron') * F('quantity')),
     )
 
         daily_records = OrderItems.objects.filter(base_query).annotate(
@@ -670,7 +681,8 @@ def monthly_summary_data(request):
         day_fiber=Sum(F('dish__total_fiber') * F('quantity')),
         day_calcium=Sum(F('dish__calcium') * F('quantity')),
         day_vitamin_c=Sum(F('dish__vitamin_c') * F('quantity')),
-        day_sugar_added=Sum(F('dish__sugar') * F('quantity')),
+        day_sugar_added=Sum(F('dish__total_sugar') * F('quantity')),
+        day_iron=Sum(F('dish__iron') * F('quantity')),
     ).order_by('date')
 
         total_calories = 0
@@ -680,6 +692,7 @@ def monthly_summary_data(request):
         total_vitamin_c = 0
         total_fat = 0
         total_sugar_added = 0
+        total_iron = 0
 
         days_with_records = 0
         days_goal_achieved = 0
@@ -695,6 +708,7 @@ def monthly_summary_data(request):
             day_vitamin_c = float(entry['day_vitamin_c'] or 0)
             day_fat = float(entry['day_fat'] or 0)
             day_sugar_added = float(entry['day_sugar_added'] or 0)
+            day_iron = float(entry['day_iron'] or 0)
 
             total_calories += day_cal
             total_protein += day_protein
@@ -703,6 +717,7 @@ def monthly_summary_data(request):
             total_vitamin_c += day_vitamin_c
             total_fat += day_fat
             total_sugar_added += day_sugar_added
+            total_iron += day_iron
 
             # 使用TDEE计算每日热量缺口
             daily_deficit = tdee - day_cal
@@ -748,6 +763,8 @@ def monthly_summary_data(request):
         avg_fat_intake = round(total_fat / days_with_records, 2) if days_with_records > 0 else 0
         avg_calcium_intake = round(total_calcium / days_with_records, 2) if days_with_records > 0 else 0
         avg_vitamin_c_intake = round(total_vitamin_c / days_with_records, 2) if days_with_records > 0 else 0
+        avg_protein_intake = round(total_protein / days_with_records, 2) if days_with_records > 0 else 0
+        avg_iron_intake = round(total_iron / days_with_records, 2) if days_with_records > 0 else 0
 
         calcium_goal_achievement_percentage = round((avg_calcium_intake / daily_calcium_goal) * 100, 2) if daily_calcium_goal > 0 else 0
 
@@ -764,6 +781,10 @@ def monthly_summary_data(request):
             'avg_calcium_intake': avg_calcium_intake,
             'avg_vitamin_c_intake': avg_vitamin_c_intake,
             'calcium_goal_achievement_percentage': calcium_goal_achievement_percentage,
+            'avg_protein_intake': avg_protein_intake,
+            'avg_iron_intake': avg_iron_intake,
+            'total_protein': total_protein,
+            'total_iron': total_iron,
         }
 
     this_month_data = get_monthly_aggregated_data(this_month_start, this_month_end, current_month_flag=True)
@@ -784,6 +805,8 @@ def monthly_summary_data(request):
     fat_intake_change = calculate_change(this_month_data['avg_fat_intake'], last_month_data['avg_fat_intake'])
     calcium_goal_change = calculate_change(this_month_data['calcium_goal_achievement_percentage'], last_month_data['calcium_goal_achievement_percentage'])
     vitamin_c_intake_change = calculate_change(this_month_data['avg_vitamin_c_intake'], last_month_data['avg_vitamin_c_intake'])
+    protein_intake_change = calculate_change(this_month_data['total_protein'], last_month_data['total_protein'])
+    iron_intake_change = calculate_change(this_month_data['total_iron'], last_month_data['total_iron'])
 
     return JsonResponse({
         'this_month_start_date': this_month_start.strftime('%#m月%#d日'),
@@ -808,6 +831,10 @@ def monthly_summary_data(request):
         'calcium_goal_change': calcium_goal_change,
         'vitamin_c_intake_this_month': this_month_data['avg_vitamin_c_intake'],
         'vitamin_c_change': vitamin_c_intake_change, # 修正变量名以保持一致性
+        'protein_intake_this_month': this_month_data['total_protein'],
+        'protein_intake_change': protein_intake_change,
+        'iron_intake_this_month': this_month_data['total_iron'],
+        'iron_intake_change': iron_intake_change,
     })
 
 
@@ -860,6 +887,8 @@ def weekly_nutrient_analysis_data(request):
     today = now().date()
 
     user = getUserSession(request)
+    if not user:
+        return JsonResponse({'error': '用户未登录'}, status=401)
 
     # 计算本周 (周一到周日)
     current_weekday = today.weekday() # 0=周一, 6=周日
@@ -945,6 +974,8 @@ def weekly_summary_data(request):
     yesterday = today - timedelta(days=1)
 
     user = getUserSession(request)
+    if not user:
+        return JsonResponse({'error': '用户未登录'}, status=401)
     user_id = user["user_id"]
     current_weekday = today.weekday() # 0=周一, 6=周日
     week_start = today - timedelta(days=current_weekday) # 本周一
@@ -972,8 +1003,9 @@ def weekly_summary_data(request):
     )['total_calories'] or 0
 
 
-    days_in_week_so_far = (today - week_start).days + 1
-    daily_avg_calories = round(weekly_total_calories / days_in_week_so_far, 2) if days_in_week_so_far > 0 else 0
+    # 计算本周完整的7天日均摄入热量
+    days_in_week = 7  # 一周7天
+    daily_avg_calories = round(weekly_total_calories / days_in_week, 2) if days_in_week > 0 else 0
 
     change_percentage = 0
     if yesterday_total_calories > 0:
@@ -985,6 +1017,7 @@ def weekly_summary_data(request):
     goal_achievement_percentage = round((today_total_calories / calorie_goal_per_day) * 100, 2) if calorie_goal_per_day > 0 else 0
 
     accumulated_deficit_kcal = 0
+    days_in_week_so_far = (today - week_start).days + 1  # 计算本周已经过去的天数
     for i in range(days_in_week_so_far):
         current_day = week_start + timedelta(days=i)
         day_total_calories = OrderItems.objects.filter(
@@ -1025,7 +1058,6 @@ def get_weekly_nutrient_radar_data(request):
         protein_avg=Avg(F('dish__total_protein') * F('quantity')),
         fat_avg=Avg(F('dish__total_fat') * F('quantity')),
         carb_avg=Avg(F('dish__total_carbohydrate') * F('quantity')),
-        # 以下字段在新表结构中不存在，已注释掉
         fiber_avg=Avg(F('dish__total_fiber') * F('quantity')),
         calcium_avg=Avg(F('dish__calcium') * F('quantity')),
         vitamin_c_avg=Avg(F('dish__vitamin_c') * F('quantity')),
@@ -1043,7 +1075,6 @@ def get_weekly_nutrient_radar_data(request):
         protein_avg=Avg(F('dish__total_protein') * F('quantity')),
         fat_avg=Avg(F('dish__total_fat') * F('quantity')),
         carb_avg=Avg(F('dish__total_carbohydrate') * F('quantity')),
-        # 以下字段在新表结构中不存在，已注释掉
         fiber_avg=Avg(F('dish__total_fiber') * F('quantity')),
         calcium_avg=Avg(F('dish__calcium') * F('quantity')),
         vitamin_c_avg=Avg(F('dish__vitamin_c') * F('quantity')),
@@ -1056,10 +1087,10 @@ def get_weekly_nutrient_radar_data(request):
             'protein': float(avg_data.get('protein_avg', 0) or 0),
             'fat': float(avg_data.get('fat_avg', 0) or 0),
             'carb': float(avg_data.get('carb_avg', 0) or 0),
-            # 'fiber': float(avg_data.get('fiber', 0) or 0),
-            # 'calcium': float(avg_data.get('calcium', 0) or 0),
-            # 'vitamin_c': float(avg_data.get('vitamin_c', 0) or 0),
-            # 'iron': float(avg_data.get('iron', 0) or 0)
+            'fiber': float(avg_data.get('fiber_avg', 0) or 0),
+            'calcium': float(avg_data.get('calcium_avg', 0) or 0),
+            'vitamin_c': float(avg_data.get('vitamin_c_avg', 0) or 0),
+            'iron': float(avg_data.get('iron_avg', 0) or 0)
         }
 
     this_weekly_avg = process_avg_data(this_weekly_avg)
@@ -1068,11 +1099,8 @@ def get_weekly_nutrient_radar_data(request):
         return round(x or 0, 2)
 
     return JsonResponse({
-        "this_month": [safe(this_weekly_avg[k]) for k in ['protein', 'fat', 'carb']],
-        "last_month": [safe(last_weekly_avg[k]) for k in ['protein', 'fat', 'carb']]
-
-        # "this_month": [safe(this_month_avg[k]) for k in ['protein', 'fiber', 'calcium', 'vitamin_c', 'iron', 'fat']],
-        # "last_month": [safe(last_month_avg[k]) for k in ['protein', 'fiber', 'calcium', 'vitamin_c', 'iron', 'fat']]
+        "this_week": [safe(this_weekly_avg[k]) for k in ['protein', 'fat', 'carb', 'fiber', 'calcium', 'vitamin_c', 'iron']],
+        "last_week": [safe(last_weekly_avg[k]) for k in ['protein', 'fat', 'carb', 'fiber', 'calcium', 'vitamin_c', 'iron']]
     })
 
 
@@ -1092,11 +1120,10 @@ def get_nutrient_radar_data(request):
         protein_avg=Avg(F('dish__total_protein') * F('quantity')),
         fat_avg=Avg(F('dish__total_fat') * F('quantity')),
         carb_avg=Avg(F('dish__total_carbohydrate') * F('quantity')),
-        # 以下字段在新表结构中不存在，已注释掉
-        # fiber_avg=Avg(F('dish__total_fiber') * F('quantity')),
-        # calcium_avg=Avg(F('dish__total_calcium') * F('quantity')),
-        # vitamin_c_avg=Avg(F('dish__total_vitamin_c') * F('quantity')),
-        # iron_avg=Avg(F('dish__total_iron') * F('quantity'))
+        fiber_avg=Avg(F('dish__total_fiber') * F('quantity')),
+        calcium_avg=Avg(F('dish__calcium') * F('quantity')),
+        vitamin_c_avg=Avg(F('dish__vitamin_c') * F('quantity')),
+        iron_avg=Avg(F('dish__iron') * F('quantity')),
     )
 
 
@@ -1109,11 +1136,10 @@ def get_nutrient_radar_data(request):
         protein_avg=Avg(F('dish__total_protein') * F('quantity')),
         fat_avg=Avg(F('dish__total_fat') * F('quantity')),
         carb_avg=Avg(F('dish__total_carbohydrate') * F('quantity')),
-        # 以下字段在新表结构中不存在，已注释掉
-        # fiber_avg=Avg(F('dish__total_fiber') * F('quantity')),
-        # calcium_avg=Avg(F('dish__total_calcium') * F('quantity')),
-        # vitamin_c_avg=Avg(F('dish__total_vitamin_c') * F('quantity')),
-        # iron_avg=Avg(F('dish__total_iron') * F('quantity'))
+        fiber_avg=Avg(F('dish__total_fiber') * F('quantity')),
+        calcium_avg=Avg(F('dish__calcium') * F('quantity')),
+        vitamin_c_avg=Avg(F('dish__vitamin_c') * F('quantity')),
+        iron_avg=Avg(F('dish__iron') * F('quantity')),
     )
 
     # 处理结果，确保所有字段都有默认值0
@@ -1122,10 +1148,10 @@ def get_nutrient_radar_data(request):
             'protein': float(avg_data.get('protein_avg', 0) or 0),
             'fat': float(avg_data.get('fat_avg', 0) or 0),
             'carb': float(avg_data.get('carb_avg', 0) or 0),
-            # 'fiber': float(avg_data.get('fiber', 0) or 0),
-            # 'calcium': float(avg_data.get('calcium', 0) or 0),
-            # 'vitamin_c': float(avg_data.get('vitamin_c', 0) or 0),
-            # 'iron': float(avg_data.get('iron', 0) or 0)
+            'fiber': float(avg_data.get('fiber_avg', 0) or 0),
+            'calcium': float(avg_data.get('calcium_avg', 0) or 0),
+            'vitamin_c': float(avg_data.get('vitamin_c_avg', 0) or 0),
+            'iron': float(avg_data.get('iron_avg', 0) or 0)
         }
 
     this_month_avg = process_avg_data(this_month_avg)
@@ -1134,11 +1160,8 @@ def get_nutrient_radar_data(request):
         return round(x or 0, 2)
 
     return JsonResponse({
-        "this_month": [safe(this_month_avg[k]) for k in ['protein', 'fat', 'carb']],
-        "last_month": [safe(last_month_avg[k]) for k in ['protein', 'fat', 'carb']]
-
-        # "this_month": [safe(this_month_avg[k]) for k in ['protein', 'fiber', 'calcium', 'vitamin_c', 'iron', 'fat']],
-        # "last_month": [safe(last_month_avg[k]) for k in ['protein', 'fiber', 'calcium', 'vitamin_c', 'iron', 'fat']]
+        "this_month": [safe(this_month_avg[k]) for k in ['protein', 'fat', 'carb', 'fiber', 'calcium', 'vitamin_c', 'iron']],
+        "last_month": [safe(last_month_avg[k]) for k in ['protein', 'fat', 'carb', 'fiber', 'calcium', 'vitamin_c', 'iron']]
     })
 
 

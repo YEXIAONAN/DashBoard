@@ -1702,7 +1702,7 @@
                         message: message,
                         is_user: isUser
                     })
-                });
+                }, { passive: true });
                 
                 const result = await response.json();
                 if (result.status === 'success') {
@@ -2905,7 +2905,7 @@
                 }
             });
 
-            window.addEventListener('resize', initVisualizer);
+            window.addEventListener('resize', initVisualizer, { passive: true });
         }
 
         // 测试认证
@@ -3714,7 +3714,7 @@
         setViewportHeight();
 
         // 监听窗口大小变化
-        window.addEventListener('resize', setViewportHeight);
+        window.addEventListener('resize', setViewportHeight, { passive: true });
         window.addEventListener('orientationchange', () => {
             setTimeout(setViewportHeight, 100);
         });
@@ -3731,7 +3731,7 @@
                         conversationArea.scrollTop = conversationArea.scrollHeight;
                     }
                 }, 150);
-            });
+            }, { passive: true });
         }
 
 
