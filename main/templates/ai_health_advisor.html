@@ -1638,11 +1638,11 @@
 
         // 添加消息到会话记录
         function addMessage(text, isUser = false) {
-            // 移除欢迎消息（如果存在）
-            const welcomeMessage = conversationDiv.querySelector('.welcome-message');
-            if (welcomeMessage) {
-                welcomeMessage.remove();
-            }
+            // 不移除欢迎消息，保持欢迎语显示状态
+            // const welcomeMessage = conversationDiv.querySelector('.welcome-message');
+            // if (welcomeMessage) {
+            //     welcomeMessage.remove();
+            // }
 
             const messageDiv = document.createElement('div');
             messageDiv.className = `message ${isUser ? 'user' : 'ai'}`;
