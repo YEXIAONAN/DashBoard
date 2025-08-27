@@ -42,6 +42,8 @@ urlpatterns = [
     path('execute_order_tasks/', api.execute_order_tasks, name='execute_order_tasks'),
     path('api/login/', api.login_v, name='api_login'),
     path('api/logout/', api.logout, name='api_logout'),
+    path('api/save_chat_message/', api.save_chat_message, name='save_chat_message'),
+    path('api/get_chat_history/', api.get_chat_history, name='get_chat_history'),
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATICFILES_DIRS[0])

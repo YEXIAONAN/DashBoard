@@ -1659,6 +1659,68 @@
             }
         }
 
+        // 保存聊天记录到后端
+        async function saveChatMessageToBackend(message, isUser) {
+            try {
+                const response = await fetch('/api/save_chat_message/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCsrfToken()
+                    },
+                    body: JSON.stringify({
+                        message: message,
+                        is_user: isUser
+                    })
+                });
+                
+                const result = await response.json();
+                if (result.status === 'success') {
+                    console.log('聊天记录保存成功');
+                } else {
+                    console.error('聊天记录保存失败:', result.message);
+                }
+            } catch (error) {
+                console.error('保存聊天记录时出错:', error);
+            }
+        }
+        
+        // 加载历史聊天记录
+        async function loadChatHistory() {
+            try {
+                const response = await fetch('/api/get_chat_history/?limit=50');
+                const result = await response.json();
+                
+                if (result.status === 'success') {
+                    const history = result.chat_history;
+                    // 清空当前对话区域（保留欢迎消息）
+                    const messages = conversationDiv.querySelectorAll('.message:not(.welcome-message)');
+                    messages.forEach(msg => msg.remove());
+                    
+                    // 按时间顺序显示历史记录
+                    history.reverse().forEach(chat => {
+                        addMessageToUI(chat.message, chat.is_user, false); // false表示不保存到后端
+                    });
+                } else {
+                    console.error('加载聊天历史失败:', result.message);
+                }
+            } catch (error) {
+                console.error('加载聊天历史时出错:', error);
+            }
+        }
+        
+        // 获取CSRF令牌
+        function getCsrfToken() {
+            const cookies = document.cookie.split(';');
+            for (let cookie of cookies) {
+                const [name, value] = cookie.trim().split('=');
+                if (name === 'csrftoken') {
+                    return value;
+                }
+            }
+            return '';
+        }
+        
         // 添加消息到会话记录
         function addMessage(text, isUser = false) {
             // 不移除欢迎消息，保持欢迎语显示状态
@@ -1666,7 +1728,16 @@
             // if (welcomeMessage) {
             //     welcomeMessage.remove();
             // }
-
+            
+            // 添加消息到UI
+            addMessageToUI(text, isUser, true);
+            
+            // 保存聊天记录到后端
+            saveChatMessageToBackend(text, isUser);
+        }
+        
+        // 添加消息到UI（不保存到后端）
+        function addMessageToUI(text, isUser = false, saveToBackend = true) {
             const messageDiv = document.createElement('div');
             messageDiv.className = `message ${isUser ? 'user' : 'ai'}`;
             
@@ -3559,6 +3630,9 @@
         }
 
         initApp();
+        
+        // 页面加载时加载聊天记录
+        loadChatHistory();
 
         // 动态调整视口高度，解决移动端浏览器地址栏问题
         function setViewportHeight() {

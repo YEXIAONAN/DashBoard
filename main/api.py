@@ -10,6 +10,7 @@ from django.views.decorators.csrf import csrf_exempt  # <--- 导入 csrf_exempt
 
 from .models import Users, Dishes, OrderItems
 from .models import Orders
+from .models import ChatHistory
 import asyncio
 import lebai_sdk as lebai_sdk
 import nest_asyncio
@@ -660,3 +661,73 @@ def execute_task_one(request):
 def execute_task_two():
     lebai = init_mechanical_arm()
     mechanical_arm_scene("1012", lebai)
+
+
+@csrf_exempt
+@require_POST
+def save_chat_message(request):
+    """保存聊天记录"""
+    try:
+        user = request.session.get("user")
+        if not user:
+            return JsonResponse({'status': 'error', 'message': '用户未登录'}, status=401)
+            
+        data = json.loads(request.body)
+        message = data.get('message', '')
+        is_user = data.get('is_user', True)  # True表示用户消息，False表示AI回复
+        
+        if not message:
+            return JsonResponse({'status': 'error', 'message': '消息内容不能为空'}, status=400)
+            
+        # 创建聊天记录
+        chat_history = ChatHistory.objects.create(
+            user_id=user["user_id"],
+            message=message,
+            is_user=is_user,
+            timestamp=timezone.now()
+        )
+        
+        return JsonResponse({
+            'status': 'success', 
+            'message': '聊天记录保存成功',
+            'chat_id': chat_history.chat_id
+        })
+        
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
+
+
+@require_http_methods(["GET"])
+def get_chat_history(request):
+    """获取聊天记录"""
+    try:
+        user = request.session.get("user")
+        if not user:
+            return JsonResponse({'status': 'error', 'message': '用户未登录'}, status=401)
+            
+        # 获取参数
+        limit = int(request.GET.get('limit', 20))  # 默认获取最近20条记录
+        offset = int(request.GET.get('offset', 0))  # 偏移量，用于分页
+        
+        # 查询用户的聊天记录，按时间倒序排列
+        chat_history = ChatHistory.objects.filter(
+            user_id=user["user_id"]
+        ).order_by('-timestamp')[offset:offset+limit]
+        
+        # 格式化返回数据
+        history_data = []
+        for chat in chat_history:
+            history_data.append({
+                'chat_id': chat.chat_id,
+                'message': chat.message,
+                'is_user': chat.is_user,
+                'timestamp': chat.timestamp.strftime('%Y-%m-%d %H:%M:%S')
+            })
+        
+        return JsonResponse({
+            'status': 'success', 
+            'chat_history': history_data
+        })
+        
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': str(e)}, status=500)

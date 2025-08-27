@@ -117,3 +117,15 @@ class Users(models.Model):
     class Meta:
         managed = False
         db_table = 'users'
+
+
+class ChatHistory(models.Model):
+    chat_id = models.AutoField(primary_key=True)
+    user = models.ForeignKey('Users', models.DO_NOTHING)
+    message = models.TextField()
+    is_user = models.BooleanField(default=True)  # True表示用户消息，False表示AI回复
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        managed = True
+        db_table = 'chat_history'
