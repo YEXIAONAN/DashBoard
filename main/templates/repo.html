@@ -2507,18 +2507,19 @@
                         monthly_deficit_change: summaryData.change_percentage,
                         days_goal_achieved: Math.floor(summaryData.goal_achievement_percentage / 20),
                         days_goal_achieved_change: 1,
-                        // 营养素数据从周报雷达数据获取
-                        fiber_intake_this_month: radarData.this_week_fiber_avg || 7,
+                        // 营养素数据从周报雷达数据获取（正确从数组中提取）
+                        // this_week数组顺序: [protein, fat, carb, fiber, calcium, vitamin_c, iron]
+                        fiber_intake_this_month: radarData.this_week[3] || 0,
                         fiber_intake_change: 10,
-                        fat_intake_this_month: radarData.this_week_fat_avg || 37,
+                        fat_intake_this_month: radarData.this_week[1] || 0,
                         fat_intake_change: -5,
-                        calcium_goal_achievement_this_month: (radarData.this_week_calcium_avg / 8) || 7.38,
+                        calcium_goal_achievement_this_month: ((radarData.this_week[4] / 8) * 100) || 0,
                         calcium_goal_change: 15,
-                        vitamin_c_intake_this_month: radarData.this_week_vitamin_c_avg || 9.4,
+                        vitamin_c_intake_this_month: radarData.this_week[5] || 0,
                         vitamin_c_change: 20,
-                        protein_intake_this_month: radarData.this_week_protein_avg || 91,
+                        protein_intake_this_month: radarData.this_week[0] || 0,
                         protein_intake_change: 8,
-                        iron_intake_this_month: radarData.this_week_iron_avg || 14,
+                        iron_intake_this_month: radarData.this_week[6] || 0,
                         iron_intake_change: 12
                     };
                     localStorage.setItem(cacheKey, JSON.stringify(data));
