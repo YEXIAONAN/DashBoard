@@ -5,26 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>智慧餐饮 - 个人中心</title>
     <link rel="stylesheet" href="../static/css/all.min.css">
+    <link rel="stylesheet" href="../static/css/modern-theme.css">
     <style>
-        :root {
-            --primary-deep: #1a5f9e;     /* 主深蓝 - 专业沉稳 */
-            --primary-dark: #0d3a6b;     /* 深海军蓝 - 强调区域 */
-            --primary-light: #2c72b5;    /* 浅蓝色 - 次要元素 */
-            --secondary: #2c3e50;        /* 中性深灰 - 文字主色 */
-            --surface: #ffffff;          /* 纯白背景 */
-            --surface-soft: #f8fafc;     /* 柔和背景 - 卡片内衬 */
-            --surface-hover: #eef5fc;    /* 悬停背景 - 交互反馈 */
-            --text-primary: #2c3e50;     /* 主要文字 */
-            --text-secondary: #546e7a;   /* 次要文字 */
-            --text-muted: #78909c;       /* 辅助文字 */
-            --accent: #3498db;          /* 点缀蓝 - 重要交互 */
-            --success: #27ae60;         /* 成功色 - 进度完成 */
-            --warning: #f39c12;         /* 警告色 - 提醒信息 */
-            --shadow-soft: 0 2px 8px rgba(26, 95, 158, 0.08);
-            --shadow-card: 0 4px 16px rgba(26, 95, 158, 0.12);
-            --shadow-hover: 0 8px 24px rgba(26, 95, 158, 0.15);
-        }
-
         * {
             margin: 0;
             padding: 0;
@@ -33,16 +15,15 @@
         }
 
         body {
-            background: linear-gradient(145deg, #eef5fc 0%, #e6f2ff 100%);
-            color: var(--text-primary);
+            background: linear-gradient(145deg, #E3F2FD 0%, #FFFFFF 50%, #E8F5E9 100%);
+            color: var(--gray-800);
             font-size: 15px;
             overflow-x: hidden;
             min-height: 100vh;
-            min-height: 100dvh; /* 动态视口高度，确保真正全屏 */
+            min-height: 100dvh;
             margin: 0;
             padding: 0;
             line-height: 1.6;
-            /* 确保在iOS Safari等浏览器中全屏显示 */
             -webkit-overflow-scrolling: touch;
         }
 
@@ -53,27 +34,27 @@
             padding: 0;
             background: transparent;
             min-height: 100vh;
-            min-height: 100dvh; /* 动态视口高度 */
+            min-height: 100dvh;
             position: relative;
-            /* 确保容器占满整个屏幕 */
             box-sizing: border-box;
+            padding-top: 64px;
+            padding-bottom: 76px;
         }
 
-        /* 用户信息卡片 - 深蓝主题统一 */
+        /* 用户信息卡片 - 现代主题统一 */
         .user-info-section {
             padding: 20px 15px 15px;
         }
 
         .user-info-card {
-            background: linear-gradient(135deg, var(--primary-deep) 0%, var(--primary-dark) 100%);
+            background: var(--gradient-primary);
             color: white;
-            border-radius: 20px;
+            border-radius: var(--radius-3xl);
             padding: 25px 20px;
             position: relative;
             overflow: hidden;
-            box-shadow: var(--shadow-hover);
-            border: 1px solid rgba(26, 95, 158, 0.08);
-            background-image: linear-gradient(to bottom right, var(--primary-deep), var(--primary-dark));
+            box-shadow: var(--shadow-xl);
+            border: 1px solid var(--primary-light);
         }
 
         .profile-card {
@@ -90,19 +71,19 @@
             width: 80px;
             height: 80px;
             border-radius: 50%;
-            background: var(--surface);
+            background: var(--white);
             display: flex;
             align-items: center;
             justify-content: center;
             overflow: hidden;
             border: 3px solid rgba(255, 255, 255, 0.3);
-            box-shadow: var(--shadow-soft);
-            transition: all 0.3s ease;
+            box-shadow: var(--shadow-lg);
+            transition: all var(--transition-base);
         }
 
         .user-avatar:hover {
             transform: scale(1.05);
-            box-shadow: var(--shadow-card);
+            box-shadow: var(--shadow-xl);
         }
 
         .user-avatar img {
@@ -135,7 +116,7 @@
         .section-title {
             font-size: 1.1rem;
             font-weight: 700;
-            color: var(--primary-deep);
+            color: var(--gray-800);
             margin-bottom: 15px;
             display: flex;
             align-items: center;
@@ -143,21 +124,20 @@
         }
 
         .section-title i {
-            color: var(--primary-light);
+            color: var(--primary-blue);
         }
 
-        /* 订单状态卡片 - 深蓝主题统一 */
+        /* 订单状态卡片 - 现代主题统一 */
         .order-section {
             padding: 0 15px 15px;
         }
 
         .order-card {
-            background: var(--surface);
-            border-radius: 20px;
+            background: var(--white);
+            border-radius: var(--radius-3xl);
             padding: 20px;
-            box-shadow: var(--shadow-card);
-            border: 1px solid rgba(26, 95, 158, 0.08);
-            background-image: linear-gradient(to bottom right, var(--surface), var(--surface-soft));
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--gray-200);
         }
 
         .order-status {
@@ -165,7 +145,7 @@
             justify-content: space-between;
             padding-bottom: 15px;
             margin-bottom: 15px;
-            border-bottom: 1px solid rgba(26, 95, 158, 0.08);
+            border-bottom: 1px solid var(--gray-200);
         }
 
         .status-item {
@@ -177,14 +157,14 @@
             padding: 10px 5px;
             margin: 0;
             outline: none;
-            border-radius: 12px;
-            transition: all 0.3s ease;
+            border-radius: var(--radius-xl);
+            transition: all var(--transition-base);
         }
 
         .status-item:hover {
             transform: translateY(-3px);
-            background: var(--surface-hover);
-            box-shadow: var(--shadow-soft);
+            background: var(--gray-100);
+            box-shadow: var(--shadow-md);
         }
 
         .status-item:active {
@@ -195,36 +175,36 @@
         .status-icon {
             width: 48px;
             height: 48px;
-            border-radius: 15px;
+            border-radius: var(--radius-xl);
             margin: 0 auto 8px;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 1.3rem;
             color: white;
-            box-shadow: 0 2px 8px rgba(26, 95, 158, 0.2);
-            transition: all 0.3s ease;
+            box-shadow: var(--shadow-md);
+            transition: all var(--transition-base);
         }
 
         .status-item:hover .status-icon {
             transform: scale(1.05);
-            box-shadow: 0 4px 12px rgba(26, 95, 158, 0.3);
+            box-shadow: var(--shadow-lg);
         }
 
-        .status-1 { background: linear-gradient(135deg, var(--primary-deep), var(--primary-dark)); }
-        .status-2 { background: linear-gradient(135deg, var(--success), #1b5e20); }
+        .status-1 { background: var(--gradient-primary); }
+        .status-2 { background: var(--gradient-green); }
         .status-3 { background: linear-gradient(135deg, var(--warning), #e65100); }
-        .status-4 { background: linear-gradient(135deg, var(--accent), var(--primary-light)); }
+        .status-4 { background: linear-gradient(135deg, var(--accent-green), var(--accent-green-light)); }
 
         .status-label {
             font-size: 0.8rem;
             font-weight: 500;
-            color: var(--text-secondary);
-            transition: color 0.3s ease;
+            color: var(--gray-600);
+            transition: color var(--transition-base);
         }
 
         .status-item:hover .status-label {
-            color: var(--primary-deep);
+            color: var(--primary-blue);
         }
 
         .order-count {
@@ -247,7 +227,7 @@
         .recent-title {
             font-size: 1rem;
             font-weight: 600;
-            color: var(--primary-deep);
+            color: var(--gray-800);
             margin-bottom: 15px;
             display: flex;
             align-items: center;
@@ -257,17 +237,17 @@
         .recent-order {
             display: flex;
             padding: 12px 0;
-            border-bottom: 1px solid rgba(26, 95, 158, 0.08);
+            border-bottom: 1px solid var(--gray-200);
             gap: 15px;
             align-items: center;
-            transition: all 0.3s ease;
-            border-radius: 12px;
+            transition: all var(--transition-base);
+            border-radius: var(--radius-xl);
             margin: 0 -10px;
             padding: 12px 10px;
         }
 
         .recent-order:hover {
-            background: var(--surface-hover);
+            background: var(--gray-100);
             transform: translateX(5px);
         }
 
@@ -278,14 +258,14 @@
         .order-img {
             width: 60px;
             height: 60px;
-            border-radius: 12px;
+            border-radius: var(--radius-xl);
             overflow: hidden;
-            background: linear-gradient(135deg, rgba(26, 95, 158, 0.1), rgba(26, 95, 158, 0.05));
+            background: var(--primary-pale);
             display: flex;
             align-items: center;
             justify-content: center;
-            color: var(--primary-deep);
-            border: 1px solid rgba(26, 95, 158, 0.08);
+            color: var(--primary-blue);
+            border: 1px solid var(--gray-200);
         }
 
         .order-details {
@@ -295,42 +275,41 @@
         .order-name {
             font-weight: 600;
             margin-bottom: 5px;
-            color: var(--text-primary);
+            color: var(--gray-800);
         }
 
         .order-meta {
             display: flex;
             font-size: 0.85rem;
-            color: var(--text-muted);
+            color: var(--gray-500);
             justify-content: space-between;
         }
 
         .order-price {
             font-weight: 700;
-            color: var(--accent);
+            color: var(--accent-green);
         }
 
         .order-status-tag {
-            background: rgba(26, 95, 158, 0.1);
-            color: var(--primary-deep);
+            background: var(--primary-pale);
+            color: var(--primary-blue);
             padding: 3px 8px;
-            border-radius: 12px;
+            border-radius: var(--radius-xl);
             font-size: 0.8rem;
             font-weight: 600;
         }
 
-        /* 健康数据卡片 - 深蓝主题统一 */
+        /* 健康数据卡片 - 现代主题统一 */
         .health-section {
             padding: 0 15px 15px;
         }
 
         .health-card {
-            background: var(--surface);
-            border-radius: 20px;
+            background: var(--white);
+            border-radius: var(--radius-3xl);
             padding: 20px;
-            box-shadow: var(--shadow-card);
-            border: 1px solid rgba(26, 95, 158, 0.08);
-            background-image: linear-gradient(to bottom right, var(--surface), var(--surface-soft));
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--gray-200);
         }
 
         .health-grid {
@@ -340,44 +319,44 @@
         }
 
         .health-item {
-            background: var(--surface-soft);
-            border-radius: 16px;
+            background: var(--gray-100);
+            border-radius: var(--radius-2xl);
             padding: 15px;
             display: flex;
             align-items: center;
             gap: 12px;
-            transition: all 0.3s ease;
-            border: 1px solid rgba(26, 95, 158, 0.06);
+            transition: all var(--transition-base);
+            border: 1px solid var(--gray-200);
         }
 
         .health-item:hover {
             transform: translateY(-3px);
-            box-shadow: var(--shadow-hover);
+            box-shadow: var(--shadow-lg);
             border-color: var(--primary-light);
         }
 
         .health-icon {
             width: 48px;
             height: 48px;
-            border-radius: 15px;
+            border-radius: var(--radius-xl);
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 1.3rem;
             color: white;
-            box-shadow: 0 2px 8px rgba(26, 95, 158, 0.2);
-            transition: all 0.3s ease;
+            box-shadow: var(--shadow-md);
+            transition: all var(--transition-base);
         }
 
         .health-item:hover .health-icon {
             transform: scale(1.05);
-            box-shadow: 0 4px 12px rgba(26, 95, 158, 0.3);
+            box-shadow: var(--shadow-lg);
         }
 
-        .health-1 { background: linear-gradient(135deg, var(--primary-deep), var(--primary-dark)); }
-        .health-2 { background: linear-gradient(135deg, var(--success), #1b5e20); }
+        .health-1 { background: var(--gradient-primary); }
+        .health-2 { background: var(--gradient-green); }
         .health-3 { background: linear-gradient(135deg, var(--warning), #e65100); }
-        .health-4 { background: linear-gradient(135deg, var(--accent), var(--primary-light)); }
+        .health-4 { background: linear-gradient(135deg, var(--accent-green), var(--accent-green-light)); }
 
         .health-info {
             flex: 1;
@@ -387,27 +366,26 @@
             font-size: 0.85rem;
             font-weight: 500;
             margin-bottom: 3px;
-            color: var(--text-secondary);
+            color: var(--gray-600);
         }
 
         .health-value {
             font-size: 1.1rem;
             font-weight: 700;
-            color: var(--primary-deep);
+            color: var(--gray-800);
         }
 
-        /* 设置项 - 深蓝主题统一 */
+        /* 设置项 - 现代主题统一 */
         .settings-section {
             padding: 0 15px 15px;
         }
 
         .settings-card {
-            background: var(--surface);
-            border-radius: 20px;
+            background: var(--white);
+            border-radius: var(--radius-3xl);
             padding: 15px 0;
-            box-shadow: var(--shadow-card);
-            border: 1px solid rgba(26, 95, 158, 0.08);
-            background-image: linear-gradient(to bottom right, var(--surface), var(--surface-soft));
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--gray-200);
         }
 
         .setting-item {
@@ -415,10 +393,10 @@
             align-items: center;
             padding: 15px 20px;
             text-decoration: none;
-            color: var(--text-primary);
-            border-bottom: 1px solid rgba(26, 95, 158, 0.08);
-            transition: all 0.3s ease;
-            border-radius: 12px;
+            color: var(--gray-800);
+            border-bottom: 1px solid var(--gray-200);
+            transition: all var(--transition-base);
+            border-radius: var(--radius-xl);
             margin: 0 10px;
         }
 
@@ -427,46 +405,46 @@
         }
 
         .setting-item:hover {
-            background: var(--surface-hover);
+            background: var(--gray-100);
             transform: translateX(5px);
-            box-shadow: var(--shadow-soft);
+            box-shadow: var(--shadow-md);
         }
 
         .setting-icon {
             width: 48px;
             height: 48px;
-            border-radius: 15px;
-            background: linear-gradient(135deg, rgba(26, 95, 158, 0.1), rgba(26, 95, 158, 0.05));
+            border-radius: var(--radius-xl);
+            background: var(--primary-pale);
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 1.3rem;
-            color: var(--primary-deep);
+            color: var(--primary-blue);
             margin-right: 15px;
-            box-shadow: 0 2px 8px rgba(26, 95, 158, 0.1);
-            transition: all 0.3s ease;
+            box-shadow: var(--shadow-sm);
+            transition: all var(--transition-base);
         }
 
         .setting-item:hover .setting-icon {
             transform: scale(1.05);
-            box-shadow: 0 4px 12px rgba(26, 95, 158, 0.2);
+            box-shadow: var(--shadow-md);
         }
 
         .setting-text {
             flex: 1;
             font-size: 0.95rem;
             font-weight: 500;
-            color: var(--text-primary);
+            color: var(--gray-800);
         }
 
         .setting-arrow {
             font-size: 0.9rem;
-            color: var(--text-muted);
-            transition: all 0.3s ease;
+            color: var(--gray-500);
+            transition: all var(--transition-base);
         }
 
         .setting-item:hover .setting-arrow {
-            color: var(--primary-deep);
+            color: var(--primary-blue);
             transform: translateX(3px);
         }
 
@@ -522,157 +500,6 @@
             }
         }
 
-        /* ===== 顶部栏样式 ===== */
-        .top-header {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 60px;
-            background: linear-gradient(135deg, var(--primary-deep), var(--primary-dark));
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 20px;
-            z-index: 100;
-            box-shadow: var(--shadow-card);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            /* 支持刘海屏等异形屏 */
-            padding-top: env(safe-area-inset-top);
-            padding-left: max(20px, env(safe-area-inset-left));
-            padding-right: max(20px, env(safe-area-inset-right));
-        }
-
-        .header-left {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .header-logo {
-            width: 36px;
-            height: 36px;
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2rem;
-            backdrop-filter: blur(10px);
-        }
-
-        .header-title {
-            font-size: 1.1rem;
-            font-weight: 700;
-        }
-
-        .header-right {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .header-icon {
-            width: 36px;
-            height: 36px;
-            background: rgba(255, 255, 255, 0.15);
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(10px);
-        }
-
-        .header-icon:hover {
-            background: rgba(255, 255, 255, 0.25);
-            transform: scale(1.05);
-        }
-
-        /* ===== 底部导航栏样式 ===== */
-        .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100vw;
-            height: 70px;
-            background: var(--surface);
-            border-top: 1px solid rgba(26, 95, 158, 0.08);
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            z-index: 100;
-            box-shadow: 0 -4px 16px rgba(26, 95, 158, 0.12);
-            backdrop-filter: blur(10px);
-            /* 支持刘海屏等异形屏 */
-            padding-bottom: env(safe-area-inset-bottom);
-            padding-left: env(safe-area-inset-left);
-            padding-right: env(safe-area-inset-right);
-        }
-
-        .nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 8px 12px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            border-radius: 12px;
-            min-width: 60px;
-        }
-
-        .nav-item:hover {
-            background: var(--surface-hover);
-            transform: translateY(-2px);
-        }
-
-        .nav-item.active {
-            background: linear-gradient(135deg, rgba(26, 95, 158, 0.1), rgba(26, 95, 158, 0.05));
-            border: 1px solid rgba(26, 95, 158, 0.2);
-        }
-
-        .nav-icon {
-            width: 24px;
-            height: 24px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2rem;
-            color: var(--text-muted);
-            margin-bottom: 4px;
-            transition: all 0.3s ease;
-        }
-
-        .nav-item.active .nav-icon {
-            color: var(--primary-deep);
-            transform: scale(1.1);
-        }
-
-        .nav-label {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            font-weight: 500;
-            transition: all 0.3s ease;
-        }
-
-        .nav-item.active .nav-label {
-            color: var(--primary-deep);
-            font-weight: 600;
-        }
-
-        /* 为页面内容添加顶部和底部间距 */
-        .main-content {
-            padding-top: calc(70px + env(safe-area-inset-top));
-            padding-bottom: calc(80px + env(safe-area-inset-bottom));
-            padding-left: env(safe-area-inset-left);
-            padding-right: env(safe-area-inset-right);
-            min-height: 100vh;
-            min-height: 100dvh;
-        }
-
         /* 新增动画效果 - 与index.html统一 */
         .user-info-card {
             animation: slideInUp 0.6s ease forwards;
@@ -713,9 +540,8 @@
     </div>
 
     <div class="container">
-        <div class="main-content">
-            <!-- 用户信息卡片 - 优化后 -->
-            <div class="user-info-section">
+        <!-- 用户信息卡片 - 优化后 -->
+        <div class="user-info-section">
                 <div class="user-info-card">
                     <!-- 背景特效 -->
                     <div class="floating-element circle" style="top: -50px; right: -50px;"></div>
@@ -970,7 +796,7 @@
                 let targetUrl = '';
                 switch(target) {
                     case 'index':
-                        targetUrl = "/index/";
+                        targetUrl = "/";
                         break;
                     case 'orders':
                         targetUrl = "/orders/";

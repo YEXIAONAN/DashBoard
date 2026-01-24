@@ -2,22 +2,37 @@ import json
 import random
 import pandas as pd
 import time
+import os
 from django.contrib.auth.decorators import login_required
 from django.core import serializers
 from django.db.models import Sum, Value, DecimalField, Prefetch, F, Q, Count
 from django.db.models.functions import Coalesce, TruncDate
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render
 from django.db.models import Avg
 from django.utils.timezone import now
 from django.template.defaultfilters import date
 # 2. 定义所有页面的渲染视图
 from django.utils import timezone
+from django.conf import settings
 from collections import defaultdict
 from datetime import date, timedelta, datetime
 from calendar import monthrange # 导入 monthrange 以获取月份天数
 
 from main.models import Dishes, Orders, OrderItems, Users
+
+
+def connect_test(request):
+    """
+    显示connecttest.txt文件的内容
+    """
+    file_path = os.path.join(settings.BASE_DIR, 'main', 'templates', 'connecttest.txt')
+    try:
+        with open(file_path, 'r', encoding='utf-8') as file:
+            content = file.read()
+        return HttpResponse(content, content_type='text/plain')
+    except FileNotFoundError:
+        return HttpResponse("File not found", status=404)
 
 
 # --- 基本页面视图 ---
@@ -206,6 +221,24 @@ def repo(request):
     from django.conf import settings
     user = getUserSession(request)
     user_id = user["user_id"]
+    
+    # 获取用户名字和性别
+    user_name = ""
+    user_name_only = ""  # 纯用户名，不包含称谓
+    if user:
+        try:
+            user_obj = Users.objects.get(user_id=user["user_id"])
+            if user_obj.name:
+                user_name_only = user_obj.name  # 保存纯用户名
+                if user_obj.gender == "男":
+                    user_name = f"{user_obj.name}先生"
+                elif user_obj.gender == "女":
+                    user_name = f"{user_obj.name}女士"
+                else:
+                    user_name = user_obj.name
+        except Users.DoesNotExist:
+            pass
+    
     # 1. 推荐菜品（最多 4 条）
     recommendations = personalized(user_id)
     # dish_id_arr = recommendations["dish_id_arr"]
@@ -246,6 +279,8 @@ def repo(request):
         'today_total': totals,
         'settings': settings,
         'timestamp': int(time.time()),
+        'user_name': user_name,
+        'user_name_only': user_name_only,  # 添加纯用户名变量
     })
 
 def ai_health_advisor(request):

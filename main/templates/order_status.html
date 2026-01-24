@@ -4,10 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>智慧食堂 - 订单状态</title>
-    <link rel="stylesheet" href="../static/css/all.min.css">
+    <link rel="stylesheet" href="../static/css/all.min.css">`n    <link rel="stylesheet" href="../static/css/modern-theme.css">
     <style>
         :root {
-            --primary-deep: #1a5f9e;
+            --primary-deep: #4A90E2;
             --primary-dark: #2c5aa0;
             --primary-light: #4a90e2;
             --surface: #ffffff;
@@ -26,7 +26,7 @@
         }
 
         body {
-            background: linear-gradient(145deg, #eef5fc 0%, #e6f2ff 100%);
+            background: linear-gradient(145deg, #FAFBFC 0%, #F5F7FA 100%);
             color: var(--text-primary);
             line-height: 1.6;
             min-height: 100vh;
@@ -301,7 +301,7 @@
 
         .retry-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(26, 95, 158, 0.3);
+            box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3);
         }
 
         .loading-overlay {
@@ -363,7 +363,7 @@
 
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(26, 95, 158, 0.3);
+            box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3);
         }
 
         .btn-outline {
@@ -456,12 +456,12 @@
             font-size: 1rem;
             cursor: pointer;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(26, 95, 158, 0.4);
+            box-shadow: 0 4px 15px rgba(74, 144, 226, 0.4);
         }
 
         .modal-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(26, 95, 158, 0.6);
+            box-shadow: 0 6px 20px rgba(74, 144, 226, 0.6);
         }
 
         /* 响应式设计 */
@@ -569,7 +569,7 @@
             </div>
             <div class="view-content">
                 <div class="video-container">
-                    <img src="http://192.168.101.242:5000/video_feed"
+                    <img src="http://172.16.4.223:5000/video_feed"
                          class="video-stream"
                          alt="YOLOv5 Detection Stream"
                          onerror="this.style.display='none'; document.getElementById('backup-view').style.display='block'; document.getElementById('video-controls').style.display='none';">
@@ -717,7 +717,7 @@
             backupView.style.display = 'none';
 
             // 添加时间戳避免缓存
-            img.src = `http://192.168.101.242:5000/video_feed?t=${Date.now()}`;
+            img.src = `http://172.16.4.223:5000/video_feed?t=${Date.now()}`;
 
             // 2秒后隐藏加载界面
             setTimeout(() => {

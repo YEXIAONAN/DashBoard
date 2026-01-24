@@ -4,95 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>AI健康顾问 - 智能助手</title>
-     <link rel="stylesheet" href="../static/css/all.min.css">
+    <link rel="stylesheet" href="../static/css/all.min.css">
+    <link rel="stylesheet" href="../static/css/modern-theme.css">
      <script src="../static/js/marked.min.js"></script>
     <style>
-        /* ===== 顶部栏样式 ===== */
-        .top-header {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 60px;
-            background: linear-gradient(135deg, var(--primary-deep), var(--primary-dark));
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 20px;
-            z-index: 100;
-            box-shadow: var(--shadow-card);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
 
-        .header-left {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .header-logo {
-            width: 36px;
-            height: 36px;
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2rem;
-            backdrop-filter: blur(10px);
-        }
-
-        .header-title {
-            font-size: 1.1rem;
-            font-weight: 700;
-        }
-
-        .header-right {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .header-icon {
-            width: 36px;
-            height: 36px;
-            background: rgba(255, 255, 255, 0.15);
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(10px);
-        }
-
-        .header-icon:hover {
-            background: rgba(255, 255, 255, 0.25);
-            transform: scale(1.05);
-            transition: all 0.3s ease;
-        }
-
-        /* ===== 深蓝专业主题配色方案 ===== */
-        :root {
-            --primary-deep: #1a5f9e;
-            --primary-dark: #0d3a6b;
-            --primary-light: #2c72b5;
-            --secondary: #2c3e50;
-            --surface: #ffffff;
-            --surface-soft: #f8fafc;
-            --surface-hover: #eef5fc;
-            --text-primary: #2c3e50;
-            --text-secondary: #546e7a;
-            --text-muted: #78909c;
-            --accent: #3498db;
-            --success: #27ae60;
-            --warning: #f39c12;
-            --error: #e74c3c;
-            --shadow-soft: 0 2px 8px rgba(26, 95, 158, 0.08);
-            --shadow-card: 0 4px 16px rgba(26, 95, 158, 0.12);
-            --shadow-hover: 0 8px 24px rgba(26, 95, 158, 0.15);
-        }
 
         * {
             margin: 0;
@@ -125,8 +41,8 @@
         }
 
         body {
-            background: linear-gradient(145deg, #eef5fc 0%, #e6f2ff 100%);
-            color: var(--text-primary);
+            background: linear-gradient(145deg, #E3F2FD 0%, #FFFFFF 50%, #E8F5E9 100%);
+            color: var(--gray-800);
             font-size: 15px;
             line-height: 1.6;
             position: fixed;
@@ -150,8 +66,8 @@
             overflow: hidden;
             display: flex;
             flex-direction: column;
-            padding-top: 60px; /* 添加顶部内边距，避免被顶部栏挡住 */
-            padding-bottom: 70px; /* 添加底部内边距，避免被底部导航栏挡住 */
+            padding-top: 64px;
+            padding-bottom: 76px;
             animation: fadeIn 0.8s ease forwards;
         }
 
@@ -164,7 +80,7 @@
             background: var(--surface);
             border-radius: 20px;
             box-shadow: var(--shadow-card);
-            border: 1px solid rgba(26, 95, 158, 0.08);
+            border: 1px solid rgba(74, 144, 226, 0.08);
             background-image: linear-gradient(to bottom right, var(--surface), var(--surface-soft));
             overflow: hidden;
             min-height: 0; /* 确保flex子元素可以收缩 */
@@ -173,7 +89,7 @@
 
         .chat-header {
             padding: 20px;
-            border-bottom: 1px solid rgba(26, 95, 158, 0.08);
+            border-bottom: 1px solid rgba(74, 144, 226, 0.08);
             background: var(--surface-soft);
         }
 
@@ -274,7 +190,7 @@
 
         .message.ai {
             background: var(--surface-soft);
-            border: 1px solid rgba(26, 95, 158, 0.08);
+            border: 1px solid rgba(74, 144, 226, 0.08);
             color: var(--text-primary);
             margin-right: auto;
             border-bottom-left-radius: 6px;
@@ -351,35 +267,38 @@
 
         /* ===== 输入区域样式 ===== */
         .input-area {
-            padding: 20px;
-            border-top: 1px solid rgba(26, 95, 158, 0.08);
-            background: var(--surface);
+            padding: var(--space-5);
+            border-top: 1px solid var(--gray-200);
+            background: var(--white);
+            box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.04);
         }
 
         .input-tabs {
             display: flex;
-            margin-bottom: 15px;
-            background: var(--surface-soft);
-            border-radius: 12px;
-            padding: 4px;
+            margin-bottom: var(--space-4);
+            background: var(--gray-100);
+            border-radius: var(--radius-xl);
+            padding: var(--space-1);
+            border: 1px solid var(--gray-200);
         }
 
         .input-tab {
             flex: 1;
-            padding: 8px 16px;
+            padding: var(--space-2) var(--space-4);
             border: none;
             background: none;
-            border-radius: 8px;
+            border-radius: var(--radius-lg);
             cursor: pointer;
-            transition: all 0.3s ease;
-            font-weight: 500;
-            color: var(--text-muted);
+            transition: all var(--transition-base);
+            font-weight: 600;
+            color: var(--gray-600);
+            font-size: 0.875rem;
         }
 
         .input-tab.active {
-            background: var(--surface);
-            color: var(--primary-deep);
-            box-shadow: var(--shadow-soft);
+            background: var(--white);
+            color: var(--primary-blue);
+            box-shadow: var(--shadow-sm);
         }
 
         .input-content {
@@ -398,16 +317,17 @@
 
         .text-input {
             flex: 1;
-            padding: 12px 16px;
-            border: 1px solid rgba(26, 95, 158, 0.2);
-            border-radius: 20px;
-            background: var(--surface);
-            color: var(--text-primary);
+            padding: var(--space-3) var(--space-4);
+            border: 2px solid var(--gray-200);
+            border-radius: var(--radius-2xl);
+            background: var(--white);
+            color: var(--gray-800);
             resize: none;
-            min-height: 44px;
+            min-height: 48px;
             max-height: 120px;
-            transition: all 0.3s ease;
+            transition: all var(--transition-base);
             font-family: inherit;
+            font-size: 0.9375rem;
             -webkit-appearance: none;
             -moz-appearance: none;
             appearance: none;
@@ -415,8 +335,8 @@
 
         .text-input:focus {
             outline: none;
-            border-color: var(--primary-light);
-            box-shadow: 0 0 0 3px rgba(26, 95, 158, 0.1);
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 0 4px var(--primary-pale);
             -webkit-tap-highlight-color: transparent;
         }
 
@@ -431,33 +351,31 @@
         }
 
         .send-button {
-            width: 44px;
-            height: 44px;
+            width: 48px;
+            height: 48px;
             border: none;
             border-radius: 50%;
-            background: linear-gradient(135deg, var(--primary-deep), var(--primary-dark));
+            background: var(--gradient-primary);
             color: white;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all var(--transition-base);
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: var(--shadow-soft);
+            box-shadow: var(--shadow-md);
         }
 
         .send-button:hover:not(:disabled) {
-            background: linear-gradient(135deg, var(--primary-light), var(--primary-deep));
-            transform: scale(1.05);
-            box-shadow: var(--shadow-hover);
+            transform: scale(1.1);
+            box-shadow: var(--shadow-lg);
         }
 
         .send-button:active:not(:disabled) {
-            background: linear-gradient(135deg, var(--primary-dark), var(--primary-deep));
             transform: scale(0.95);
         }
 
         .send-button:disabled {
-            background: #cccccc;
+            background: var(--gray-300);
             cursor: not-allowed;
             transform: none;
         }
@@ -524,7 +442,7 @@
         .audio-visualizer {
             height: 60px;
             width: 100%;
-            border: 1px solid rgba(26, 95, 158, 0.2);
+            border: 1px solid rgba(74, 144, 226, 0.2);
             border-radius: 12px;
             background: var(--surface-soft);
             display: none;
@@ -538,7 +456,7 @@
                 width: 380px;
                 height: calc(100vh - 60px);
                 background: var(--surface);
-                border-left: 1px solid rgba(26, 95, 158, 0.08);
+                border-left: 1px solid rgba(74, 144, 226, 0.08);
                 box-shadow: var(--shadow-card);
                 transition: right 0.3s ease;
                 z-index: 99;
@@ -551,7 +469,7 @@
 
         .settings-header {
             padding: 20px;
-            border-bottom: 1px solid rgba(26, 95, 158, 0.08);
+            border-bottom: 1px solid rgba(74, 144, 226, 0.08);
             background: var(--surface-soft);
         }
 
@@ -600,7 +518,7 @@
         .setting-item input {
             flex: 1;
             padding: 8px 12px;
-            border: 1px solid rgba(26, 95, 158, 0.2);
+            border: 1px solid rgba(74, 144, 226, 0.2);
             border-radius: 8px;
             background: var(--surface);
             color: var(--text-primary);
@@ -610,7 +528,7 @@
         .setting-item input:focus {
             outline: none;
             border-color: var(--primary-light);
-            box-shadow: 0 0 0 3px rgba(26, 95, 158, 0.1);
+            box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
         }
 
         .connect-button {
@@ -671,7 +589,7 @@
             line-height: 1.4;
             margin-top: 8px;
             padding: 8px 12px;
-            background: rgba(26, 95, 158, 0.05);
+            background: rgba(74, 144, 226, 0.05);
             border-radius: 6px;
             border-left: 3px solid rgba(231, 76, 60, 0.3);
         }
@@ -740,73 +658,6 @@
         .mic-status-btn:hover {
             background: var(--primary-deep);
             transform: translateY(-1px);
-        }
-
-        /* ===== 底部导航栏样式 ===== */
-        .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100vw;
-            height: 70px;
-            background: #ffffff;
-            border-top: 1px solid rgba(26, 95, 158, 0.08);
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            z-index: 100;
-            box-shadow: 0 -4px 16px rgba(26, 95, 158, 0.12);
-            backdrop-filter: blur(10px);
-            /* 支持刘海屏等异形屏 */
-            padding-bottom: env(safe-area-inset-bottom);
-            padding-left: env(safe-area-inset-left);
-            padding-right: env(safe-area-inset-right);
-        }
-
-        .nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 8px 12px;
-            cursor: pointer;
-            border-radius: 12px;
-            min-width: 60px;
-        }
-
-        .nav-item:hover {
-            background: var(--surface-hover);
-        }
-
-        .nav-item.active {
-            background: linear-gradient(135deg, rgba(26, 95, 158, 0.1), rgba(26, 95, 158, 0.05));
-            border: 1px solid rgba(26, 95, 158, 0.2);
-        }
-
-        .nav-icon {
-            width: 24px;
-            height: 24px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2rem;
-            color: var(--text-muted);
-            margin-bottom: 4px;
-        }
-
-        .nav-item.active .nav-icon {
-            color: var(--primary-deep);
-        }
-
-        .nav-label {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            font-weight: 500;
-        }
-
-        .nav-item.active .nav-label {
-            color: var(--primary-deep);
-            font-weight: 600;
         }
 
         /* 为页面内容添加底部间距 */
@@ -1251,13 +1102,13 @@
             margin: 8px 0;
             padding: 8px 12px;
             border-left: 3px solid var(--primary-light);
-            background: rgba(26, 95, 158, 0.05);
+            background: rgba(74, 144, 226, 0.05);
             border-radius: 0 8px 8px 0;
             font-style: italic;
         }
         
         .message code {
-            background: rgba(26, 95, 158, 0.1);
+            background: rgba(74, 144, 226, 0.1);
             padding: 2px 4px;
             border-radius: 4px;
             font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
@@ -1266,8 +1117,8 @@
         }
         
         .message pre {
-            background: rgba(26, 95, 158, 0.05);
-            border: 1px solid rgba(26, 95, 158, 0.2);
+            background: rgba(74, 144, 226, 0.05);
+            border: 1px solid rgba(74, 144, 226, 0.2);
             border-radius: 8px;
             padding: 12px;
             margin: 8px 0;
@@ -1291,18 +1142,18 @@
         }
         
         .message th, .message td {
-            border: 1px solid rgba(26, 95, 158, 0.2);
+            border: 1px solid rgba(74, 144, 226, 0.2);
             padding: 6px 8px;
             text-align: left;
         }
         
         .message th {
-            background: rgba(26, 95, 158, 0.1);
+            background: rgba(74, 144, 226, 0.1);
             font-weight: 600;
         }
         
         .message tr:nth-child(even) {
-            background: rgba(26, 95, 158, 0.02);
+            background: rgba(74, 144, 226, 0.02);
         }
         
         .message a {
@@ -1330,7 +1181,7 @@
         .message hr {
             border: none;
             height: 1px;
-            background: rgba(26, 95, 158, 0.2);
+            background: rgba(74, 144, 226, 0.2);
             margin: 12px 0;
         }
         
@@ -1447,7 +1298,7 @@
                         <button class="quick-button" onclick="sendQuickMessage('我想健康减肥')">我想健康减肥</button>
                         <button class="quick-button" onclick="sendQuickMessage('我想均衡饮食')">我想均衡饮食</button>
                         <button class="quick-button" onclick="sendQuickMessage('我应该怎么吃')">我应该怎么吃</button>
-                        <button class="quick-button" onclick="sendQuickMessage('从数据库中查询我的饮食习惯')">从数据库中查询我的饮食习惯</button>
+                        <button class="quick-button" onclick="sendQuickMessage('{{user_name}}从数据库中查询我的饮食习惯')">从数据库中查询我的饮食习惯</button>
                     </div>
                 </div>
             </div>
@@ -1502,11 +1353,11 @@
                 <h3><i class="fas fa-server"></i> 服务器配置</h3>
                 <div class="setting-item">
                     <label>WebSocket:</label>
-                    <input type="text" id="serverUrl" value="ws://192.168.101.251:8000/xiaozhi/v1/" placeholder="WebSocket服务器地址">
+                    <input type="text" id="serverUrl" value="ws://172.16.65.200:8000/xiaozhi/v1/" placeholder="WebSocket服务器地址">
                 </div>
                 <div class="setting-item">
                     <label>OTA服务:</label>
-                    <input type="text" id="otaUrl" value="http://192.168.101.251:8002/xiaozhi/ota/" placeholder="OTA服务器地址">
+                    <input type="text" id="otaUrl" value="http://172.16.65.200:8002/xiaozhi/ota/" placeholder="OTA服务器地址">
                 </div>
                 <button class="connect-button" id="connectButton">连接服务器</button>
             </div>
@@ -4156,3 +4007,4 @@
 </body>
 
 </html>
+

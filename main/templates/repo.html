@@ -97,11 +97,58 @@
         })();
     </script>
     <link rel="stylesheet" href="{% static 'css/all.min.css' %}?v={{ settings.STATIC_VERSION }}&t={{ settings.STATIC_VERSION }}_{{ timestamp }}">
+    <link rel="stylesheet" href="{% static 'css/modern-theme.css' %}?v={{ settings.STATIC_VERSION }}&t={{ settings.STATIC_VERSION }}_{{ timestamp }}">
     <script src="{% static 'js/chart.js' %}?v={{ settings.STATIC_VERSION }}&t={{ settings.STATIC_VERSION }}_{{ timestamp }}"></script>
     <script src="{% static 'js/echarts.min.js' %}?v={{ settings.STATIC_VERSION }}&t={{ settings.STATIC_VERSION }}_{{ timestamp }}"></script>
     <script src="{% static 'js/marked.min.js' %}?v={{ settings.STATIC_VERSION }}&t={{ settings.STATIC_VERSION }}_{{ timestamp }}"></script>
     <script src="{% static 'js/html2pdf.bundle.min.js' %}?v={{ settings.STATIC_VERSION }}&t={{ settings.STATIC_VERSION }}_{{ timestamp }}"></script>
     <style>
+        /* ===== 下载按钮特殊样式 ===== */
+        .download-btn {
+            position: relative;
+            overflow: visible !important;
+        }
+
+        .download-tooltip {
+            position: absolute;
+            top: calc(100% + 12px);
+            right: 0;
+            background: rgba(0, 0, 0, 0.85);
+            color: white;
+            padding: var(--space-2) var(--space-3);
+            border-radius: var(--radius-lg);
+            font-size: 0.8125rem;
+            white-space: nowrap;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: all var(--transition-base);
+            pointer-events: none;
+            z-index: 2000;
+            box-shadow: var(--shadow-lg);
+            font-weight: 500;
+        }
+
+        .download-tooltip::before {
+            content: '';
+            position: absolute;
+            top: -6px;
+            right: 12px;
+            width: 0;
+            height: 0;
+            border-left: 6px solid transparent;
+            border-right: 6px solid transparent;
+            border-bottom: 6px solid rgba(0, 0, 0, 0.85);
+        }
+
+        .download-tooltip.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .download-btn:hover {
+            overflow: visible !important;
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -115,33 +162,10 @@
             overflow: hidden;
         }
 
-        :root {
-            --primary: #1a5f9e;
-            /* 深蓝色 */
-            --primary-deep: #1a5f9e;
-            /* 主深蓝 - 与primary保持一致 */
-            --primary-dark: #0d3a6b;
-            /* 海军蓝 */
-            --primary-light: #2c72b5;
-            /* 浅蓝色 */
-            --secondary: #2c3e50;
-            --accent: #3498db;
-            /* 点点缀蓝色 */
-            --light: #eef5fc;
-            --gray: #5a768d;
-            --success: #27ae60;
-            --warning: #f39c12;
-            --danger: #e74c3c;
-            --comparison: #ff6b6b;
-            /* 对比数据使用的颜色 */
-            --shadow: 0 4px 16px rgba(22, 66, 118, 0.2);
-            --card-shadow: 0 8px 24px rgba(26, 95, 158, 0.15);
-        }
-
         body {
             font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
-            background: linear-gradient(145deg, #dcebf9 0%, #e6f2ff 100%);
-            color: #2c3e50;
+            background: linear-gradient(145deg, #E3F2FD 0%, #FFFFFF 50%, #E8F5E9 100%);
+            color: var(--gray-800);
             font-size: 15px;
             line-height: 1.6;
             position: fixed;
@@ -154,144 +178,12 @@
         .container {
             width: 100%;
             height: 100vh;
-            padding-top: 60px;
-            padding-bottom: 70px;
+            padding-top: 64px;
+            padding-bottom: 76px;
             background: transparent;
             position: relative;
             overflow-y: auto;
             overflow-x: hidden;
-        }
-
-        /* ===== 顶部栏样式 ===== */
-        .top-header {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 60px;
-            background: linear-gradient(135deg, var(--primary-deep), var(--primary-dark));
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 20px;
-            z-index: 100;
-            box-shadow: var(--card-shadow);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            /* 支持刘海屏等异形屏 */
-            padding-top: env(safe-area-inset-top);
-            padding-left: max(20px, env(safe-area-inset-left));
-            padding-right: max(20px, env(safe-area-inset-right));
-        }
-
-        .header-left {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .header-logo {
-            width: 36px;
-            height: 36px;
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2rem;
-            backdrop-filter: blur(10px);
-        }
-
-        .header-title {
-            font-size: 1.1rem;
-            font-weight: 700;
-        }
-
-        .header-right {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .header-icon {
-            width: 36px;
-            height: 36px;
-            background: rgba(255, 255, 255, 0.15);
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(10px);
-        }
-
-        .header-icon:hover {
-            background: rgba(255, 255, 255, 0.25);
-            transform: scale(1.05);
-        }
-
-        /* 下载按钮特殊样式 */
-        .download-btn {
-            position: relative;
-            overflow: hidden;
-        }
-
-        .download-btn::after {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 0;
-            height: 0;
-            background: rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            transform: translate(-50%, -50%);
-            transition: all 0.3s ease;
-        }
-
-        .download-btn:hover::after {
-            width: 100%;
-            height: 100%;
-        }
-
-        .download-btn:active {
-            transform: scale(0.95);
-        }
-
-        /* 下载进度提示 */
-        .download-tooltip {
-            position: absolute;
-            top: 45px;
-            right: 0;
-            background: rgba(0, 0, 0, 0.8);
-            color: white;
-            padding: 8px 12px;
-            border-radius: 6px;
-            font-size: 12px;
-            white-space: nowrap;
-            opacity: 0;
-            transform: translateY(-10px);
-            transition: all 0.3s ease;
-            pointer-events: none;
-            z-index: 1000;
-        }
-
-        .download-tooltip.show {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        .download-tooltip::before {
-            content: '';
-            position: absolute;
-            top: -5px;
-            right: 15px;
-            width: 0;
-            height: 0;
-            border-left: 5px solid transparent;
-            border-right: 5px solid transparent;
-            border-bottom: 5px solid rgba(0, 0, 0, 0.8);
         }
 
         /* ===== 滚动条样式 ===== */
@@ -304,84 +196,12 @@
         }
 
         .container::-webkit-scrollbar-thumb {
-            background: rgba(26, 95, 158, 0.2);
+            background: var(--primary-light);
             border-radius: 2px;
         }
 
         .container::-webkit-scrollbar-thumb:hover {
-            background: rgba(26, 95, 158, 0.3);
-        }
-
-        /* ===== 底部导航栏样式 ===== */
-        .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100vw;
-            height: 70px;
-            background: #ffffff;
-            border-top: 1px solid rgba(26, 95, 158, 0.08);
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            z-index: 100;
-            box-shadow: 0 -4px 16px rgba(26, 95, 158, 0.12);
-            backdrop-filter: blur(10px);
-            /* 支持刘海屏等异形屏 */
-            padding-bottom: env(safe-area-inset-bottom);
-            padding-left: env(safe-area-inset-left);
-            padding-right: env(safe-area-inset-right);
-        }
-
-        .nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 8px 12px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            border-radius: 12px;
-            min-width: 60px;
-        }
-
-        .nav-item:hover {
-            background: #eef5fc;
-            transform: translateY(-2px);
-        }
-
-        .nav-item.active {
-            background: linear-gradient(135deg, rgba(26, 95, 158, 0.1), rgba(26, 95, 158, 0.05));
-            border: 1px solid rgba(26, 95, 158, 0.2);
-        }
-
-        .nav-icon {
-            width: 24px;
-            height: 24px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2rem;
-            color: #78909c;
-            margin-bottom: 4px;
-            transition: all 0.3s ease;
-        }
-
-        .nav-item.active .nav-icon {
-            color: var(--primary-deep);
-            transform: scale(1.1);
-        }
-
-        .nav-label {
-            font-size: 0.75rem;
-            color: #78909c;
-            font-weight: 500;
-            transition: all 0.3s ease;
-        }
-
-        .nav-item.active .nav-label {
-            color: var(--primary-deep);
-            font-weight: 600;
+            background: var(--primary-blue);
         }
 
         .main-content {
@@ -391,30 +211,31 @@
         /* 报告切换标签 */
         .report-tabs {
             display: flex;
-            background: rgba(13, 58, 107, 0.3);
-            border-radius: 50px;
-            padding: 5px;
+            background: var(--primary-pale);
+            border-radius: var(--radius-full);
+            padding: 6px;
             margin: 15px 0;
-            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+            box-shadow: inset 0 2px 4px rgba(74, 144, 226, 0.1);
+            border: 2px solid var(--primary-light);
         }
 
         .tab {
             flex: 1;
             text-align: center;
-            padding: 10px 0;
-            border-radius: 50px;
+            padding: 12px 0;
+            border-radius: var(--radius-full);
             font-size: 0.95rem;
-            font-weight: 500;
-            transition: all 0.3s ease;
+            font-weight: 600;
+            transition: all var(--transition-base);
             cursor: pointer;
-            color: rgba(255, 255, 255, 0.8);
+            color: var(--gray-600);
         }
 
         .tab.active {
             background: white;
-            color: var(--primary-dark);
-            box-shadow: var(--shadow);
-            font-weight: 600;
+            color: var(--primary-blue);
+            box-shadow: var(--shadow-md);
+            font-weight: 700;
         }
 
         /* 报告内容 */
@@ -429,12 +250,23 @@
 
         .report-card {
             background: white;
-            border-radius: 20px;
-            padding: 20px;
-            box-shadow: var(--card-shadow);
-            margin-bottom: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.7);
-            background-image: linear-gradient(to bottom right, #ffffff, #f5faff);
+            border-radius: var(--radius-3xl);
+            padding: var(--space-6);
+            box-shadow: var(--shadow-xl);
+            margin-bottom: var(--space-5);
+            border: 1px solid var(--gray-200);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .report-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--gradient-primary);
         }
 
         .report-header {
@@ -442,7 +274,7 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 20px;
-            border-bottom: 1px solid #e0edff;
+            border-bottom: 2px solid var(--gray-100);
             padding-bottom: 15px;
         }
 
@@ -452,30 +284,32 @@
         }
 
         .report-icon {
-            width: 40px;
-            height: 40px;
-            background: rgba(26, 95, 158, 0.1);
-            border-radius: 12px;
+            width: 44px;
+            height: 44px;
+            background: var(--primary-pale);
+            border-radius: var(--radius-xl);
             display: flex;
             align-items: center;
             justify-content: center;
             margin-right: 12px;
-            color: var(--primary);
-            font-size: 20px;
+            color: var(--primary-blue);
+            font-size: 22px;
         }
 
         .report-title h2 {
-            font-size: 1.4rem;
-            color: var(--primary-dark);
+            font-size: 1.5rem;
+            color: var(--gray-800);
+            font-weight: 700;
         }
 
         .time-range {
             font-size: 0.8rem;
-            color: var(--primary);
-            background: rgba(26, 95, 158, 0.1);
-            padding: 5px 10px;
-            border-radius: 20px;
-            font-weight: 500;
+            color: var(--primary-blue);
+            background: var(--primary-pale);
+            padding: 6px 14px;
+            border-radius: var(--radius-full);
+            font-weight: 600;
+            border: 2px solid var(--primary-light);
         }
 
         .report-section {
@@ -485,22 +319,22 @@
         .section-title {
             display: flex;
             align-items: center;
-            font-size: 1.1rem;
-            color: var(--primary-dark);
+            font-size: 1.125rem;
+            color: var(--gray-800);
             margin-bottom: 15px;
-            font-weight: 600;
+            font-weight: 700;
         }
 
         .section-title i {
             margin-right: 10px;
-            width: 28px;
-            height: 28px;
-            background: rgba(26, 95, 158, 0.1);
-            border-radius: 8px;
+            width: 32px;
+            height: 32px;
+            background: var(--primary-pale);
+            border-radius: var(--radius-lg);
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            color: var(--primary);
+            color: var(--primary-blue);
         }
 
         .chart-container {
@@ -552,101 +386,128 @@
         }
 
         .stat-card {
-            background: linear-gradient(to right, rgba(26, 95, 158, 0.05), rgba(26, 95, 158, 0.02));
-            border-radius: 16px;
-            padding: 15px;
-            border-left: 4px solid var(--primary);
-            box-shadow: 0 2px 8px rgba(26, 95, 158, 0.1);
+            background: var(--white);
+            border-radius: var(--radius-2xl);
+            padding: var(--space-5);
+            border-left: 4px solid var(--primary-blue);
+            box-shadow: var(--shadow-md);
             position: relative;
             overflow: hidden;
+            transition: all var(--transition-base);
+            border: 1px solid var(--gray-200);
+        }
+
+        .stat-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 60px;
+            height: 60px;
+            background: var(--primary-pale);
+            border-radius: 50%;
+            transform: translate(30%, -30%);
+            opacity: 0.5;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+            border-left-width: 6px;
         }
 
         .stat-card .value {
-            font-size: 1.5rem;
+            font-size: 1.75rem;
             font-weight: 700;
-            color: var(--primary-dark);
+            color: var(--gray-800);
             line-height: 1.2;
             display: flex;
             align-items: center;
+            position: relative;
+            z-index: 1;
         }
 
         .stat-card .label {
-            font-size: 0.85rem;
-            color: var(--gray);
-            margin-top: 5px;
+            font-size: 0.875rem;
+            color: var(--gray-600);
+            margin-top: var(--space-2);
+            font-weight: 600;
+            position: relative;
+            z-index: 1;
         }
 
         .comparison {
             display: inline-block;
-            padding: 3px 8px;
-            border-radius: 15px;
+            padding: 4px 10px;
+            border-radius: var(--radius-full);
             font-size: 0.75rem;
-            font-weight: 600;
+            font-weight: 700;
             margin-left: 8px;
             background: rgba(255, 107, 107, 0.15);
             color: #e74949;
         }
 
         .comparison.positive {
-            background: rgba(39, 174, 96, 0.15);
-            color: var(--success);
+            background: var(--success-pale);
+            color: var(--primary-blue);
         }
         
         .comparison.negative {
             background: rgba(231, 76, 60, 0.15);
-            color: var(--danger);
+            color: #e74c3c;
         }
 
         .badge {
             display: inline-block;
-            padding: 3px 10px;
-            border-radius: 20px;
+            padding: 4px 12px;
+            border-radius: var(--radius-full);
             font-size: 0.75rem;
-            font-weight: 500;
-            margin-top: 5px;
+            font-weight: 600;
+            margin-top: 6px;
         }
 
         .badge.good {
-            background: rgba(39, 174, 96, 0.15);
-            color: var(--success);
+            background: var(--success-pale);
+            color: var(--primary-blue);
         }
 
         .badge.warning {
             background: rgba(243, 156, 18, 0.15);
-            color: var(--warning);
+            color: #f39c12;
         }
 
         .badge.alert {
             background: rgba(231, 76, 60, 0.15);
-            color: var(--danger);
+            color: #e74c3c;
         }
 
         .feedback {
-            background: #f0f8ff;
-            border-radius: 16px;
-            padding: 18px;
+            background: var(--primary-pale);
+            border-radius: var(--radius-2xl);
+            padding: 20px;
             margin: 15px 0;
-            border-left: 4px solid var(--primary);
-            font-size: 0.95rem;
-            box-shadow: 0 2px 8px rgba(26, 95, 158, 0.1);
-            line-height: 1.7;
+            border-left: 4px solid var(--primary-blue);
+            font-size: 0.9375rem;
+            box-shadow: var(--shadow-md);
+            line-height: 1.8;
         }
 
         .recommendation {
-            background: linear-gradient(to right, rgba(52, 152, 219, 0.05), rgba(52, 152, 219, 0.02));
-            border-radius: 16px;
-            padding: 18px;
+            background: linear-gradient(135deg, var(--primary-pale), var(--white));
+            border-radius: var(--radius-2xl);
+            padding: 20px;
             margin: 15px 0;
-            border-left: 4px solid var(--accent);
-            box-shadow: 0 2px 8px rgba(52, 152, 219, 0.1);
+            border-left: 4px solid var(--accent-green);
+            box-shadow: var(--shadow-md);
         }
 
         .recommendation h4 {
-            color: var(--accent);
-            margin-bottom: 10px;
+            color: var(--primary-blue);
+            margin-bottom: 12px;
             display: flex;
             align-items: center;
-            font-size: 1.05rem;
+            font-size: 1.0625rem;
+            font-weight: 700;
         }
 
         .recommendation h4 i {
@@ -681,7 +542,7 @@
             display: flex;
             align-items: center;
             padding: 10px 15px;
-            background: linear-gradient(to right, rgba(26, 95, 158, 0.1), transparent);
+            background: linear-gradient(to right, rgba(74, 144, 226, 0.1), transparent);
             border-radius: 12px;
         }
 
@@ -698,22 +559,38 @@
 
         .menu-item {
             background: white;
-            border-radius: 20px;
+            border-radius: var(--radius-3xl);
             overflow: hidden;
-            box-shadow: var(--card-shadow);
-            transition: all 0.3s ease;
+            box-shadow: var(--shadow-lg);
+            transition: all var(--transition-base);
             position: relative;
-            border: 1px solid rgba(26, 95, 158, 0.08);
-            background-image: linear-gradient(to bottom, white, #f8fbff);
+            border: 1px solid var(--gray-200);
+        }
+
+        .menu-item::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--gradient-primary);
+            transform: scaleX(0);
+            transition: transform var(--transition-base);
+        }
+
+        .menu-item:hover::before {
+            transform: scaleX(1);
         }
 
         .menu-item:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 12px 24px rgba(26, 95, 158, 0.2);
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-2xl);
+            border-color: var(--primary-light);
         }
 
         .menu-img {
-            height: 140px;
+            height: 160px;
             background-size: cover;
             background-position: center;
             position: relative;
@@ -721,52 +598,57 @@
 
         .calorie-tag {
             position: absolute;
-            top: 10px;
-            right: 10px;
-            background: rgba(13, 58, 107, 0.85);
+            top: var(--space-3);
+            right: var(--space-3);
+            background: var(--gradient-primary);
             color: white;
-            padding: 5px 10px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 500;
+            padding: var(--space-2) var(--space-3);
+            border-radius: var(--radius-full);
+            font-size: 0.8125rem;
+            font-weight: 700;
+            box-shadow: var(--shadow-lg);
+            border: 2px solid white;
+            backdrop-filter: blur(10px);
         }
 
         .menu-content {
-            padding: 15px;
+            padding: var(--space-5);
         }
 
         .menu-title {
-            font-size: 1.05rem;
+            font-size: 1.125rem;
             font-weight: 700;
-            color: var(--primary-dark);
-            margin-bottom: 8px;
+            color: var(--gray-800);
+            margin-bottom: var(--space-2);
         }
 
         .menu-desc {
-            font-size: 0.85rem;
-            color: var(--gray);
-            margin-bottom: 10px;
+            font-size: 0.875rem;
+            color: var(--gray-600);
+            margin-bottom: var(--space-3);
             display: -webkit-box;
             -webkit-line-clamp: 2;
             line-clamp: 2;
             -webkit-box-orient: vertical;
             box-orient: vertical;
             overflow: hidden;
+            line-height: 1.6;
         }
 
         .menu-tags {
             display: flex;
             flex-wrap: wrap;
-            gap: 6px;
+            gap: var(--space-2);
         }
 
         .menu-tag {
-            background: rgba(26, 95, 158, 0.1);
-            color: var(--primary);
+            background: var(--primary-pale);
+            color: var(--primary-blue);
             font-size: 0.75rem;
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-weight: 500;
+            padding: var(--space-1) var(--space-3);
+            border-radius: var(--radius-full);
+            font-weight: 700;
+            border: 1px solid var(--primary-light);
         }
 
         /* 对比数据卡片 */
@@ -1006,7 +888,7 @@
         }
 
         #ai-output code {
-            background: rgba(26, 95, 158, 0.1);
+            background: rgba(74, 144, 226, 0.1);
             color: var(--primary-dark);
             padding: 2px 6px;
             border-radius: 4px;
@@ -1031,7 +913,7 @@
 
         #ai-output blockquote {
             border-left: 4px solid var(--primary);
-            background: rgba(26, 95, 158, 0.05);
+            background: rgba(74, 144, 226, 0.05);
             margin: 16px 0;
             padding: 12px 20px;
             font-style: italic;
@@ -1052,7 +934,7 @@
         }
 
         #ai-output th {
-            background: rgba(26, 95, 158, 0.1);
+            background: rgba(74, 144, 226, 0.1);
             font-weight: 600;
             color: var(--primary-dark);
         }
@@ -1703,8 +1585,8 @@
                 series: [
                     {
                         name: '上月', type: 'line', data: data.this_month_data, smooth: true,
-                        lineStyle: { width: 3, color: '#1a5f9e' },
-                        areaStyle: { opacity: 0.1, color: '#1a5f9e' },
+                        lineStyle: { width: 3, color: '#4A90E2' },
+                        areaStyle: { opacity: 0.1, color: '#4A90E2' },
                         emphasis: { focus: 'series' }
                     },
                     {
@@ -1844,7 +1726,7 @@
                             name: "营养对比",  // 展示2
                             type: "radar",
                             data: [
-                                { value: data.this_week.map(x => Number(x) || 0), name: "上月", itemStyle: { color: 'rgba(26, 95, 158, 1.0)' }, areaStyle: { opacity: 0.2 } },
+                                { value: data.this_week.map(x => Number(x) || 0), name: "上月", itemStyle: { color: 'rgba(74, 144, 226, 1.0)' }, areaStyle: { opacity: 0.2 } },
                                 { value: data.last_week.map(x => Number(x) || 0), name: "本月", itemStyle: { color: 'rgba(255, 107, 107, 1.0)' }, areaStyle: { opacity: 0.2 } }
                             ]
                         }]
@@ -1950,7 +1832,7 @@
                         inactiveColor: '#999'
                     },
                     grid: {
-                        left: isSmallMobile ? '10%' : (isMobile ? '8%' : '6%'),
+                        left: isSmallMobile ? '15%' : (isMobile ? '12%' : '10%'),
                         right: isSmallMobile ? '8%' : (isMobile ? '6%' : '4%'),
                         bottom: isSmallMobile ? '25%' : (isMobile ? '20%' : '15%'),
                         top: isSmallMobile ? '15%' : (isMobile ? '12%' : '10%'),
@@ -1974,9 +1856,12 @@
                     yAxis: { 
                         type: 'value', 
                         name: '热量 (kcal)',
+                        nameLocation: 'end',
+                        nameGap: 10,
                         nameTextStyle: {
                             fontSize: isSmallMobile ? 10 : (isMobile ? 11 : 12),
-                            color: '#333'
+                            color: '#333',
+                            padding: [0, 0, 0, isSmallMobile ? 0 : 10]
                         },
                         axisLabel: {
                             fontSize: isSmallMobile ? 9 : (isMobile ? 10 : 12),
@@ -1990,8 +1875,8 @@
                             type: 'line',
                             data: data.this_week_data,
                             smooth: true,
-                            areaStyle: { opacity: 0.1, color: '#1a5f9e' },
-                            lineStyle: { width: 3, color: '#1a5f9e' },
+                            areaStyle: { opacity: 0.1, color: '#4A90E2' },
+                            lineStyle: { width: 3, color: '#4A90E2' },
                             emphasis: { focus: 'series' }
                         },
                         {
@@ -2227,7 +2112,7 @@
                                 type: 'bar', 
                                 data: data.this_week_data.map(val => Number(val) || 0), 
                                 itemStyle: { 
-                                    color: 'rgba(26, 95, 158, 0.8)',
+                                    color: 'rgba(74, 144, 226, 0.8)',
                                     borderRadius: [2, 2, 0, 0]
                                 }, 
                                 emphasis: { focus: 'series' },
@@ -2373,8 +2258,8 @@
                         series: [
                             {
                                 name: '本周', type: 'line', data: data.this_month_data, smooth: true,
-                                lineStyle: { width: 3, color: '#1a5f9e' },
-                                areaStyle: { opacity: 0.1, color: '#1a5f9e' }, emphasis: { focus: 'series' }
+                                lineStyle: { width: 3, color: '#4A90E2' },
+                                areaStyle: { opacity: 0.1, color: '#4A90E2' }, emphasis: { focus: 'series' }
                             },
                             {
                                 name: '上周', type: 'line', data: data.last_month_data, smooth: true,

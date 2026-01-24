@@ -185,7 +185,7 @@ def init_mechanical_arm():
     nest_asyncio.apply()
 
     try:
-        robot_ip = "192.168.1.2"
+        robot_ip = "172.16.4.78"
         print(f"尝试连接机器人 {robot_ip}...")
 
         lebai = lebai_sdk.connect(robot_ip, False)
@@ -294,7 +294,7 @@ def detect_dish_with_yolo(dish_name, timeout=5):
         start_time = time.time()
 
         # 尝试连接到YOLO检测服务
-        yolo_url = "http://192.168.1.102:5000/detect"
+        yolo_url = "http://172.16.4.223:5000/detect"
  
         while time.time() - start_time < timeout:
             try:

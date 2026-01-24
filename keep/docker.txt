@@ -1,0 +1,5 @@
+docker run -it -d --name ttskeep `
+  --restart=always `
+  --network nutri_net `
+  -v C:\NutriAI\healthy_eating_web\keep:/app `
+  ttskeep:v1.2

@@ -83,7 +83,7 @@ DATABASES = {
         'NAME': 'SDashboard',               # 数据库名称，我们使用新设计的库
         'USER': 'root',                           # 您的 MySQL 用户名
         'PASSWORD': 'BigData#123..',              # 您的 MySQL 密码
-        'HOST': '192.168.101.251',                      # 您的 MySQL 主机地址
+        'HOST': '172.16.4.181',           # 您的 MySQL 主机地址
         'PORT': 6666,                             # 您的 MySQL 端口号
         'OPTIONS': {
             'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
