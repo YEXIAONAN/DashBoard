@@ -1690,7 +1690,7 @@
             }
             const option = {
                 tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
-                legend: { data: ['本月', '上月'], top: 'top', textStyle: { color: '#333' } },
+                legend: { data: ['上月', '本月'], top: 'top', textStyle: { color: '#333' } },
                 grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
                 xAxis: { type: 'category', data: data.labels, axisLabel: { color: '#333', interval: 0 }},
                 yAxis: {
@@ -1702,13 +1702,13 @@
                 },
                 series: [
                     {
-                        name: '本月', type: 'line', data: data.this_month_data, smooth: true,
+                        name: '上月', type: 'line', data: data.this_month_data, smooth: true,
                         lineStyle: { width: 3, color: '#1a5f9e' },
                         areaStyle: { opacity: 0.1, color: '#1a5f9e' },
                         emphasis: { focus: 'series' }
                     },
                     {
-                        name: '上月', type: 'line', data: data.last_month_data, smooth: true,
+                        name: '本月', type: 'line', data: data.last_month_data, smooth: true,
                         lineStyle: { width: 2, type: 'dashed', color: '#ff6b6b' },
                         areaStyle: { opacity: 0.1, color: '#ff6b6b' },
                         emphasis: { focus: 'series' }
@@ -1813,7 +1813,7 @@
                     chart.setOption({
                         tooltip: { trigger: "item" },
                         legend: {
-                                data: ["本月", "上月"],
+                                data: ["上月", "本月"],
                                 top: 0, // 保持在顶部，可以根据需要微调
                                 padding: [0, 0]
                             },
@@ -1844,8 +1844,8 @@
                             name: "营养对比",  // 展示2
                             type: "radar",
                             data: [
-                                { value: data.this_week.map(x => Number(x) || 0), name: "本月", itemStyle: { color: 'rgba(26, 95, 158, 1.0)' }, areaStyle: { opacity: 0.2 } },
-                                { value: data.last_week.map(x => Number(x) || 0), name: "上月", itemStyle: { color: 'rgba(255, 107, 107, 1.0)' }, areaStyle: { opacity: 0.2 } }
+                                { value: data.this_week.map(x => Number(x) || 0), name: "上月", itemStyle: { color: 'rgba(26, 95, 158, 1.0)' }, areaStyle: { opacity: 0.2 } },
+                                { value: data.last_week.map(x => Number(x) || 0), name: "本月", itemStyle: { color: 'rgba(255, 107, 107, 1.0)' }, areaStyle: { opacity: 0.2 } }
                             ]
                         }]
                     });
@@ -1986,7 +1986,7 @@
                     },
                     series: [
                         {
-                            name: '本月',
+                            name: '上月',
                             type: 'line',
                             data: data.this_week_data,
                             smooth: true,
@@ -1995,7 +1995,7 @@
                             emphasis: { focus: 'series' }
                         },
                         {
-                            name: '上月',
+                            name: '本月',
                             type: 'line',
                             data: data.last_week_data,
                             smooth: true,
@@ -2659,8 +2659,10 @@
             console.error("AI 元素未找到");
         } else {
             // 定义请求的 URL 和 API Key
-            const OPENAI_API_URL = 'http://192.168.1.1:3099/v1/chat/completions';
-            const OPENAI_API_KEY = 'app-bzBAseue8wuzdhSCG8O05fkI'; // 请替换为你的第三方 OpenAI API Key
+            const OPENAI_API_URL = 'http://172.16.4.181:3099/v1/chat/completions';
+            const OPENAI_API_KEY = 'http://172.16.4.181:180/v1|app-bzBAseue8wuzdhSCG8O05fkI|Chat'; // 用户提供的API Key
+
+            // app-bzBAseue8wuzdhSCG8O05fkI
 
             aiButton.addEventListener('click', async function () {
                 console.log('AI 分析按钮被点击');
@@ -2673,11 +2675,21 @@
                 aiButton.innerHTML = 'AI 正在思考中...';
 
                 try {
-                    // 构建系统提示
-                    const systemPrompt = `请通过get_weekly_nutrition工具分析用户的健康数据并反馈和建议`;
+                    // 先获取营养数据作为系统提示词
+                    const nutritionResponse = await fetch(`http://172.16.4.181:8120/nutrition_by_name?user_name={{user_name_only}}`);
+                    
+                    if (!nutritionResponse.ok) {
+                        throw new Error(`获取营养数据失败: ${nutritionResponse.status}`);
+                    }
+                    
+                    const nutritionData = await nutritionResponse.json();
+                    console.log('获取到的营养数据:', nutritionData);
+                    
+                    // 构建系统提示，包含获取到的营养数据
+                    const systemPrompt = `用户名：{{user_name}}，营养数据如下：${JSON.stringify(nutritionData)}`;
 
                     // 构建用户消息（包含健康数据）
-                    const userMessage = `根据上游提示词回答`;
+                    const userMessage = `根据以上营养数据库，提供个性化的饮食分析与优化以及反馈和建议`;
 
                     const response = await fetch(OPENAI_API_URL, {
                         method: 'POST',
@@ -2686,7 +2698,7 @@
                             'Authorization': `Bearer ${OPENAI_API_KEY}`
                         },
                         body: JSON.stringify({
-                            model: 'dify|Chat|http://192.168.1.1/v1',
+                            model: 'dify',
                             messages: [
                                 {
                                     role: 'system',
