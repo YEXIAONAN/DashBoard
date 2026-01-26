@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智能食堂健康平台 - 深蓝主题</title>
+    {% load static %}
+    <link rel="stylesheet" href="../static/css/all.min.css">
+    <!-- 引入 EventSource Polyfill -->
+    <script src="https://cdn.jsdelivr.net/npm/event-source-polyfill@1.0.31/src/eventsource.min.js"></script>
+    <!-- <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> -->
+    <script src="{% static 'js/echarts.min.js' %}"></script>
+    <script src="./marked.min.js"></script>
+    <style>
+        /* ===== 深蓝专业主题配色方案 - 与index.html统一 ===== */
+        :root {
+            --primary-deep: #1a5f9e;     /* 主深蓝 - 专业沉稳 */
+            --primary-dark: #0d3a6b;     /* 深海军蓝 - 强调区域 */
+            --primary-light: #2c72b5;    /* 浅蓝色 - 次要元素 */
+            --secondary: #2c3e50;        /* 中性深灰 - 文字主色 */
+            --surface: #ffffff;          /* 纯白背景 */
+            --surface-soft: #f8fafc;     /* 柔和背景 - 卡片内衬 */
+            --surface-hover: #eef5fc;    /* 悬停背景 - 交互反馈 */
+            --text-primary: #2c3e50;     /* 主要文字 */
+            --text-secondary: #546e7a;   /* 次要文字 */
+            --text-muted: #78909c;       /* 辅助文字 */
+            --accent: #3498db;          /* 点缀蓝 - 重要交互 */
+            --success: #27ae60;         /* 成功色 - 进度完成 */
+            --warning: #f39c12;         /* 警告色 - 提醒信息 */
+            --danger: #e74c3c;          /* 危险色 - 警告信息 */
+            --comparison: #ff6b6b;      /* 对比数据使用的颜色 */
+            --shadow-soft: 0 2px 8px rgba(26, 95, 158, 0.08);
+            --shadow-card: 0 4px 16px rgba(26, 95, 158, 0.12);
+            --shadow-hover: 0 8px 24px rgba(26, 95, 158, 0.15);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'PingFang SC', 'Helvetica Neue', Arial, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background: linear-gradient(145deg, #eef5fc 0%, #e6f2ff 100%);
+            color: var(--text-primary);
+            font-size: 15px;
+            overflow-x: hidden;
+            min-height: 100vh;
+            margin: 0;
+            line-height: 1.6;
+        }
+
+        .container {
+            width: 100%;
+            margin: 0;
+            padding: 0;
+            padding-bottom: 20px;
+            background: transparent;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        /* ===== 顶部栏样式 ===== */
+        .top-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 60px;
+            background: linear-gradient(135deg, var(--primary-deep), var(--primary-dark));
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            z-index: 100;
+            box-shadow: var(--shadow-card);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header-logo {
+            width: 36px;
+            height: 36px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .header-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header-icon {
+            width: 36px;
+            height: 36px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .header-icon:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: scale(1.05);
+        }
+
+        /* ===== 底部导航栏样式 ===== */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100vw;
+            height: 70px;
+            background: var(--surface);
+            border-top: 1px solid rgba(26, 95, 158, 0.08);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            z-index: 100;
+            box-shadow: 0 -4px 16px rgba(26, 95, 158, 0.12);
+            backdrop-filter: blur(10px);
+            /* 支持刘海屏等异形屏 */
+            padding-bottom: env(safe-area-inset-bottom);
+            padding-left: env(safe-area-inset-left);
+            padding-right: env(safe-area-inset-right);
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 8px 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-radius: 12px;
+            min-width: 60px;
+        }
+
+        .nav-item:hover {
+            background: var(--surface-hover);
+            transform: translateY(-2px);
+        }
+
+        .nav-item.active {
+            background: linear-gradient(135deg, rgba(26, 95, 158, 0.1), rgba(26, 95, 158, 0.05));
+            border: 1px solid rgba(26, 95, 158, 0.2);
+        }
+
+        .nav-icon {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-item.active .nav-icon {
+            color: var(--primary-deep);
+            transform: scale(1.1);
+        }
+
+        .nav-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .nav-item.active .nav-label {
+            color: var(--primary-deep);
+            font-weight: 600;
+        }
+
+        /* 为页面内容添加顶部和底部间距 */
+        .container {
+            padding-top: 70px;
+            padding-left: 15px;
+            padding-right: 15px;
+            padding-bottom: calc(80px + env(safe-area-inset-bottom));
+        }
+
+        /* 其他样式保持不变... */
+        /* 报告切换标签 - 与index.html风格统一 */
+        .report-tabs {
+            display: flex;
+            background: var(--surface);
+            border-radius: 20px;
+            padding: 8px;
+            margin: 15px;
+            box-shadow: var(--shadow-card);
+            border: 1px solid rgba(26, 95, 158, 0.08);
+            background-image: linear-gradient(to bottom right, var(--surface), var(--surface-soft));
+        }
+        .tab {
+            flex: 1;
+            text-align: center;
+            padding: 12px 16px;
+            border-radius: 15px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            color: var(--text-secondary);
+            position: relative;
+        }
+        .tab.active {
+            background: linear-gradient(135deg, var(--primary-deep), var(--primary-light));
+            color: #ffffff;
+            box-shadow: var(--shadow-hover);
+            font-weight: 600;
+            transform: translateY(-1px);
+        }
+        .tab:hover:not(.active) {
+            background: var(--surface-hover);
+            color: var(--primary-deep);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-soft);
+        }
+        /* 报告内容 */
+        .report-container {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+        .report-container.active {
+            display: block;
+        }
+        .report-card {
+            background: var(--surface);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: var(--shadow-card);
+            margin-bottom: 20px;
+            border: 1px solid rgba(26, 95, 158, 0.08);
+            background-image: linear-gradient(to bottom right, var(--surface), var(--surface-soft));
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* 动画效果 */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .fade-in {
+            animation: fadeIn 0.6s ease forwards;
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部栏 -->
+    <div class="top-header">
+        <div class="header-left">
+            <div class="header-logo">
+                <i class="fas fa-chart-line"></i>
+            </div>
+            <div class="header-title">健康报告</div>
+        </div>
+        <div class="header-right">
+            <div class="header-icon">
+                <i class="fas fa-download"></i>
+            </div>
+            <div class="header-icon">
+                <i class="fas fa-share-alt"></i>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- 报告切换标签 -->
+        <div class="report-tabs">
+            <div class="tab active" data-report="weekly">健康周报</div>
+            <div class="tab" data-report="monthly">健康月报</div>
+        </div>
+
+        <!-- 周报内容 -->
+        <div id="weekly-report" class="report-container active">
+            <div class="report-card fade-in">
+                <div class="report-header">
+                    <div class="report-title">
+                        <div class="report-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <h2>本周健康报告</h2>
+                    </div>
+
+                </div>
+                
+                <div class="report-section">
+                    <div class="section-title">
+                        <i class="fas fa-fire"></i> 热量摄入分析
+                    </div>
+                    <div class="chart-container">
+                        <div id="weeklyCalorieChart" style="width:100%;height:220px;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 月报内容 -->
+        <div id="monthly-report" class="report-container">
+            <div class="report-card fade-in">
+                <div class="report-header">
+                    <div class="report-title">
+                        <div class="report-icon">
+                            <i class="fas fa-chart-bar"></i>
+                        </div>
+                        <h2>本月健康报告</h2>
+                    </div>
+
+                </div>
+                
+                <div class="report-section">
+                    <div class="section-title">
+                        <i class="fas fa-fire"></i> 月度热量趋势
+                    </div>
+                    <div class="chart-container">
+                        <div id="monthlyCalorieChart" style="width:100%;height:220px;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 底部导航栏 -->
+    <div class="bottom-nav">
+        <div class="nav-item" data-target="index">
+            <div class="nav-icon">
+                <i class="fas fa-home"></i>
+            </div>
+            <div class="nav-label">主页</div>
+        </div>
+        <div class="nav-item" data-target="orders">
+            <div class="nav-icon">
+                <i class="fas fa-utensils"></i>
+            </div>
+            <div class="nav-label">点餐</div>
+        </div>
+        <div class="nav-item active" data-target="repo">
+            <div class="nav-icon">
+                <i class="fas fa-chart-line"></i>
+            </div>
+            <div class="nav-label">报告</div>
+        </div>
+        <div class="nav-item" data-target="ai-assistant">
+            <div class="nav-icon">
+                <i class="fas fa-robot"></i>
+            </div>
+            <div class="nav-label">AI助手</div>
+        </div>
+    </div>
+
+    <script>
+        // 底部导航点击跳转
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', function() {
+                const target = this.getAttribute('data-target');
+                let targetUrl = '';
+                switch(target) {
+                    case 'index':
+                        targetUrl = "/";
+                        break;
+                    case 'orders':
+                        targetUrl = "/orders/";
+                        break;
+                    case 'repo':
+                        targetUrl = "/repo/";
+                        break;
+                    case 'ai-assistant':
+                        targetUrl = "/ai_health_advisor/";
+                        break;
+                    default:
+                        break;
+                }
+                if (targetUrl) {
+                    window.location.href = targetUrl;
+                }
+            });
+        });
+
+        // 标签切换功能
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                // 移除所有标签的active类
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                // 添加当前标签的active类
+                this.classList.add('active');
+                
+                // 隐藏所有报告容器
+                document.querySelectorAll('.report-container').forEach(container => {
+                    container.classList.remove('active');
+                });
+                
+                // 显示选中的报告
+                const reportId = this.getAttribute('data-report') + '-report';
+                const activeContainer = document.getElementById(reportId);
+                if (activeContainer) {
+                    activeContainer.classList.add('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
