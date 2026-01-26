@@ -1,4 +1,4 @@
-FROM nginx:alpine
+FROM nginx:1.29.4-perl
 
 # 复制自定义配置
 COPY nginx.conf /etc/nginx/nginx.conf
