@@ -68,7 +68,6 @@
             flex-direction: column;
             padding-top: 64px;
             padding-bottom: 76px;
-            animation: fadeIn 0.8s ease forwards;
         }
 
         /* ===== AI对话区域样式 ===== */
@@ -84,7 +83,6 @@
             background-image: linear-gradient(to bottom right, var(--surface), var(--surface-soft));
             overflow: hidden;
             min-height: 0; /* 确保flex子元素可以收缩 */
-            animation: fadeIn 0.6s ease forwards;
         }
 
         .chat-header {
@@ -671,6 +669,35 @@
         }
 
         /* ===== 动画效果 ===== */
+        
+        /* ========== 统一的瀑布流加载动画 ========== */
+        @keyframes cascadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* 顶部栏瀑布流动画 */
+        .top-header {
+            animation: cascadeIn 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.0s both;
+        }
+
+        /* 聊天容器瀑布流动画 */
+        .chat-container {
+            animation: cascadeIn 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.15s both;
+        }
+
+        /* 底部导航瀑布流动画 */
+        .bottom-nav {
+            animation: cascadeIn 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.90s both;
+        }
+
+        /* 保留聊天消息的上滑动画（用户体验需要）*/
         @keyframes slideInUp {
             from {
                 opacity: 0;

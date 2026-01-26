@@ -28,9 +28,45 @@
             overflow-x: hidden;
         }
 
+        /* ========== 统一的瀑布流加载动画 ========== */
+        @keyframes cascadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* 顶部栏瀑布流动画 */
+        .header {
+            animation: cascadeIn 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.0s both;
+        }
+
+        /* 统计容器瀑布流动画 */
+        .stats-container {
+            animation: cascadeIn 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.15s both;
+        }
+
+        /* 订单标签瀑布流动画 */
+        .order-tabs {
+            animation: cascadeIn 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.30s both;
+        }
+
+        /* 订单容器瀑布流动画 */
+        .order-container {
+            animation: cascadeIn 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.45s both;
+        }
+
+        /* 底部导航瀑布流动画 */
+        .bottom-nav {
+            animation: cascadeIn 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.90s both;
+        }
+
         /* 页面过渡动画 */
         .page-container {
-            animation: fadeIn 0.5s ease-out;
         }
 
         @keyframes fadeIn {
@@ -38,21 +74,23 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* 顶部标题栏 */
-        .header {
-            background: linear-gradient(135deg, #4b6cb7, #182848);
-            color: white;
-            padding: 15px 16px;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            display: flex;
-            align-items: center;
-            height: 54px;
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        .back-btn, .search-btn {
+        /* 订单统计 */
+        .stats-container {
+            display: flex;
+            background: white;
+            border-radius: 16px;
+            padding: 18px 15px;
+            margin: 20px 15px;
+            box-shadow: 0 6px 16px rgba(0,0,0,0.05);
+            border: 1px solid rgba(75, 108, 183, 0.1);
+        }
+
+        .stat-item {
             background: none;
             border: none;
             color: white;
@@ -95,12 +133,8 @@
             animation: slideUp 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .stat-item {
+        /* 顶部标题栏 */
+        .header {
             flex: 1;
             text-align: center;
             padding: 5px;

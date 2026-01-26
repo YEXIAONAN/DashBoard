@@ -1,0 +1,177 @@
+{
+  "mcpEndpoint": "wss://api.xiaozhi.me/mcp/?token=eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjExNTMzMCwiYWdlbnRJZCI6MjA5MTg0LCJlbmRwb2ludElkIjoiYWdlbnRfMjA5MTg0IiwicHVycG9zZSI6Im1jcC1lbmRwb2ludCIsImlhdCI6MTc1MDk5MzI0Mn0.UVwvmkgAF0oYDC2WlyywxMC_eaFxs2P0unGaivWDIfTyd9wFbJ4NKyp2iC8VrTxFDlHXeIeerbPFJtivfg6-FA",
+  "mcpServers": {
+    "calculator": {
+      "command": "node",
+      "args": [
+        "./mcpServers/calculator.js"
+      ]
+    },
+    "datetime": {
+      "command": "node",
+      "args": [
+        "./mcpServers/datetime.js"
+      ]
+    },
+    "amap-maps": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@amap/amap-maps-mcp-server"
+      ],
+      "env": {
+        "AMAP_MAPS_API_KEY": "你的API密钥"
+      }
+    },
+    "sequential-thinking": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-sequential-thinking"
+      ]
+    },
+    "bingcn": {
+      "command": "npx",
+      "args": [
+        "bing-cn-mcp"
+      ]
+    },
+    "datset": {
+      "command": "D:/conda/envs/mcp/python.exe",
+      "args": [
+        "E:/JHY/python/mcp-client/ragflow_mcp.py"
+      ]
+    }
+  },
+  "connection": {
+    "heartbeatInterval": 30000,
+    "heartbeatTimeout": 10000,
+    "reconnectInterval": 5000
+  },
+  "mcpServerConfig": {
+    "calculator": {
+      "tools": {
+        "calculator": {
+          "description": "For mathematical calculation, always use this tool to calculate the result of a JavaScript expression. Math object and basic operations are available.",
+          "enable": true
+        }
+      }
+    },
+    "datetime": {
+      "tools": {
+        "get_current_time": {
+          "description": "Get the current time in various formats",
+          "enable": true
+        },
+        "get_current_date": {
+          "description": "Get the current date in various formats",
+          "enable": true
+        },
+        "format_datetime": {
+          "description": "Format a given date/time string or timestamp into specified format",
+          "enable": true
+        },
+        "add_time": {
+          "description": "Add or subtract time from a given date/time",
+          "enable": true
+        }
+      }
+    },
+    "amap-maps": {
+      "tools": {
+        "maps_regeocode": {
+          "description": "将一个高德经纬度坐标转换为行政区划地址信息",
+          "enable": false
+        },
+        "maps_geo": {
+          "description": "将详细的结构化地址转换为经纬度坐标。支持对地标性名胜景区、建筑物名称解析为经纬度坐标",
+          "enable": false
+        },
+        "maps_ip_location": {
+          "description": "IP 定位根据用户输入的 IP 地址，定位 IP 的所在位置",
+          "enable": true
+        },
+        "maps_weather": {
+          "description": "根据城市名称或者标准adcode查询指定城市的天气",
+          "enable": true
+        },
+        "maps_search_detail": {
+          "description": "查询关键词搜或者周边搜获取到的POI ID的详细信息",
+          "enable": true
+        },
+        "maps_bicycling": {
+          "description": "骑行路径规划用于规划骑行通勤方案，规划时会考虑天桥、单行线、封路等情况。最大支持 500km 的骑行路线规划",
+          "enable": true
+        },
+        "maps_direction_walking": {
+          "description": "步行路径规划 API 可以根据输入起点终点经纬度坐标规划100km 以内的步行通勤方案，并且返回通勤方案的数据",
+          "enable": true
+        },
+        "maps_direction_driving": {
+          "description": "驾车路径规划 API 可以根据用户起终点经纬度坐标规划以小客车、轿车通勤出行的方案，并且返回通勤方案的数据。",
+          "enable": true
+        },
+        "maps_direction_transit_integrated": {
+          "description": "公交路径规划 API 可以根据用户起终点经纬度坐标规划综合各类公共（火车、公交、地铁）交通方式的通勤方案，并且返回通勤方案的数据，跨城场景下必须传起点城市与终点城市",
+          "enable": true
+        },
+        "maps_distance": {
+          "description": "距离测量 API 可以测量两个经纬度坐标之间的距离,支持驾车、步行以及球面距离测量",
+          "enable": false
+        },
+        "maps_text_search": {
+          "description": "关键词搜，根据用户传入关键词，搜索出相关的POI",
+          "enable": true
+        },
+        "maps_around_search": {
+          "description": "周边搜，根据用户传入关键词以及坐标location，搜索出radius半径范围的POI",
+          "enable": true
+        }
+      }
+    },
+    "sequential-thinking": {
+      "tools": {
+        "sequentialthinking": {
+          "description": "A detailed tool for dynamic and reflective problem-solving through thoughts.\nThis tool helps analyze problems through a flexible thinking process that can adapt and evolve.\nEach thought can build on, question, or revise previous insights as understanding deepens.\n\nWhen to use this tool:\n- Breaking down complex problems into steps\n- Planning and design with room for revision\n- Analysis that might need course correction\n- Problems where the full scope might not be clear initially\n- Problems that require a multi-step solution\n- Tasks that need to maintain context over multiple steps\n- Situations where irrelevant information needs to be filtered out\n\nKey features:\n- You can adjust total_thoughts up or down as you progress\n- You can question or revise previous thoughts\n- You can add more thoughts even after reaching what seemed like the end\n- You can express uncertainty and explore alternative approaches\n- Not every thought needs to build linearly - you can branch or backtrack\n- Generates a solution hypothesis\n- Verifies the hypothesis based on the Chain of Thought steps\n- Repeats the process until satisfied\n- Provides a correct answer\n\nParameters explained:\n- thought: Your current thinking step, which can include:\n* Regular analytical steps\n* Revisions of previous thoughts\n* Questions about previous decisions\n* Realizations about needing more analysis\n* Changes in approach\n* Hypothesis generation\n* Hypothesis verification\n- next_thought_needed: True if you need more thinking, even if at what seemed like the end\n- thought_number: Current number in sequence (can go beyond initial total if needed)\n- total_thoughts: Current estimate of thoughts needed (can be adjusted up/down)\n- is_revision: A boolean indicating if this thought revises previous thinking\n- revises_thought: If is_revision is true, which thought number is being reconsidered\n- branch_from_thought: If branching, which thought number is the branching point\n- branch_id: Identifier for the current branch (if any)\n- needs_more_thoughts: If reaching end but realizing more thoughts needed\n\nYou should:\n1. Start with an initial estimate of needed thoughts, but be ready to adjust\n2. Feel free to question or revise previous thoughts\n3. Don't hesitate to add more thoughts if needed, even at the \"end\"\n4. Express uncertainty when present\n5. Mark thoughts that revise previous thinking or branch into new paths\n6. Ignore information that is irrelevant to the current step\n7. Generate a solution hypothesis when appropriate\n8. Verify the hypothesis based on the Chain of Thought steps\n9. Repeat the process until satisfied with the solution\n10. Provide a single, ideally correct answer as the final output\n11. Only set next_thought_needed to false when truly done and a satisfactory answer is reached",
+          "enable": true
+        }
+      }
+    },
+    "bingcn": {
+      "tools": {
+        "bing_search": {
+          "description": "使用必应搜索指定的关键词，并返回搜索结果列表，包括标题、链接、摘要和ID",
+          "enable": true
+        },
+        "fetch_webpage": {
+          "description": "根据提供的ID获取对应网页的内容",
+          "enable": true
+        }
+      }
+    },
+    "datset": {
+      "tools": {
+        "start_search": {
+          "description": "Start Ragflow search task and return task ID for further result retrieval.",
+          "enable": true
+        },
+        "get_search_status": {
+          "description": "获取任务状态",
+          "enable": true
+        },
+        "get_search_results": {
+          "description": "Retrieve Ragflow search results based on the task ID.",
+          "enable": true
+        },
+        "cancel_search": {
+          "description": "取消正在进行的搜索任务",
+          "enable": true
+        },
+        "get_active_tasks": {
+          "description": "获取所有活跃任务的信息",
+          "enable": true
+        }
+      }
+    }
+  }
+}
