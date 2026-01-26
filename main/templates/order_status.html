@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智慧食堂 - 订单状态</title>
+    <link rel="stylesheet" href="../static/css/all.min.css">`n    <link rel="stylesheet" href="../static/css/modern-theme.css">
+    <style>
+        :root {
+            --primary-deep: #4A90E2;
+            --primary-dark: #2c5aa0;
+            --primary-light: #4a90e2;
+            --surface: #ffffff;
+            --surface-soft: #f8fafc;
+            --text-primary: #2d3748;
+            --text-secondary: #718096;
+            --border-light: #e2e8f0;
+            --error: #e74c3c;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(145deg, #FAFBFC 0%, #F5F7FA 100%);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 100%;
+            padding: 0;
+            margin: 0;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary-deep), var(--primary-dark));
+            color: white;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .back-btn {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: white;
+            font-size: 1.2rem;
+            text-decoration: none;
+        }
+
+        .order-card {
+            background: var(--surface);
+            margin: 15px;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            border: 1px solid var(--border-light);
+        }
+
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .order-id {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .order-status {
+            color: var(--primary-deep);
+            font-weight: 600;
+        }
+
+        .order-items {
+            margin-bottom: 15px;
+        }
+
+        .order-item {
+            display: flex;
+            margin-bottom: 10px;
+        }
+
+        .item-image {
+            width: 60px;
+            height: 60px;
+            background: var(--border-light);
+            border-radius: 8px;
+            margin-right: 10px;
+            overflow: hidden;
+        }
+
+        .item-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .item-info {
+            flex: 1;
+        }
+
+        .item-name {
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: var(--text-primary);
+        }
+
+        .item-price {
+            color: var(--error);
+            font-weight: 600;
+        }
+
+        .order-total {
+            display: flex;
+            justify-content: space-between;
+            font-weight: 600;
+            font-size: 1.1rem;
+            padding-top: 10px;
+            border-top: 1px solid var(--border-light);
+        }
+
+        .status-timeline {
+            margin: 20px 15px;
+            position: relative;
+            padding-left: 30px;
+        }
+
+        .timeline-line {
+            position: absolute;
+            left: 10px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: var(--border-light);
+        }
+
+        .timeline-step {
+            position: relative;
+            margin-bottom: 25px;
+        }
+
+        .timeline-step:last-child {
+            margin-bottom: 0;
+        }
+
+        .step-icon {
+            position: absolute;
+            left: -30px;
+            top: 0;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--border-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.7rem;
+        }
+
+        .step-icon.active {
+            background: var(--primary-deep);
+        }
+
+        .step-icon.completed {
+            background: #4ade80;
+        }
+
+        .step-content {
+            padding-bottom: 5px;
+        }
+
+        .step-title {
+            font-weight: 600;
+            margin-bottom: 3px;
+            color: var(--text-primary);
+        }
+
+        .step-desc {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .step-time {
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+        }
+
+        .robot-view {
+            margin: 15px;
+            background: var(--surface);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            border: 1px solid var(--border-light);
+        }
+
+        .view-title {
+            padding: 15px;
+            font-weight: 600;
+            border-bottom: 1px solid var(--border-light);
+            color: var(--text-primary);
+        }
+
+        .view-content {
+            position: relative;
+            background: #000;
+        }
+
+        .video-container {
+            position: relative;
+            width: 100%;
+            height: 400px;
+            background: #000;
+            border-radius: 0;
+            overflow: hidden;
+        }
+
+        .video-stream {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .video-controls {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            display: flex;
+            gap: 8px;
+        }
+
+        .video-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            color: white;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .video-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
+        }
+
+        .backup-view {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            color: #fff;
+            display: none;
+        }
+
+        .view-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+
+        .retry-btn {
+            background: linear-gradient(135deg, var(--primary-deep), var(--primary-dark));
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .retry-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3);
+        }
+
+        .loading-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+
+        .fullscreen-video {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 9999;
+            background: black;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .fullscreen-video img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        .action-buttons {
+            display: flex;
+            margin: 15px;
+            gap: 10px;
+        }
+
+        .action-btn {
+            flex: 1;
+            padding: 12px;
+            border-radius: 8px;
+            border: none;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-deep), var(--primary-dark));
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3);
+        }
+
+        .btn-outline {
+            background: var(--surface);
+            border: 1px solid var(--primary-deep);
+            color: var(--primary-deep);
+        }
+
+        /* 弹窗样式 */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(5px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-overlay.show {
+            display: flex;
+            opacity: 1;
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, #ffffff, #f8fafc);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+            width: 400px;
+            max-width: 90vw;
+            text-align: center;
+            transform: scale(0.8);
+            transition: transform 0.3s ease;
+            overflow: hidden;
+        }
+
+        .modal-overlay.show .modal-content {
+            transform: scale(1);
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, var(--primary-deep), var(--primary-dark));
+            color: white;
+            padding: 20px;
+            margin-bottom: 0;
+        }
+
+        .modal-header h3 {
+            margin: 0;
+            font-size: 1.4rem;
+            font-weight: 600;
+        }
+
+        .modal-body {
+            padding: 30px 20px;
+        }
+
+        .robot-animation {
+            position: relative;
+            height: 200px;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+            border-radius: 15px;
+            overflow: hidden;
+        }
+
+        .modal-message {
+            color: var(--text-primary);
+            font-size: 1rem;
+            margin: 10px 0;
+            line-height: 1.5;
+        }
+
+        .modal-footer {
+            padding: 0 20px 20px;
+        }
+
+        .modal-btn {
+            background: linear-gradient(135deg, var(--primary-deep), var(--primary-dark));
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(74, 144, 226, 0.4);
+        }
+
+        .modal-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(74, 144, 226, 0.6);
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 480px) {
+            .modal-content {
+                width: 95vw;
+                margin: 20px;
+            }
+            
+            .robot-animation {
+                height: 150px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <a href="/orders/" class="back-btn">
+                <i class="fas fa-chevron-left"></i>
+            </a>
+            <h1>订单状态</h1>
+        </div>
+
+        <div class="order-card">
+            <div class="order-header">
+                <div class="order-id">订单号: #{{ data.order_id }}</div>
+                <div class="order-status">{{ data.status }}</div>
+            </div>
+            <div class="order-items">
+                {% for item in data.dishes %}
+                <div class="order-item">
+                    <div class="item-image">
+                        <img src="/img/{{ item.name }}.jpg"
+                             alt="{{ item.name }}"
+                             onerror="this.style.display='none'; this.onerror=null;">
+                    </div>
+                    <div class="item-info">
+                        <div class="item-name">{{ item.name }}</div>
+                        <div class="item-desc">x{{ item.quantity }}</div>
+                        <div class="item-price">¥{{ item.dish_price }}</div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            <div class="order-total">
+                <div>总计</div>
+                <div>¥{{ data.total_amount }}</div>
+            </div>
+        </div>
+
+        <div class="status-timeline">
+            <div class="timeline-line"></div>
+
+            <div class="timeline-step">
+                <div class="step-icon completed">
+                    <i class="fas fa-check"></i>
+                </div>
+                <div class="step-content">
+                    <div class="step-title">订单已提交</div>
+                    <div class="step-desc">您的订单已成功提交</div>
+                    <div class="step-time">12:05:23</div>
+                </div>
+            </div>
+
+            <div class="timeline-step">
+                <div class="step-icon completed">
+                    <i class="fas fa-check"></i>
+                </div>
+                <div class="step-content">
+                    <div class="step-title">支付成功</div>
+                    <div class="step-desc">已通过微信支付完成付款</div>
+                    <div class="step-time">12:05:28</div>
+                </div>
+            </div>
+
+            <div class="timeline-step">
+                <div class="step-icon active">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <div class="step-content">
+                    <div class="step-title">机械臂准备中</div>
+                    <div class="step-desc">智能机械臂正在准备您的餐品</div>
+                    <div class="step-time">预计完成时间: 5分钟</div>
+                </div>
+            </div>
+
+            <div class="timeline-step">
+                <div class="step-icon">
+                    <i class="fas fa-utensils"></i>
+                </div>
+                <div class="step-content">
+                    <div class="step-title">待取餐</div>
+                    <div class="step-desc">请前往取餐窗口取餐</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="robot-view">
+            <div class="view-title">
+                <i class="fas fa-video"></i> 机械臂实时画面
+                <div style="float: right; font-size: 0.8rem; color: var(--text-secondary);">
+                    <span id="detection-status">检测中...</span>
+                </div>
+            </div>
+            <div class="view-content">
+                <div class="video-container">
+                    <img src="http://172.16.4.223:5000/video_feed"
+                         class="video-stream"
+                         alt="YOLOv5 Detection Stream"
+                         onerror="this.style.display='none'; document.getElementById('backup-view').style.display='block'; document.getElementById('video-controls').style.display='none';">
+
+                    <div id="video-controls" class="video-controls">
+                        <button class="video-btn" onclick="toggleFullscreen()" title="全屏">
+                            <i class="fas fa-expand"></i>
+                        </button>
+                        <button class="video-btn" onclick="refreshStream()" title="刷新">
+                            <i class="fas fa-sync-alt"></i>
+                        </button>
+                    </div>
+
+                    <div id="backup-view" class="backup-view">
+                        <div class="view-icon">
+                            <i class="fas fa-robot"></i>
+                        </div>
+                        <div style="font-size: 1.1rem; margin-bottom: 8px;">智能机械臂正在准备您的餐品</div>
+                        <div style="color: #aaa; margin-bottom: 15px;">预计等待时间: 5分钟</div>
+                        <button class="retry-btn" onclick="refreshStream()">
+                            <i class="fas fa-redo"></i> 重新连接
+                        </button>
+                    </div>
+
+                    <div id="loading-overlay" class="loading-overlay">
+                        <div style="text-align: center;">
+                            <i class="fas fa-spinner fa-spin" style="font-size: 2rem; margin-bottom: 10px;"></i>
+                            <div>正在加载视频流...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="action-buttons">
+            <button class="action-btn btn-primary" onclick="qucan()">
+                <i class="fas fa-map-marker-alt"></i> 取餐
+            </button>
+        </div>
+    </div>
+
+    <!-- 自定义取餐弹窗 -->
+    <div id="custom-modal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>智能配餐中</h3>
+            </div>
+            <div class="modal-body">
+                <div class="robot-animation">
+                    <!-- 简化的动画内容 -->
+                    <div style="display: flex; align-items: center; justify-content: center; height: 100%; font-size: 3rem; color: var(--primary-deep);">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                </div>
+                <p class="modal-message">机械臂正在为您准备餐品，请稍候...</p>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn" onclick="closeModal()">完成</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 自定义弹窗控制
+        function showModal() {
+            const modal = document.getElementById('custom-modal');
+            modal.classList.add('show');
+            modal.style.display = 'flex';
+            
+            // 2秒后自动关闭
+            setTimeout(() => {
+                if (modal.classList.contains('show')) {
+                    closeModal();
+                }
+            }, 2000);
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('custom-modal');
+            modal.classList.remove('show');
+            
+            setTimeout(() => {
+                modal.style.display = 'none';
+                location.reload();
+            }, 300);
+        }
+
+        function qucan(){
+            // 从URL或页面获取订单ID
+            const urlParams = new URLSearchParams(window.location.search);
+            const orderId = urlParams.get('order_id') || '{{ data.order_id }}';
+            
+            if (!orderId) {
+                alert('订单ID无效');
+                return;
+            }
+            
+            const params = new URLSearchParams();
+            params.append('order_id', orderId);
+            
+            console.log('/execute_order_tasks?'+params.toString())
+            fetch('/execute_order_tasks?'+params.toString())
+            .then(response => {
+                if (!response.ok) { throw new Error(`HTTP error ${response.status}`); }
+                return response.json();
+            })
+            .then(data => {
+                if (data.status === 'success') {
+                    showModal();
+                    console.log('配餐任务已启动:', data);
+                    // 更新订单状态为"准备中"
+                    document.querySelector('.order-status').textContent = '准备中';
+                } else {
+                    alert('配餐失败: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('配餐过程中出现错误');
+            })
+        }
+
+        // 视频流控制功能
+        let isFullscreen = false;
+
+        function toggleFullscreen() {
+            const videoContainer = document.querySelector('.video-container');
+            if (!isFullscreen) {
+                videoContainer.classList.add('fullscreen-video');
+                isFullscreen = true;
+                document.body.style.overflow = 'hidden';
+            } else {
+                videoContainer.classList.remove('fullscreen-video');
+                isFullscreen = false;
+                document.body.style.overflow = 'auto';
+            }
+        }
+
+        function refreshStream() {
+            const img = document.querySelector('.video-stream');
+            const loadingOverlay = document.getElementById('loading-overlay');
+            const backupView = document.getElementById('backup-view');
+
+            loadingOverlay.style.display = 'flex';
+            backupView.style.display = 'none';
+
+            // 添加时间戳避免缓存
+            img.src = `http://172.16.4.223:5000/video_feed?t=${Date.now()}`;
+
+            // 2秒后隐藏加载界面
+            setTimeout(() => {
+                loadingOverlay.style.display = 'none';
+            }, 2000);
+        }
+
+        // 检测视频流状态
+        function checkVideoStatus() {
+            const img = document.querySelector('.video-stream');
+            const statusText = document.getElementById('detection-status');
+            const loadingOverlay = document.getElementById('loading-overlay');
+
+            if (!img || !statusText) return;
+
+            // 设置初始状态
+            statusText.textContent = '连接中...';
+            statusText.style.color = '#fbbf24';
+            loadingOverlay.style.display = 'flex';
+
+            img.onload = function() {
+                statusText.textContent = '实时检测中';
+                statusText.style.color = '#22c55e';
+                loadingOverlay.style.display = 'none';
+            };
+
+            img.onerror = function() {
+                statusText.textContent = '连接失败';
+                statusText.style.color = '#ef4444';
+                loadingOverlay.style.display = 'none';
+                document.getElementById('backup-view').style.display = 'block';
+            };
+
+            // 检查图片是否已经加载完成
+            if (img.complete) {
+                if (img.naturalWidth > 0) {
+                    img.onload();
+                } else {
+                    img.onerror();
+                }
+            }
+        }
+
+        // ESC键退出全屏
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && isFullscreen) {
+                toggleFullscreen();
+            }
+        });
+
+        // 检查机械臂工作状态
+        function checkRobotWorkStatus() {
+            // 检查当前订单状态
+            const currentStatus = document.querySelector('.order-status').textContent.trim();
+            
+            if (currentStatus === '准备中' || currentStatus === '机械臂准备中') {
+                // 模拟检查机械臂是否完成工作的API调用
+                // 这里可以替换为实际的API调用
+                fetch('/check_robot_status')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'completed') {
+                        updateToReadyStatus();
+                    }
+                })
+                .catch(error => {
+                    console.log('机械臂状态检查失败，使用模拟状态更新');
+                    // 如果API调用失败，使用定时器模拟
+                    setTimeout(updateToReadyStatus, 8000);
+                });
+            }
+        }
+
+        // 更新到待取餐状态
+        function updateToReadyStatus() {
+            const preparingStep = document.querySelector('.timeline-step:nth-child(3) .step-icon');
+            const stepContent = document.querySelector('.timeline-step:nth-child(3) .step-content');
+            const readyStep = document.querySelector('.timeline-step:nth-child(4) .step-icon');
+            const orderStatus = document.querySelector('.order-status');
+            const detectionStatus = document.getElementById('detection-status');
+
+            // 更新准备步骤为完成状态
+            preparingStep.classList.remove('active');
+            preparingStep.classList.add('completed');
+            preparingStep.innerHTML = '<i class="fas fa-check"></i>';
+
+            // 更新步骤内容
+            stepContent.querySelector('.step-title').textContent = '准备完成';
+            stepContent.querySelector('.step-desc').textContent = '您的餐品已准备完成';
+            stepContent.querySelector('.step-time').textContent = new Date().toLocaleTimeString('zh-CN', {hour12: false});
+
+            // 激活待取餐步骤
+            readyStep.classList.add('active');
+
+            // 更新订单状态
+            orderStatus.textContent = '待取餐';
+            orderStatus.style.color = '#22c55e';
+
+            // 更新检测状态
+            if (detectionStatus) {
+                detectionStatus.textContent = '配餐完成';
+                detectionStatus.style.color = '#22c55e';
+            }
+
+            // 显示完成通知
+            showCompletionNotification();
+        }
+
+        // 显示完成通知
+        function showCompletionNotification() {
+            // 创建通知元素
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 80px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: linear-gradient(135deg, #22c55e, #16a34a);
+                color: white;
+                padding: 15px 25px;
+                border-radius: 25px;
+                box-shadow: 0 4px 15px rgba(34, 197, 94, 0.3);
+                z-index: 1001;
+                font-weight: 600;
+                animation: slideDown 0.5s ease-out;
+            `;
+            notification.innerHTML = '<i class="fas fa-check-circle"></i> 您的餐品已准备完成，请前往取餐！';
+
+            // 添加动画样式
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes slideDown {
+                    from { transform: translateX(-50%) translateY(-100%); opacity: 0; }
+                    to { transform: translateX(-50%) translateY(0); opacity: 1; }
+                }
+            `;
+            document.head.appendChild(style);
+
+            document.body.appendChild(notification);
+
+            // 3秒后移除通知
+            setTimeout(() => {
+                notification.style.animation = 'slideDown 0.5s ease-out reverse';
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.parentNode.removeChild(notification);
+                    }
+                }, 500);
+            }, 3000);
+        }
+
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            checkVideoStatus();
+            
+            // 开始检查机械臂工作状态
+            checkRobotWorkStatus();
+            
+            // 每5秒检查一次机械臂状态
+            setInterval(checkRobotWorkStatus, 5000);
+        });
+    </script>
+</body>
+</html>

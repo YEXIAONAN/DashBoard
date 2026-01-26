@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+ <!-- 底部导航栏 -->
+ <!-- 底部导航栏 -->
+<div class="bottom-nav">
+    <a href="javascript:void(0);" class="nav-item" data-target="index">
+        <i class="fas fa-home"></i>
+        首页
+    </a>
+    <a href="javascript:void(0);" class="nav-item active" data-target="orders">
+        <i class="fas fa-utensils"></i>
+        点餐
+    </a>
+    <a href="javascript:void(0);" class="nav-item" data-target="repo">
+        <i class="fas fa-chart-pie"></i>
+        报告
+    </a>
+    <a href="javascript:void(0);" class="nav-item" data-target="profile">
+        <i class="fas fa-user"></i>
+        我的
+    </a>
+</div>
+
+<script>
+    // 底部导航点击跳转
+    document.querySelectorAll('.nav-item').forEach(item => {
+        item.addEventListener('click', function() {
+            // 获取对应的页面路径（可以改为动态的路径）
+            const target = this.getAttribute('data-target');
+            let targetUrl = '';
+
+            switch(target) {
+                case 'index':
+                    targetUrl = "/index/";  // 首页路径
+                    break;
+                case 'orders':
+                    targetUrl = "/orders/";  // 点餐路径
+                    break;
+                case 'repo':
+                    targetUrl = "/repo/";  // 订单路径
+                    break;
+                case 'profile':
+                    targetUrl = "/profile/";  // 个人中心路径
+                    break;
+                default:
+                    break;
+            }
+
+            // 跳转到相应页面
+            if (targetUrl) {
+                window.location.href = targetUrl;
+            }
+
+            // 激活样式效果
+            document.querySelectorAll('.nav-item').forEach(i => {
+                i.classList.remove('active');
+            });
+            this.classList.add('active');
+        });
+    });
+
+    // 添加卡片悬停效果
+    document.querySelectorAll('.menu-card, .action-btn, .calory-card').forEach(card => {
+        card.addEventListener('mouseenter', () => {
+            card.style.transform = 'translateY(-5px)';
+            card.style.boxShadow = '0 12px 20px rgba(30, 136, 229, 0.2)';
+        });
+
+        card.addEventListener('mouseleave', () => {
+            card.style.transform = 'translateY(0)';
+            card.style.boxShadow = '0 5px 15px rgba(30, 136, 229, 0.1)';
+        });
+    });
+
+    // 添加按钮点击效果
+    document.querySelectorAll('.action-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const originalBg = this.style.backgroundColor;
+            this.style.backgroundColor = '#bbdefb';
+            this.style.transform = 'scale(0.95)';
+
+            setTimeout(() => {
+                this.style.backgroundColor = originalBg || '';
+                this.style.transform = '';
+            }, 300);
+        });
+    });
+
+    // 菜单项点击效果
+    document.querySelectorAll('.menu-card').forEach(card => {
+        card.addEventListener('click', function() {
+            this.style.border = '2px solid #1e88e5';
+            setTimeout(() => {
+                this.style.border = '1px solid #e3f2fd';
+            }, 500);
+        });
+    });
+</script>
+
+</body>
+</html>
