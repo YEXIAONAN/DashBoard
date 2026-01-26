@@ -1,6 +1,0 @@
-docker run -it -d --name nutri `
-  --restart=always `
-  --network nutri_net `
-  -p 80:8000 `
-  -v C:\NutriAI\healthy_eating_web:/app `
-  nutri:v1.9
