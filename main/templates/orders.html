@@ -10,6 +10,43 @@
     <link rel="stylesheet" href="../static/css/modern-theme.css">
    <style>
 
+        /* ========== 统一的瀑布流加载动画 ========== */
+        @keyframes cascadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* 顶部栏瀑布流动画 */
+        .top-header {
+            animation: cascadeIn 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.0s both;
+        }
+
+        /* 推荐横幅瀑布流动画 */
+        .recommendation-banner {
+            animation: cascadeIn 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.15s both;
+        }
+
+        /* 菜单列表瀑布流动画 */
+        .menu-list {
+            animation: cascadeIn 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.30s both;
+        }
+
+        /* 购物车指示器瀑布流动画 */
+        .cart-indicator {
+            animation: cascadeIn 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.45s both;
+        }
+
+        /* 底部导航瀑布流动画 */
+        .bottom-nav {
+            animation: cascadeIn 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.90s both;
+        }
+
         .recommendation-banner { 
             background: var(--white);
             color: var(--gray-800);
@@ -589,42 +626,6 @@
             .main-container {
                 padding: 10px;
             }
-        }
-
-        /* 动画效果 - 与profile.html统一 */
-        @keyframes slideInUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .fade-in {
-            animation: fadeIn 0.6s ease forwards;
-        }
-
-        .slide-in-up {
-            animation: slideInUp 0.6s ease forwards;
-        }
-
-        /* 为主要内容区域添加动画 */
-        .recommendation-banner {
-            animation: slideInUp 0.6s ease forwards;
-        }
-
-        .menu-list {
-            animation: fadeIn 0.6s ease forwards;
-        }
-
-        .food-card {
-            animation: fadeIn 0.6s ease forwards;
-        }
-
-        .cart-indicator {
-            animation: fadeIn 0.6s ease forwards;
         }
     </style>
 </head>
