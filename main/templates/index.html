@@ -1058,33 +1058,115 @@
 
     <!-- 底部导航栏 -->
     <div class="bottom-nav">
-        <div class="nav-item active" data-target="index">
-            <div class="nav-icon">
-                <i class="fas fa-home"></i>
+        <div class="nav-container">
+            <!-- 滑动背景指示器 -->
+            <div class="nav-indicator"></div>
+            
+            <div class="nav-item active" data-index="0" data-target="index">
+                <div class="nav-icon">
+                    <i class="fas fa-home"></i>
+                </div>
+                <div class="nav-label">主页</div>
             </div>
-            <div class="nav-label">主页</div>
-        </div>
-        <div class="nav-item" data-target="orders">
-            <div class="nav-icon">
-                <i class="fas fa-utensils"></i>
+            <div class="nav-item" data-index="1" data-target="orders">
+                <div class="nav-icon">
+                    <i class="fas fa-shopping-bag"></i>
+                </div>
+                <div class="nav-label">点餐</div>
             </div>
-            <div class="nav-label">点餐</div>
-        </div>
-        <div class="nav-item" data-target="repo">
-            <div class="nav-icon">
-                <i class="fas fa-chart-line"></i>
+            <div class="nav-item" data-index="2" data-target="repo">
+                <div class="nav-icon">
+                    <i class="fas fa-chart-bar"></i>
+                </div>
+                <div class="nav-label">报告</div>
             </div>
-            <div class="nav-label">报告</div>
-        </div>
-        <div class="nav-item" data-target="ai-assistant">
-            <div class="nav-icon">
-                <i class="fas fa-robot"></i>
+            <div class="nav-item" data-index="3" data-target="ai-assistant">
+                <div class="nav-icon">
+                    <i class="fas fa-sparkles"></i>
+                </div>
+                <div class="nav-label">AI助手</div>
             </div>
-            <div class="nav-label">AI助手</div>
         </div>
     </div>
 
     <script>
+        // ========== 底部导航滑动指示器 ==========
+        (function() {
+            const navContainer = document.querySelector('.nav-container');
+            const navItems = document.querySelectorAll('.nav-container .nav-item');
+            const indicator = document.querySelector('.nav-indicator');
+            
+            if (!indicator || !navContainer || navItems.length === 0) return;
+            
+            // 初始化指示器位置和宽度
+            function initIndicator() {
+                const activeItem = document.querySelector('.nav-container .nav-item.active');
+                if (activeItem) {
+                    updateIndicator(activeItem);
+                }
+            }
+            
+            // 更新指示器位置（精确匹配导航项）
+            function updateIndicator(item) {
+                const itemRect = item.getBoundingClientRect();
+                const containerRect = navContainer.getBoundingClientRect();
+                
+                // 计算相对于 nav-container 的位置
+                const left = itemRect.left - containerRect.left;
+                const width = itemRect.width;
+                
+                indicator.style.width = width + 'px';
+                indicator.style.left = left + 'px';
+            }
+            
+            // 点击导航项
+            navItems.forEach(item => {
+                item.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    // 更新选中状态
+                    navItems.forEach(i => i.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // 移动指示器
+                    updateIndicator(this);
+                    
+                    // 延迟跳转，让动画完成
+                    const target = this.getAttribute('data-target');
+                    setTimeout(() => {
+                        let targetUrl = '';
+                        switch(target) {
+                            case 'index':
+                                targetUrl = "/";
+                                break;
+                            case 'orders':
+                                targetUrl = "/orders/";
+                                break;
+                            case 'repo':
+                                targetUrl = "/repo/";
+                                break;
+                            case 'ai-assistant':
+                                targetUrl = "/ai_health_advisor/";
+                                break;
+                        }
+                        if (targetUrl) {
+                            window.location.href = targetUrl;
+                        }
+                    }, 400);
+                });
+            });
+            
+            // 页面加载时初始化
+            setTimeout(initIndicator, 100);
+            
+            // 窗口大小改变时重新计算
+            let resizeTimer;
+            window.addEventListener('resize', function() {
+                clearTimeout(resizeTimer);
+                resizeTimer = setTimeout(initIndicator, 100);
+            });
+        })();
+
         // ========== 横幅增强功能 ==========
         
         // 图片懒加载
