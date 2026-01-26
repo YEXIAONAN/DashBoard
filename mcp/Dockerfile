@@ -5,4 +5,4 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-CMD ["python", "main.py", "--host", "0.0.0.0", "--port", "8020"]
+CMD ["python", "test_main.py", "--host", "0.0.0.0", "--port", "8020"]

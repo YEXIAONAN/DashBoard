@@ -1,1 +1,0 @@
- docker run -d -it --name mcp_mysql -v C:\Docker\mcp_get_data:/app -p 8120:8020 mcpsql:v1.0

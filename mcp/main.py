@@ -1,139 +1,118 @@
-# server.py
 import os
-import decimal
-import datetime
+from collections import defaultdict
+
+import uvicorn
 import logging
+from dotenv import load_dotenv
 from argparse import ArgumentParser
 
-import pymysql
-import uvicorn
-from dotenv import load_dotenv
-from fastmcp import FastMCP
+from mcp.server.fastmcp import FastMCP
 from starlette.applications import Starlette
-from starlette.middleware.cors import CORSMiddleware
-from starlette.responses import JSONResponse
-from starlette.routing import Route, Mount
 from mcp.server import Server
 from mcp.server.sse import SseServerTransport
 
-# ---------- 日志 ----------
+import pymysql
+from starlette.routing import Route, Mount
+
+
+
+# 配置日志
 logging.basicConfig(
     level=logging.INFO,
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
 logger = logging.getLogger(__name__)
 
-# ---------- 环境变量 ----------
+# 加载环境变量
 load_dotenv()
 
 
 class Config:
-    HOST = os.getenv("HOST", "0.0.0.0")
-    PORT = int(os.getenv("PORT", 8020))
-    DEBUG = os.getenv("DEBUG", "False").lower() == "true"
+    HOST = os.getenv('HOST', '0.0.0.0')
+    PORT = int(os.getenv('PORT', 8020))
+    DEBUG = os.getenv('DEBUG', 'False').lower() == 'true'
 
-    MYSQL_HOST = os.getenv("MYSQL_HOST")
-    MYSQL_PORT = int(os.getenv("MYSQL_PORT", 6666))
-    MYSQL_USER = os.getenv("MYSQL_USER")
-    MYSQL_PASSWORD = os.getenv("MYSQL_PASSWORD")
-    MYSQL_DATABASE = os.getenv("MYSQL_DATABASE")
+    # MySQL
+    MYSQL_HOST = os.getenv('MYSQL_HOST')
+    MYSQL_PORT = int(os.getenv('MYSQL_PORT', '6666'))
+    MYSQL_USER = os.getenv('MYSQL_USER')
+    MYSQL_PASSWORD = os.getenv('MYSQL_PASSWORD')
+    MYSQL_DATABASE = os.getenv('MYSQL_DATABASE')
 
 
-# ---------- MCP ----------
+# 初始化MCP
 mcp = FastMCP("file_reader")
-
-# 内部函数实现实际逻辑
-def _get_monthly_nutrition_impl(user_id: str = "default", user_name: str = None) -> dict:
+@mcp.tool()
+def get_weekly_nutrition() -> dict:
     """
-    获取过去 30 天用户每日饮食记录
-    参数：
-        user_id   – 用户ID；"default" 表示全部
-        user_name – 用户名；None 表示不限
+    多表查询：orders → order_items → dishes
+    统计近 7 天用户每日卡路里 & 蛋白质摄入量（按购买数量加权）
     """
-    logger.info(
-        f"get_monthly_nutrition called: user_id={user_id}, user_name={user_name}"
-    )
-
+    logger.info("get_weekly_nutrition (multi-table) called")
     conn = pymysql.connect(
         host=Config.MYSQL_HOST,
         port=Config.MYSQL_PORT,
         user=Config.MYSQL_USER,
         password=Config.MYSQL_PASSWORD,
         database=Config.MYSQL_DATABASE,
-        charset="utf8mb4",
-        cursorclass=pymysql.cursors.DictCursor,
+        charset='utf8mb4',
+        cursorclass=pymysql.cursors.DictCursor
     )
     try:
         with conn.cursor() as cur:
-            # 基础 SQL
             sql = """
                 SELECT
-                    DATE(o.order_time) AS order_date,
-                    GROUP_CONCAT(DISTINCT d.name SEPARATOR ', ') AS dish_names,
-                    SUM(oi.quantity * d.total_calorie) AS total_calories,
-                    SUM(oi.quantity * d.total_protein) AS total_protein
+                    DATE(o.order_time) AS d,
+                    oi.quantity,
+                    d.total_calorie,
+                    d.total_protein
                 FROM orders o
-                JOIN users u ON o.user_id = u.user_id
-                JOIN order_items oi ON o.order_id = oi.order_id
-                JOIN dishes d ON oi.dish_id = d.dish_id
-                WHERE o.order_time >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)
+                JOIN order_items oi
+                  ON o.order_id = oi.order_id
+                JOIN dishes d
+                  ON oi.dish_id = d.dish_id
+                WHERE o.order_time >= DATE_SUB(CURDATE(), INTERVAL 7 DAY);
             """
-
-            # 动态条件 + 防注入
-            conditions = []
-            params = []
-            if user_id != "default":
-                conditions.append("o.user_id = %s")
-                params.append(user_id)
-            if user_name is not None:
-                conditions.append("u.name = %s")
-                params.append(user_name)
-
-            if conditions:
-                sql += " AND " + " AND ".join(conditions)
-
-            sql += " GROUP BY DATE(o.order_time)"
-            sql += " ORDER BY order_date"
-
-            cur.execute(sql, params)
+            cur.execute(sql)
             rows = cur.fetchall()
-            logger.info(f"Retrieved {len(rows)} rows")
 
-        # 转 JSON 可序列化
-        records = make_jsonable(rows)
+        if not rows:
+            return {"error": "近 7 天没有订单数据"}
+
+        # 按日期汇总
+        daily = defaultdict(lambda: {"cal": 0.0, "pro": 0.0})
+        for r in rows:
+            day = str(r["d"])
+            qty = int(r["quantity"])
+            daily[day]["cal"] += float(r["total_calorie"]) * qty
+            daily[day]["pro"] += float(r["total_protein"]) * qty
+
+        # 7 日均值
+        avg_cal = round(sum(v["cal"] for v in daily.values()) / 7, 1)
+        avg_protein = round(sum(v["pro"] for v in daily.values()) / 7, 1)
+
+        prompt = (
+            f"我上周平均每天通过点餐摄入 {avg_cal} 千卡热量、{avg_protein} 克蛋白质。"
+            "请针对我的饮食进行评估与建议。"
+        )
+
         return {
-            "text": "",
-            "files": [],
-            "json": [{"records": records}],
-        }
-    except Exception as e:
-        logger.exception("Database error")
-        return {
-            "text": "",
-            "files": [],
-            "json": [{"records": []}],
+            "daily_data": [{"date": k, "cal": v["cal"], "pro": v["pro"]}
+                           for k, v in sorted(daily.items())],
+            "avg_cal": avg_cal,
+            "avg_protein": avg_protein,
+            "prompt": prompt
         }
     finally:
         conn.close()
 
+import decimal, datetime, json
 
-# MCP 工具包装器
-@mcp.tool()
-def get_monthly_nutrition(user_id: str = "default", user_name: str = None) -> dict:
-    """
-    获取过去 30 天用户每日饮食记录
-    参数：
-        user_id   – 用户ID；"default" 表示全部
-        user_name – 用户名；None 表示不限
-    """
-    return _get_monthly_nutrition_impl(user_id, user_name)
-
-
-# ---------- 通用：把 Decimal/date 转成 JSON 可序列化 ----------
 def make_jsonable(obj):
+    """递归把 Decimal / date 转成 float / str"""
     if isinstance(obj, decimal.Decimal):
         return float(obj)
-    if isinstance(obj, (datetime.date, datetime.datetime)):
+    if isinstance(obj, datetime.date):
         return str(obj)
     if isinstance(obj, dict):
         return {k: make_jsonable(v) for k, v in obj.items()}
@@ -141,10 +120,10 @@ def make_jsonable(obj):
         return [make_jsonable(i) for i in obj]
     return obj
 
+from starlette.responses import Response   # 如已导入可忽略
+from starlette.responses import JSONResponse   # 新增
 
-# ---------- Starlette App ----------
 def create_starlette_app(mcp_server: Server) -> Starlette:
-    # SSE 通道
     sse = SseServerTransport("/messages/")
 
     async def handle_sse(request):
@@ -156,22 +135,11 @@ def create_starlette_app(mcp_server: Server) -> Starlette:
                 write_stream,
                 mcp_server.create_initialization_options(),
             )
-        return JSONResponse({})
+        return Response(status_code=200)
 
-    # REST 接口 1：按 user_id（兼容旧）
-    async def api_get_monthly_nutrition(request):
-        user_id = request.query_params.get("user_id", "default")
-        data = _get_monthly_nutrition_impl(user_id=user_id)
-        return JSONResponse(data)
-
-    # REST 接口 2：按 user_name
-    async def api_get_monthly_nutrition_by_name(request):
-        user_name = request.query_params.get("user_name", "").strip()
-        if not user_name:
-            return JSONResponse(
-                {"error": "user_name 不能为空"}, status_code=400
-            )
-        data = _get_monthly_nutrition_impl(user_name=user_name)
+    # ⬇︎ 新增：给 Dify「自定义工具」用的 REST 接口
+    async def api_get_weekly_nutrition(request):
+        data = get_weekly_nutrition()
         return JSONResponse(data)
 
     app = Starlette(
@@ -179,14 +147,13 @@ def create_starlette_app(mcp_server: Server) -> Starlette:
         routes=[
             Route("/sse", endpoint=handle_sse, methods=["GET"]),
             Mount("/messages/", app=sse.handle_post_message),
-            Route("/get_monthly_nutrition", endpoint=api_get_monthly_nutrition),
-            Route("/nutrition_by_name", endpoint=api_get_monthly_nutrition_by_name),
+            Route("/get_weekly_nutrition", endpoint=api_get_weekly_nutrition, methods=["GET"]),  # ⬅︎ 这一行
         ],
         on_startup=[lambda: logger.info("Server starting...")],
         on_shutdown=[lambda: logger.info("Server shutting down...")],
     )
 
-    # CORS
+    from starlette.middleware.cors import CORSMiddleware
     app.add_middleware(
         CORSMiddleware,
         allow_origins=["*"],
@@ -196,23 +163,26 @@ def create_starlette_app(mcp_server: Server) -> Starlette:
     )
     return app
 
-
-# ---------- CLI ----------
 def parse_arguments():
-    parser = ArgumentParser(description="MCP SSE Server")
-    parser.add_argument("--host", default=Config.HOST, help="Host")
-    parser.add_argument("--port", type=int, default=Config.PORT, help="Port")
-    parser.add_argument("--debug", action="store_true", help="Debug")
+    """解析命令行参数"""
+    parser = ArgumentParser(description='Run MCP SSE-based server')
+    parser.add_argument('--host', default=Config.HOST, help='Host to bind to')
+    parser.add_argument('--port', type=int,
+                        default=Config.PORT, help='Port to listen on')
+    parser.add_argument('--debug', action='store_true',
+                        help='Enable debug mode')
     return parser.parse_args()
 
 
-# ---------- 入口 ----------
 if __name__ == "__main__":
     args = parse_arguments()
+
+    # 更新配置
     Config.HOST = args.host
     Config.PORT = args.port
     Config.DEBUG = args.debug
 
+    # 启动服务器
     mcp_server = mcp._mcp_server
     starlette_app = create_starlette_app(mcp_server)
 
@@ -221,5 +191,5 @@ if __name__ == "__main__":
         starlette_app,
         host=Config.HOST,
         port=Config.PORT,
-        log_level="debug" if Config.DEBUG else "info",
+        log_level="info" if not Config.DEBUG else "debug"
     )
