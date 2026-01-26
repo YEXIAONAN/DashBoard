@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  o2-gateway:
+    build: .
+    container_name: o2-gateway
+    ports:
+      - "8080:80"
+    restart: unless-stopped
+    networks:
+      - gateway-network
+
+networks:
+  gateway-network:
+    driver: bridge

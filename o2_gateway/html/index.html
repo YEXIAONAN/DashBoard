@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>O2 Gateway - 服务网关</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="background">
+        <div class="gradient-orb orb-1"></div>
+        <div class="gradient-orb orb-2"></div>
+        <div class="gradient-orb orb-3"></div>
+    </div>
+
+    <div class="container">
+        <header class="glass-card header-card">
+            <div class="logo">
+                <div class="logo-icon">O2</div>
+                <h1>Gateway</h1>
+            </div>
+            <div class="status-indicator">
+                <span class="status-dot"></span>
+                <span class="status-text">系统运行中</span>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <div class="welcome-section glass-card">
+                <h2 class="gradient-text">欢迎访问 O2 服务网关</h2>
+                <p class="subtitle">统一入口 · 安全可靠 · 高效稳定</p>
+            </div>
+
+            <div class="services-grid">
+                <div class="service-card glass-card" data-service="api">
+                    <div class="service-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+                        </svg>
+                    </div>
+                    <h3>API 服务</h3>
+                    <p>RESTful API 接口服务</p>
+                    <div class="service-status online">在线</div>
+                </div>
+
+                <div class="service-card glass-card" data-service="auth">
+                    <div class="service-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                        </svg>
+                    </div>
+                    <h3>认证服务</h3>
+                    <p>统一身份认证与授权</p>
+                    <div class="service-status online">在线</div>
+                </div>
+
+                <div class="service-card glass-card" data-service="data">
+                    <div class="service-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <ellipse cx="12" cy="5" rx="9" ry="3"/>
+                            <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/>
+                            <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/>
+                        </svg>
+                    </div>
+                    <h3>数据服务</h3>
+                    <p>数据存储与查询服务</p>
+                    <div class="service-status online">在线</div>
+                </div>
+
+                <div class="service-card glass-card" data-service="monitor">
+                    <div class="service-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+                        </svg>
+                    </div>
+                    <h3>监控服务</h3>
+                    <p>实时监控与告警系统</p>
+                    <div class="service-status online">在线</div>
+                </div>
+
+                <div class="service-card glass-card" data-service="cache">
+                    <div class="service-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+                            <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
+                            <line x1="12" y1="22.08" x2="12" y2="12"/>
+                        </svg>
+                    </div>
+                    <h3>缓存服务</h3>
+                    <p>高速缓存与会话管理</p>
+                    <div class="service-status online">在线</div>
+                </div>
+
+                <div class="service-card glass-card" data-service="message">
+                    <div class="service-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                        </svg>
+                    </div>
+                    <h3>消息服务</h3>
+                    <p>消息队列与推送服务</p>
+                    <div class="service-status online">在线</div>
+                </div>
+            </div>
+
+            <div class="stats-section">
+                <div class="stat-card glass-card">
+                    <div class="stat-value">99.9%</div>
+                    <div class="stat-label">系统可用性</div>
+                </div>
+                <div class="stat-card glass-card">
+                    <div class="stat-value">1.2ms</div>
+                    <div class="stat-label">平均响应时间</div>
+                </div>
+                <div class="stat-card glass-card">
+                    <div class="stat-value">10K+</div>
+                    <div class="stat-label">每秒请求数</div>
+                </div>
+                <div class="stat-card glass-card">
+                    <div class="stat-value">24/7</div>
+                    <div class="stat-label">全天候服务</div>
+                </div>
+            </div>
+        </main>
+
+        <footer class="glass-card footer-card">
+            <p>&copy; 2026 O2 Gateway. All rights reserved.</p>
+            <div class="footer-links">
+                <a href="#docs">文档</a>
+                <a href="#api">API</a>
+                <a href="#support">支持</a>
+            </div>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
