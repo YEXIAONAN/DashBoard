@@ -101,5 +101,5 @@ docker run -p 8000:8000 dashboard-app
 
 ## 📄 许可协议
 
-本项目采用 **MIT License**，详细信息见 LICENSE 文件。
+本项目详细信息见 LICENSE 文件。
 

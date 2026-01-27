@@ -34,3 +34,4 @@ ROBOT_CONFIG = {
     'timeout': 5,  # YOLO检测超时时间（秒）
     'detection_success_rate': 0.8  # 模拟检测成功率
 }
+
