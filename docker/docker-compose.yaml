@@ -1,0 +1,71 @@
+version: "3.9"
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: project_mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: BigData#123..
+    volumes:
+      - C:/Users/Administrator/Desktop/Project/MySQL_Server/data:/var/lib/mysql
+      - C:/Users/Administrator/Desktop/Project/MySQL_Server/log:/var/log/mysql
+      - C:/Users/Administrator/Desktop/Project/MySQL_Server/conf.d:/etc/mysql/conf.d
+      - C:/Users/Administrator/Desktop/Project/MySQL_Server/my.cnf:/etc/my.cnf:ro
+    networks:
+      - project_net
+    ports:
+      - "6666:3306"
+    command: >
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_unicode_ci
+      --skip-character-set-client-handshake
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 5s
+      timeout: 10s
+      retries: 10
+  web:
+    image: project_web:v1.9
+    container_name: project_web
+    restart: always
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - project_net
+    ports:
+      - "80:8000"
+    volumes:
+      - C:\Users\Administrator\Desktop\Project\Project_Web:/app
+    command: >
+      sh -c "
+        echo 'Waiting for MySQL to be ready...'
+        retry=30
+        while ! python manage.py check --database default >/dev/null 2>&1; do
+          retry=$$(expr $$retry - 1)
+          [ $$retry -eq 0 ] && { echo 'MySQL connect failed after 30 attempts'; exit 1; }
+          echo 'MySQL not ready, retry in 5s...'
+          sleep 5
+        done
+        echo 'MySQL is ready, starting Django...'
+        python manage.py runserver 0.0.0.0:8000
+      "
+  mcp_mysql:
+    build:
+      context: ./Project_Web/mcp
+      dockerfile: Dockerfile
+    image: project_mcp:v1.9
+    container_name: project_mcp      
+    restart: always
+    stdin_open: true                
+    tty: true                    
+    volumes:
+      - C:\Users\Administrator\Desktop\Project\Project_Web\mcp:/app  
+    ports:
+      - "8120:8020"                  
+    networks:
+      - project_net                    
+networks:
+  project_net:
+    driver: bridge
