@@ -7,10 +7,10 @@ from argparse import ArgumentParser
 import pymysql
 import uvicorn
 from dotenv import load_dotenv
-from fastmcp import FastMCP
+from mcp.server.fastmcp import FastMCP
 from starlette.applications import Starlette
 from starlette.middleware.cors import CORSMiddleware
-from starlette.responses import JSONResponse
+from starlette.responses import JSONResponse, Response
 from starlette.routing import Route, Mount
 from mcp.server import Server
 from mcp.server.sse import SseServerTransport
@@ -30,11 +30,19 @@ class Config:
     PORT = int(os.getenv("PORT", 8020))
     DEBUG = os.getenv("DEBUG", "False").lower() == "true"
 
-    MYSQL_HOST = os.getenv("MYSQL_HOST")
+    MYSQL_HOST = os.getenv("MYSQL_HOST", "localhost")
     MYSQL_PORT = int(os.getenv("MYSQL_PORT", 3306))
-    MYSQL_USER = os.getenv("MYSQL_USER")
-    MYSQL_PASSWORD = os.getenv("MYSQL_PASSWORD")
-    MYSQL_DATABASE = os.getenv("MYSQL_DATABASE")
+    MYSQL_USER = os.getenv("MYSQL_USER", "root")
+    MYSQL_PASSWORD = os.getenv("MYSQL_PASSWORD", "")
+    MYSQL_DATABASE = os.getenv("MYSQL_DATABASE", "test")
+
+    @classmethod
+    def validate(cls):
+        """验证必需的配置项"""
+        required = ["MYSQL_HOST", "MYSQL_USER", "MYSQL_DATABASE"]
+        missing = [k for k in required if not getattr(cls, k)]
+        if missing:
+            raise ValueError(f"Missing required config: {', '.join(missing)}")
 
 
 # ---------- MCP ----------
@@ -100,17 +108,14 @@ def _get_monthly_nutrition_impl(user_id: str = "default", user_name: str = None)
         # 转 JSON 可序列化
         records = make_jsonable(rows)
         return {
-            "text": "",
-            "files": [],
-            "json": [{"records": records}],
+            "records": records,
+            "count": len(records),
+            "user_id": user_id if user_id != "default" else "all",
+            "user_name": user_name if user_name else "all"
         }
     except Exception as e:
         logger.exception("Database error")
-        return {
-            "text": "",
-            "files": [],
-            "json": [{"records": []}],
-        }
+        raise  # 抛出异常而不是返回空数据
     finally:
         conn.close()
 
@@ -154,31 +159,46 @@ def create_starlette_app(mcp_server: Server) -> Starlette:
                 write_stream,
                 mcp_server.create_initialization_options(),
             )
-        return JSONResponse({})
+        return Response(status_code=200)
 
     # REST 接口 1：按 user_id（兼容旧）
     async def api_get_monthly_nutrition(request):
         user_id = request.query_params.get("user_id", "default")
-        data = _get_monthly_nutrition_impl(user_id=user_id)
-        return JSONResponse(data)
+        try:
+            data = _get_monthly_nutrition_impl(user_id=user_id)
+            return JSONResponse(data)
+        except Exception as e:
+            logger.exception("API error")
+            return JSONResponse(
+                {"error": str(e), "records": []}, 
+                status_code=500
+            )
 
     # REST 接口 2：按 user_name
     async def api_get_monthly_nutrition_by_name(request):
         user_name = request.query_params.get("user_name", "").strip()
         if not user_name:
             return JSONResponse(
-                {"error": "user_name 不能为空"}, status_code=400
+                {"error": "user_name 不能为空", "records": []}, 
+                status_code=400
             )
-        data = _get_monthly_nutrition_impl(user_name=user_name)
-        return JSONResponse(data)
+        try:
+            data = _get_monthly_nutrition_impl(user_name=user_name)
+            return JSONResponse(data)
+        except Exception as e:
+            logger.exception("API error")
+            return JSONResponse(
+                {"error": str(e), "records": []}, 
+                status_code=500
+            )
 
     app = Starlette(
         debug=Config.DEBUG,
         routes=[
             Route("/sse", endpoint=handle_sse, methods=["GET"]),
             Mount("/messages/", app=sse.handle_post_message),
-            Route("/get_monthly_nutrition", endpoint=api_get_monthly_nutrition),
-            Route("/nutrition_by_name", endpoint=api_get_monthly_nutrition_by_name),
+            Route("/get_monthly_nutrition", endpoint=api_get_monthly_nutrition, methods=["GET"]),
+            Route("/nutrition_by_name", endpoint=api_get_monthly_nutrition_by_name, methods=["GET"]),
         ],
         on_startup=[lambda: logger.info("Server starting...")],
         on_shutdown=[lambda: logger.info("Server shutting down...")],
@@ -211,10 +231,21 @@ if __name__ == "__main__":
     Config.PORT = args.port
     Config.DEBUG = args.debug
 
+    # 验证配置
+    try:
+        Config.validate()
+        logger.info("Configuration validated successfully")
+    except ValueError as e:
+        logger.error(f"Configuration error: {e}")
+        exit(1)
+
+    # 创建 MCP 服务器
     mcp_server = mcp._mcp_server
     starlette_app = create_starlette_app(mcp_server)
 
     logger.info(f"Starting server on {Config.HOST}:{Config.PORT}")
+    logger.info(f"Database: {Config.MYSQL_HOST}:{Config.MYSQL_PORT}/{Config.MYSQL_DATABASE}")
+    
     uvicorn.run(
         starlette_app,
         host=Config.HOST,
