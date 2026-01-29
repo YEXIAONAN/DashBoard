@@ -278,13 +278,27 @@ def classify_and_sort_dishes(dish_list):
     return sorted_dishes
 
 
-def detect_dish_with_yolo(dish_name, timeout=5):
-    """使用YOLOv11检测菜品是否存在"""
+def detect_dish_with_yolo(dish_name, timeout=5, use_yolo=False):
+    """使用YOLOv11检测菜品是否存在
+    
+    Args:
+        dish_name: 菜品名称
+        timeout: 检测超时时间（秒）
+        use_yolo: 是否使用YOLO检测，False则直接返回True（跳过检测）- 默认False
+    
+    Returns:
+        bool: 是否检测到菜品（或跳过检测时返回True）
+    """
+    # 如果不使用YOLO检测，直接返回True
+    if not use_yolo:
+        print(f'跳过YOLO检测，直接执行{dish_name}的任务')
+        return True
+    
     try:
         # 映射菜品名到YOLO类别
         target_class = YOLO_CLASS_MAPPING.get(dish_name)
         if not target_class:
-            print(f'找不到{dish_name}')
+            print(f'找不到{dish_name}的YOLO映射')
             return False
 
         # 实际调用YOLOv11检测接口
@@ -323,8 +337,14 @@ def detect_dish_with_yolo(dish_name, timeout=5):
         return False
 
 
-def execute_dish_tasks(dish_list, order_id):
-    """执行菜品任务流程"""
+def execute_dish_tasks(dish_list, order_id, use_yolo=False):
+    """执行菜品任务流程
+    
+    Args:
+        dish_list: 菜品列表
+        order_id: 订单ID
+        use_yolo: 是否使用YOLO检测，False则跳过检测直接执行任务 - 默认False
+    """
     global global_lebai
 
     # 分类排序菜品
@@ -340,13 +360,16 @@ def execute_dish_tasks(dish_list, order_id):
 
     # 逐个检测并执行任务
     for dish in sorted_dishes:
-        print(f"开始检测菜品: {dish}")
+        print(f"开始处理菜品: {dish}")
 
-        # YOLO检测
-        detected = detect_dish_with_yolo(dish)
+        # YOLO检测（可选）
+        detected = detect_dish_with_yolo(dish, use_yolo=use_yolo)
         if not detected:
-            print(f"没有找到{dish}，请及时补货")
-            continue
+            if use_yolo:
+                print(f"没有找到{dish}，请及时补货")
+                continue
+            else:
+                print(f"跳过YOLO检测，直接执行{dish}的任务")
 
         # 获取任务ID
         task_id = DISH_TASK_MAPPING.get(dish)
@@ -618,8 +641,18 @@ def execute_staple_dish_placement():
 
 @require_http_methods(["GET"])
 def start_pickup_process(request):
-    """启动取餐流程"""
+    """启动取餐流程
+    
+    参数:
+        order_id: 订单ID（必需）
+        use_yolo: 是否使用YOLO检测（可选，默认为false）
+                  传入 'true', '1', 'yes' 表示使用YOLO
+    """
     order_id = request.GET.get('order_id', '')
+    use_yolo_param = request.GET.get('use_yolo', 'false').lower()
+    
+    # 解析use_yolo参数 - 只有明确指定true/1/yes时才使用YOLO
+    use_yolo = use_yolo_param in ['true', '1', 'yes', 'on']
 
     if not order_id:
         return JsonResponse({'status': 'error', 'message': '订单ID不能为空'}, status=400)
@@ -633,10 +666,18 @@ def start_pickup_process(request):
             return JsonResponse({'status': 'error', 'message': '订单中没有菜品'}, status=400)
 
         # 在新线程中执行取餐流程，避免阻塞请求
-        pickup_thread = threading.Thread(target=execute_dish_tasks, args=(dish_list, order_id))
+        pickup_thread = threading.Thread(
+            target=execute_dish_tasks, 
+            args=(dish_list, order_id, use_yolo)
+        )
         pickup_thread.start()
 
-        return JsonResponse({'status': 'success', 'message': '取餐流程已开始执行'})
+        mode_msg = "使用YOLO检测" if use_yolo else "跳过YOLO检测"
+        return JsonResponse({
+            'status': 'success', 
+            'message': f'取餐流程已开始执行（{mode_msg}）',
+            'use_yolo': use_yolo
+        })
 
     except Exception as e:
         return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
@@ -644,8 +685,18 @@ def start_pickup_process(request):
 
 @require_http_methods(["GET"])
 def execute_order_tasks(request):
-    """执行订单任务"""
+    """执行订单任务
+    
+    参数:
+        order_id: 订单ID（必需）
+        use_yolo: 是否使用YOLO检测（可选，默认为false）
+                  传入 'true', '1', 'yes' 表示使用YOLO
+    """
     order_id = request.GET.get('order_id', '')
+    use_yolo_param = request.GET.get('use_yolo', 'false').lower()
+    
+    # 解析use_yolo参数 - 只有明确指定true/1/yes时才使用YOLO
+    use_yolo = use_yolo_param in ['true', '1', 'yes', 'on']
 
     if not order_id:
         return JsonResponse({'status': 'error', 'message': '订单ID不能为空'}, status=400)
@@ -659,10 +710,18 @@ def execute_order_tasks(request):
             return JsonResponse({'status': 'error', 'message': '订单中没有菜品'}, status=400)
 
         # 在新线程中执行任务，避免阻塞请求
-        task_thread = threading.Thread(target=execute_dish_tasks, args=(dish_list, order_id))
+        task_thread = threading.Thread(
+            target=execute_dish_tasks, 
+            args=(dish_list, order_id, use_yolo)
+        )
         task_thread.start()
 
-        return JsonResponse({'status': 'success', 'message': '任务已开始执行'})
+        mode_msg = "使用YOLO检测" if use_yolo else "跳过YOLO检测"
+        return JsonResponse({
+            'status': 'success', 
+            'message': f'任务已开始执行（{mode_msg}）',
+            'use_yolo': use_yolo
+        })
 
     except Exception as e:
         return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
