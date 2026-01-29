@@ -285,8 +285,31 @@ body {
     justify-content: center;
 }
 
+.nav-icon svg {
+    width: 24px;
+    height: 24px;
+    fill: currentColor;
+    transition: all 0.3s ease;
+}
+
 .nav-item.active .nav-icon {
     color: #FFFFFF;
+}
+
+.nav-item.active .nav-icon svg {
+    filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.5));
+    animation: sparkle 2s ease-in-out infinite;
+}
+
+@keyframes sparkle {
+    0%, 100% {
+        opacity: 1;
+        transform: scale(1) rotate(0deg);
+    }
+    50% {
+        opacity: 0.8;
+        transform: scale(1.1) rotate(5deg);
+    }
 }
 
 .nav-label {
