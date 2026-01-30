@@ -295,10 +295,15 @@ async def chat_stream(text: str = Form(...)):
                                     
                                     if data.get("done", False):
                                         # 完成后生成语音（使用完整文本）
-                                        logger.info(f"流式输出完成，开始生成语音: {full_text[:50]}...")
+                                        logger.info(f"流式输出完成，完整文本长度: {len(full_text)} 字符")
+                                        logger.info(f"完整文本预览: {full_text[:100]}...")
+                                        logger.info("开始生成语音...")
                                         audio_bytes = await text_to_speech(full_text)
+                                        logger.info(f"语音生成完成，大小: {len(audio_bytes)} bytes")
                                         audio_base64 = base64.b64encode(audio_bytes).decode("utf-8")
+                                        logger.info(f"Base64 编码完成，长度: {len(audio_base64)} 字符")
                                         yield f"data: {json.dumps({'audio': audio_base64, 'done': True})}\n\n"
+                                        logger.info("音频数据已发送")
                                         break
                                 except json.JSONDecodeError:
                                     continue
