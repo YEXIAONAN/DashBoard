@@ -16,9 +16,17 @@ import uvicorn
 # ==================== 设置 ffmpeg 路径到环境变量 ====================
 # Chocolatey 安装的 ffmpeg 路径
 FFMPEG_BIN_PATH = r"C:\ProgramData\chocolatey\bin"
+FFMPEG_EXE = os.path.join(FFMPEG_BIN_PATH, "ffmpeg.exe")
+
+# 设置环境变量
 if os.path.exists(FFMPEG_BIN_PATH):
     os.environ["PATH"] = FFMPEG_BIN_PATH + os.pathsep + os.environ.get("PATH", "")
     print(f"✓ 已添加 ffmpeg 路径到 PATH: {FFMPEG_BIN_PATH}")
+
+# 设置 Whisper 使用的 ffmpeg 路径
+if os.path.exists(FFMPEG_EXE):
+    os.environ["FFMPEG_BINARY"] = FFMPEG_EXE
+    print(f"✓ 设置 FFMPEG_BINARY: {FFMPEG_EXE}")
 
 # ==================== 日志配置 ====================
 logging.basicConfig(
@@ -127,8 +135,18 @@ async def transcribe_audio(audio_bytes: bytes) -> str:
             
             logger.info(f"音频转换成功: {output_path}")
             
-            # 使用 Whisper 识别
-            whisper_result = model.transcribe(output_path, language="zh", fp16=False)
+            # 直接读取 WAV 文件，不让 Whisper 再次调用 ffmpeg
+            import wave
+            import numpy as np
+            
+            with wave.open(output_path, 'rb') as wav_file:
+                # 读取音频数据
+                audio_data = wav_file.readframes(wav_file.getnframes())
+                # 转换为 numpy 数组
+                audio_array = np.frombuffer(audio_data, dtype=np.int16).astype(np.float32) / 32768.0
+            
+            # 使用 Whisper 识别（传入音频数组而不是文件路径）
+            whisper_result = model.transcribe(audio_array, language="zh", fp16=False)
             text = whisper_result["text"]
             logger.info(f"识别结果: {text}")
             return text.strip()
