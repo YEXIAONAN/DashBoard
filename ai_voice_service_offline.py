@@ -48,9 +48,9 @@ def load_whisper():
     global whisper_model
     if whisper_model is None:
         try:
-            from faster_whisper import WhisperModel
+            import whisper
             logger.info(f"加载 Whisper 模型: {WHISPER_MODEL}")
-            whisper_model = WhisperModel(WHISPER_MODEL, device="cpu", compute_type="int8")
+            whisper_model = whisper.load_model(WHISPER_MODEL)
             logger.info("Whisper 模型加载成功")
         except Exception as e:
             logger.error(f"Whisper 模型加载失败: {e}")
@@ -87,10 +87,8 @@ async def transcribe_audio(audio_bytes: bytes) -> str:
         
         try:
             logger.info(f"开始识别音频: {len(audio_bytes)} bytes")
-            segments, info = model.transcribe(tmp_path, language="zh")
-            
-            # 合并所有片段
-            text = " ".join([segment.text for segment in segments])
+            result = model.transcribe(tmp_path, language="zh")
+            text = result["text"]
             logger.info(f"识别结果: {text}")
             return text.strip()
         finally:
@@ -211,7 +209,7 @@ async def health():
         "ollama": OLLAMA_HOST,
         "model": OLLAMA_MODEL,
         "whisper_model": WHISPER_MODEL,
-        "asr": "faster-whisper (local)",
+        "asr": "openai-whisper (local)",
         "tts": "pyttsx3 (local)"
     }
 
