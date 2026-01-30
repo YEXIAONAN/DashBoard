@@ -13,6 +13,13 @@ from fastapi.middleware.cors import CORSMiddleware
 import httpx
 import uvicorn
 
+# ==================== 设置 ffmpeg 路径到环境变量 ====================
+# Chocolatey 安装的 ffmpeg 路径
+FFMPEG_BIN_PATH = r"C:\ProgramData\chocolatey\bin"
+if os.path.exists(FFMPEG_BIN_PATH):
+    os.environ["PATH"] = FFMPEG_BIN_PATH + os.pathsep + os.environ.get("PATH", "")
+    print(f"✓ 已添加 ffmpeg 路径到 PATH: {FFMPEG_BIN_PATH}")
+
 # ==================== 日志配置 ====================
 logging.basicConfig(
     level=logging.INFO,
