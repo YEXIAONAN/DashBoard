@@ -6,7 +6,11 @@ python-multipart==0.0.6
 
 # 本地语音识别 (ASR) - 使用 OpenAI Whisper（有预编译版本）
 openai-whisper==20231117
-scipy==1.11.4
 
 # 本地语音合成 (TTS) - 使用 edge-tts（微软中文语音）
 edge-tts==6.1.12
+
+# 注意：需要安装 ffmpeg
+# Windows: choco install ffmpeg
+# Linux: sudo apt install ffmpeg
+# Mac: brew install ffmpeg
