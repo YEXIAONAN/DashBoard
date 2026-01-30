@@ -1,0 +1,14 @@
+# FastAPI 后端
+fastapi==0.109.0
+uvicorn[standard]==0.27.0
+httpx==0.26.0
+python-multipart==0.0.6
+
+# 本地语音识别 (ASR)
+faster-whisper==1.0.0
+
+# 本地语音合成 (TTS)
+pyttsx3==2.90
+
+# Windows TTS 支持（如果在 Windows 上）
+pywin32==306
