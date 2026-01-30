@@ -543,7 +543,11 @@
         }
         
         async function sendAudio(audioBlob) {
-            if (isProcessing) return;
+            console.log('sendAudio 被调用');
+            if (isProcessing) {
+                console.log('已经在处理中，跳过');
+                return;
+            }
             
             isProcessing = true;
             sendBtn.disabled = true;
@@ -559,6 +563,7 @@
             chatDisplay.scrollTop = chatDisplay.scrollHeight;
             
             try {
+                console.log('开始语音识别');
                 // 调用语音识别接口
                 const formData = new FormData();
                 formData.append('audio', audioBlob, 'audio.wav');
@@ -568,12 +573,14 @@
                     body: formData
                 });
                 
+                console.log('识别响应状态:', response.status);
                 if (!response.ok) {
                     throw new Error(`识别失败: HTTP ${response.status}`);
                 }
                 
                 const result = await response.json();
                 const recognizedText = result.text;
+                console.log('识别结果:', recognizedText);
                 
                 // 立即显示识别结果
                 const placeholder = document.getElementById(placeholderId);
@@ -585,17 +592,23 @@
                     placeholder.appendChild(timeDiv);
                 }
                 
+                // 重要：重置 isProcessing，让 sendTextStream 可以执行
+                isProcessing = false;
+                
                 // 第二步：流式获取 AI 回复
+                console.log('开始调用 sendTextStream，文本:', recognizedText);
                 await sendTextStream(recognizedText);
+                console.log('sendTextStream 完成');
                 
             } catch (error) {
+                console.error('sendAudio 错误:', error);
                 setStatus('错误: ' + error.message, 'error');
                 const placeholder = document.getElementById(placeholderId);
                 if (placeholder) {
                     placeholder.innerHTML = '❌ 识别失败';
                     placeholder.style.opacity = '0.6';
                 }
-            } finally {
+                // 确保重置状态
                 isProcessing = false;
                 sendBtn.disabled = false;
                 recordBtn.disabled = false;
@@ -603,7 +616,11 @@
         }
         
         async function sendTextStream(text) {
-            if (isProcessing) return;
+            console.log('sendTextStream 被调用，文本:', text);
+            if (isProcessing) {
+                console.log('已经在处理中，跳过');
+                return;
+            }
             
             isProcessing = true;
             sendBtn.disabled = true;
@@ -611,6 +628,7 @@
             showTyping();
             
             try {
+                console.log('创建消息容器');
                 // 创建 AI 回复消息容器
                 const messageDiv = document.createElement('div');
                 messageDiv.className = 'message assistant';
@@ -623,6 +641,7 @@
                 chatDisplay.appendChild(messageDiv);
                 chatDisplay.scrollTop = chatDisplay.scrollHeight;
                 
+                console.log('发送流式请求到:', CHAT_STREAM_URL);
                 // 发送流式请求
                 const formData = new FormData();
                 formData.append('text', text);
@@ -632,25 +651,32 @@
                     body: formData
                 });
                 
+                console.log('收到响应，状态:', response.status);
                 if (!response.ok) {
                     throw new Error(`HTTP ${response.status}`);
                 }
                 
+                console.log('开始读取流');
                 const reader = response.body.getReader();
                 const decoder = new TextDecoder();
                 let fullText = '';
                 
                 while (true) {
                     const { done, value } = await reader.read();
-                    if (done) break;
+                    if (done) {
+                        console.log('流读取完成');
+                        break;
+                    }
                     
                     const chunk = decoder.decode(value, { stream: true });
+                    console.log('收到数据块:', chunk.substring(0, 100));
                     const lines = chunk.split('\n');
                     
                     for (const line of lines) {
                         if (line.startsWith('data: ')) {
                             try {
                                 const data = JSON.parse(line.slice(6));
+                                console.log('解析数据:', data);
                                 
                                 if (data.error) {
                                     throw new Error(data.error);
@@ -664,6 +690,7 @@
                                 }
                                 
                                 if (data.audio && data.done) {
+                                    console.log('收到音频，准备播放');
                                     // 添加时间戳
                                     const timeDiv = document.createElement('div');
                                     timeDiv.className = 'message-time';
@@ -676,7 +703,7 @@
                                     audioPlayer.play().catch(e => console.log('音频播放失败:', e));
                                 }
                             } catch (e) {
-                                console.error('解析数据失败:', e);
+                                console.error('解析数据失败:', e, '原始行:', line);
                             }
                         }
                     }
@@ -685,6 +712,7 @@
                 setStatus('', '');
                 
             } catch (error) {
+                console.error('sendTextStream 错误:', error);
                 hideTyping();
                 setStatus('错误: ' + error.message, 'error');
                 
@@ -694,6 +722,7 @@
                 }
                 addMessage('❌ 系统错误: ' + error.message, 'assistant');
             } finally {
+                console.log('sendTextStream 清理');
                 isProcessing = false;
                 sendBtn.disabled = false;
                 recordBtn.disabled = false;
