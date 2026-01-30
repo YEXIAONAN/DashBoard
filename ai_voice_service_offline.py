@@ -41,7 +41,12 @@ OLLAMA_MODEL = "qwen2.5:7b"
 SERVICE_PORT = 8001
 
 # Whisper 模型大小: tiny, base, small, medium, large
-WHISPER_MODEL = "base"  # base 模型平衡速度和准确度
+# tiny: 最快但准确度最低
+# base: 平衡速度和准确度（当前使用）
+# small: 更准确，稍慢
+# medium: 很准确，较慢
+# large: 最准确，最慢
+WHISPER_MODEL = "small"  # 升级到 small 模型，提升准确度
 
 # ffmpeg 路径（Windows 默认安装位置）
 FFMPEG_PATH = r"C:\ProgramData\chocolatey\bin\ffmpeg.exe"
@@ -111,14 +116,15 @@ async def transcribe_audio(audio_bytes: bytes) -> str:
             else:
                 ffmpeg_cmd = FFMPEG_PATH
             
-            # 使用 ffmpeg 转换为 16kHz 单声道 WAV
+            # 使用 ffmpeg 转换为更高质量的 WAV
             cmd = [
                 ffmpeg_cmd,
                 "-i", input_path,
-                "-ar", "16000",  # 采样率 16kHz
-                "-ac", "1",      # 单声道
-                "-f", "wav",     # WAV 格式
-                "-y",            # 覆盖输出文件
+                "-ar", "16000",      # 采样率 16kHz（Whisper 标准）
+                "-ac", "1",          # 单声道
+                "-acodec", "pcm_s16le",  # 16-bit PCM 编码
+                "-f", "wav",         # WAV 格式
+                "-y",                # 覆盖输出文件
                 output_path
             ]
             
@@ -146,7 +152,16 @@ async def transcribe_audio(audio_bytes: bytes) -> str:
                 audio_array = np.frombuffer(audio_data, dtype=np.int16).astype(np.float32) / 32768.0
             
             # 使用 Whisper 识别（传入音频数组而不是文件路径）
-            whisper_result = model.transcribe(audio_array, language="zh", fp16=False)
+            whisper_result = model.transcribe(
+                audio_array, 
+                language="zh",           # 中文
+                fp16=False,              # 不使用 FP16（CPU 模式）
+                beam_size=5,             # 增加束搜索大小，提高准确度
+                best_of=5,               # 从多个候选中选择最佳结果
+                temperature=0.0,         # 降低随机性，提高稳定性
+                condition_on_previous_text=False,  # 不依赖前文，避免累积错误
+                initial_prompt="以下是普通话的句子。"  # 提示模型这是普通话
+            )
             text = whisper_result["text"]
             logger.info(f"识别结果: {text}")
             return text.strip()
