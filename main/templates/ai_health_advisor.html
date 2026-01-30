@@ -101,18 +101,20 @@
         }
 
         .message.user {
-            background: linear-gradient(135deg, var(--primary-deep), var(--primary-light));
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             margin-left: auto;
             border-bottom-right-radius: 6px;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
         }
 
         .message.assistant {
-            background: var(--surface-soft);
-            border: 1px solid rgba(74, 144, 226, 0.08);
-            color: var(--text-primary);
+            background: white;
+            border: 1px solid rgba(74, 144, 226, 0.15);
+            color: #2d3748;
             margin-right: auto;
             border-bottom-left-radius: 6px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
         }
 
         .message-time {
@@ -527,15 +529,22 @@
         }
         
         async function sendAudio(audioBlob) {
-            addMessage('🎤 [语音消息]', 'user');
+            // 先显示"正在识别..."占位符
+            const placeholderId = 'audio-' + Date.now();
+            const placeholderDiv = document.createElement('div');
+            placeholderDiv.className = 'message user';
+            placeholderDiv.id = placeholderId;
+            placeholderDiv.innerHTML = '🎤 正在识别语音...';
+            chatDisplay.appendChild(placeholderDiv);
+            chatDisplay.scrollTop = chatDisplay.scrollHeight;
             
             const formData = new FormData();
             formData.append('audio', audioBlob, 'audio.wav');
             
-            await sendRequest(formData);
+            await sendRequest(formData, placeholderId);
         }
         
-        async function sendRequest(data) {
+        async function sendRequest(data, audioPlaceholderId = null) {
             if (isProcessing) return;
             
             isProcessing = true;
@@ -563,7 +572,21 @@
                 
                 hideTyping();
                 
-                // 显示文本回复
+                // 如果是语音输入，更新占位符显示识别的文字
+                if (audioPlaceholderId) {
+                    const placeholder = document.getElementById(audioPlaceholderId);
+                    if (placeholder && result.recognized_text) {
+                        placeholder.innerHTML = `🎤 "${result.recognized_text}"`;
+                        
+                        // 添加时间戳
+                        const timeDiv = document.createElement('div');
+                        timeDiv.className = 'message-time';
+                        timeDiv.textContent = new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
+                        placeholder.appendChild(timeDiv);
+                    }
+                }
+                
+                // 显示 AI 回复
                 addMessage(result.text, 'assistant');
                 
                 // 播放语音
@@ -578,6 +601,16 @@
             } catch (error) {
                 hideTyping();
                 setStatus('错误: ' + error.message, 'error');
+                
+                // 如果是语音输入失败，更新占位符
+                if (audioPlaceholderId) {
+                    const placeholder = document.getElementById(audioPlaceholderId);
+                    if (placeholder) {
+                        placeholder.innerHTML = '❌ 识别失败';
+                        placeholder.style.opacity = '0.6';
+                    }
+                }
+                
                 addMessage('❌ 系统错误: ' + error.message, 'assistant');
             } finally {
                 isProcessing = false;

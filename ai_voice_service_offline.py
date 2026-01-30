@@ -239,12 +239,14 @@ async def chat(
         
         # 1. 获取输入文本
         input_text = text or ""
+        recognized_text = ""  # 保存语音识别的文字
         
         if audio:
             audio_bytes = await audio.read()
             logger.info(f"音频大小: {len(audio_bytes)} bytes")
             asr_text = await transcribe_audio(audio_bytes)
             input_text = asr_text if asr_text else input_text
+            recognized_text = asr_text  # 保存识别结果
         
         if not input_text:
             raise HTTPException(status_code=400, detail="需要提供文本或音频")
@@ -262,7 +264,8 @@ async def chat(
         
         return {
             "text": reply_text,
-            "audio": audio_base64
+            "audio": audio_base64,
+            "recognized_text": recognized_text  # 返回识别的文字
         }
     
     except HTTPException:
