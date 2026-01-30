@@ -58,66 +58,53 @@ def load_whisper():
     return whisper_model
 
 def load_tts():
-    """延迟加载 TTS 引擎"""
-    global tts_engine
-    if tts_engine is None:
-        try:
-            import pyttsx3
-            logger.info("初始化 TTS 引擎")
-            tts_engine = pyttsx3.init()
-            # 设置语速和音量
-            tts_engine.setProperty('rate', 150)  # 语速
-            tts_engine.setProperty('volume', 0.9)  # 音量
-            logger.info("TTS 引擎初始化成功")
-        except Exception as e:
-            logger.error(f"TTS 引擎初始化失败: {e}")
-            raise
-    return tts_engine
+    """延迟加载 TTS 引擎（edge-tts 不需要预加载）"""
+    logger.info("使用 edge-tts（无需预加载）")
+    return None
 
 # ==================== ASR 服务（本地 Whisper）====================
 async def transcribe_audio(audio_bytes: bytes) -> str:
     """音频转文字 - 使用本地 Whisper"""
     try:
-        import soundfile as sf
-        import numpy as np
+        import io
+        from pydub import AudioSegment
         
         model = load_whisper()
         
-        # 保存临时音频文件
-        with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as tmp_file:
-            tmp_file.write(audio_bytes)
-            tmp_path = tmp_file.name
+        logger.info(f"开始识别音频: {len(audio_bytes)} bytes")
         
         try:
-            logger.info(f"开始识别音频: {len(audio_bytes)} bytes")
+            # 使用 pydub 处理各种音频格式
+            audio = AudioSegment.from_file(io.BytesIO(audio_bytes))
             
-            # 使用 soundfile 读取音频（不需要 ffmpeg）
-            audio_data, sample_rate = sf.read(tmp_path)
+            # 转换为 Whisper 需要的格式：单声道、16kHz、16bit PCM
+            audio = audio.set_channels(1)  # 单声道
+            audio = audio.set_frame_rate(16000)  # 16kHz
+            audio = audio.set_sample_width(2)  # 16bit
             
-            # 如果是立体声，转换为单声道
-            if len(audio_data.shape) > 1:
-                audio_data = audio_data.mean(axis=1)
+            # 导出为 WAV
+            wav_io = io.BytesIO()
+            audio.export(wav_io, format="wav")
+            wav_bytes = wav_io.getvalue()
             
-            # Whisper 需要 16kHz 采样率
-            if sample_rate != 16000:
-                # 简单重采样
-                import scipy.signal
-                audio_data = scipy.signal.resample(
-                    audio_data, 
-                    int(len(audio_data) * 16000 / sample_rate)
-                )
+            # 保存临时文件
+            with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as tmp_file:
+                tmp_file.write(wav_bytes)
+                tmp_path = tmp_file.name
             
-            # 转换为 float32
-            audio_data = audio_data.astype(np.float32)
-            
-            result = model.transcribe(audio_data, language="zh")
-            text = result["text"]
-            logger.info(f"识别结果: {text}")
-            return text.strip()
-        finally:
-            # 删除临时文件
-            if os.path.exists(tmp_path):
-                os.unlink(tmp_path)
+            try:
+                # 使用 Whisper 识别
+                result = model.transcribe(tmp_path, language="zh", fp16=False)
+                text = result["text"]
+                logger.info(f"识别结果: {text}")
+                return text.strip()
+            finally:
+                if os.path.exists(tmp_path):
+                    os.unlink(tmp_path)
+                    
+        except Exception as e:
+            logger.error(f"音频处理失败: {e}")
+            raise
                 
     except Exception as e:
         logger.error(f"ASR 失败: {str(e)}", exc_info=True)
@@ -144,20 +131,29 @@ async def chat_with_ollama(text: str) -> str:
         logger.error(f"Ollama 失败: {str(e)}")
         raise HTTPException(status_code=500, detail=f"AI 对话失败: {str(e)}")
 
-# ==================== TTS 服务（本地 pyttsx3）====================
+# ==================== TTS 服务（使用 edge-tts 中文语音）====================
 async def text_to_speech(text: str) -> bytes:
-    """文字转语音 - 使用本地 TTS"""
+    """文字转语音 - 使用 edge-tts（微软中文语音）"""
     try:
-        engine = load_tts()
+        import edge_tts
+        
+        logger.info(f"开始合成语音: {text[:50]}...")
+        
+        # 使用微软中文女声
+        voice = "zh-CN-XiaoxiaoNeural"  # 晓晓（女声）
+        # 其他选项：
+        # zh-CN-YunxiNeural（云希，男声）
+        # zh-CN-YunyangNeural（云扬，男声）
+        
+        # 生成语音
+        communicate = edge_tts.Communicate(text, voice)
         
         # 保存到临时文件
-        with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as tmp_file:
+        with tempfile.NamedTemporaryFile(suffix=".mp3", delete=False) as tmp_file:
             tmp_path = tmp_file.name
         
         try:
-            logger.info(f"开始合成语音: {text[:50]}...")
-            engine.save_to_file(text, tmp_path)
-            engine.runAndWait()
+            await communicate.save(tmp_path)
             
             # 读取生成的音频
             with open(tmp_path, 'rb') as f:
@@ -166,7 +162,6 @@ async def text_to_speech(text: str) -> bytes:
             logger.info(f"语音合成完成: {len(audio_data)} bytes")
             return audio_data
         finally:
-            # 删除临时文件
             if os.path.exists(tmp_path):
                 os.unlink(tmp_path)
                 
@@ -233,7 +228,7 @@ async def health():
         "model": OLLAMA_MODEL,
         "whisper_model": WHISPER_MODEL,
         "asr": "openai-whisper (local)",
-        "tts": "pyttsx3 (local)"
+        "tts": "edge-tts (Microsoft Chinese)"
     }
 
 @app.on_event("startup")
