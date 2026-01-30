@@ -7,9 +7,11 @@ import base64
 import tempfile
 import logging
 import io
+import json
 from typing import Optional
 from fastapi import FastAPI, File, UploadFile, Form, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import StreamingResponse
 import httpx
 import uvicorn
 
@@ -239,15 +241,85 @@ async def text_to_speech(text: str) -> bytes:
         return b'RIFF$\x00\x00\x00WAVEfmt \x10\x00\x00\x00\x01\x00\x01\x00D\xac\x00\x00\x88X\x01\x00\x02\x00\x10\x00data\x00\x00\x00\x00'
 
 # ==================== 主接口 ====================
+@app.post("/transcribe")
+async def transcribe_only(audio: UploadFile = File(...)):
+    """
+    仅语音识别接口（快速返回识别文本）
+    """
+    try:
+        logger.info("收到语音识别请求")
+        audio_bytes = await audio.read()
+        logger.info(f"音频大小: {len(audio_bytes)} bytes")
+        
+        # 语音识别
+        text = await transcribe_audio(audio_bytes)
+        
+        return {"text": text}
+    
+    except Exception as e:
+        logger.error(f"语音识别失败: {str(e)}", exc_info=True)
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/chat-stream")
+async def chat_stream(text: str = Form(...)):
+    """
+    流式对话接口（打字机效果）
+    """
+    try:
+        logger.info(f"收到流式对话请求: {text[:50]}...")
+        
+        async def generate():
+            try:
+                full_text = ""  # 累积完整文本
+                
+                # 使用 Ollama 流式 API
+                async with httpx.AsyncClient(timeout=120.0) as client:
+                    payload = {
+                        "model": OLLAMA_MODEL,
+                        "prompt": text,
+                        "stream": True
+                    }
+                    
+                    async with client.stream("POST", f"{OLLAMA_HOST}/api/generate", json=payload) as response:
+                        response.raise_for_status()
+                        
+                        async for line in response.aiter_lines():
+                            if line:
+                                try:
+                                    data = json.loads(line)
+                                    if "response" in data:
+                                        chunk_text = data["response"]
+                                        full_text += chunk_text  # 累积文本
+                                        # 发送每个字符
+                                        yield f"data: {json.dumps({'text': chunk_text})}\n\n"
+                                    
+                                    if data.get("done", False):
+                                        # 完成后生成语音（使用完整文本）
+                                        logger.info(f"流式输出完成，开始生成语音: {full_text[:50]}...")
+                                        audio_bytes = await text_to_speech(full_text)
+                                        audio_base64 = base64.b64encode(audio_bytes).decode("utf-8")
+                                        yield f"data: {json.dumps({'audio': audio_base64, 'done': True})}\n\n"
+                                        break
+                                except json.JSONDecodeError:
+                                    continue
+                        
+            except Exception as e:
+                logger.error(f"流式对话失败: {str(e)}")
+                yield f"data: {json.dumps({'error': str(e)})}\n\n"
+        
+        return StreamingResponse(generate(), media_type="text/event-stream")
+    
+    except Exception as e:
+        logger.error(f"流式对话失败: {str(e)}", exc_info=True)
+        raise HTTPException(status_code=500, detail=str(e))
+
 @app.post("/chat")
 async def chat(
     text: Optional[str] = Form(None),
     audio: Optional[UploadFile] = File(None)
 ):
     """
-    统一聊天接口
-    - text: 文本输入（可选）
-    - audio: 音频文件（可选）
+    统一聊天接口（兼容旧版本）
     """
     try:
         logger.info(f"收到请求 - text: {text}, audio: {audio is not None}")
