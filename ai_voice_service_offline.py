@@ -66,42 +66,62 @@ def load_tts():
 async def transcribe_audio(audio_bytes: bytes) -> str:
     """音频转文字 - 使用本地 Whisper"""
     try:
+        import wave
         import io
-        from pydub import AudioSegment
+        import numpy as np
         
         model = load_whisper()
         
         logger.info(f"开始识别音频: {len(audio_bytes)} bytes")
         
         try:
-            # 使用 pydub 处理各种音频格式
-            audio = AudioSegment.from_file(io.BytesIO(audio_bytes))
-            
-            # 转换为 Whisper 需要的格式：单声道、16kHz、16bit PCM
-            audio = audio.set_channels(1)  # 单声道
-            audio = audio.set_frame_rate(16000)  # 16kHz
-            audio = audio.set_sample_width(2)  # 16bit
-            
-            # 导出为 WAV
-            wav_io = io.BytesIO()
-            audio.export(wav_io, format="wav")
-            wav_bytes = wav_io.getvalue()
-            
-            # 保存临时文件
-            with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as tmp_file:
-                tmp_file.write(wav_bytes)
-                tmp_path = tmp_file.name
-            
-            try:
+            # 尝试直接读取 WAV 文件
+            wav_io = io.BytesIO(audio_bytes)
+            with wave.open(wav_io, 'rb') as wav_file:
+                # 获取音频参数
+                channels = wav_file.getnchannels()
+                sample_width = wav_file.getsampwidth()
+                framerate = wav_file.getframerate()
+                n_frames = wav_file.getnframes()
+                
+                logger.info(f"音频参数: {channels}声道, {framerate}Hz, {sample_width*8}bit")
+                
+                # 读取音频数据
+                audio_data = wav_file.readframes(n_frames)
+                
+                # 转换为 numpy 数组
+                if sample_width == 2:  # 16-bit
+                    audio_array = np.frombuffer(audio_data, dtype=np.int16)
+                elif sample_width == 4:  # 32-bit
+                    audio_array = np.frombuffer(audio_data, dtype=np.int32)
+                else:
+                    audio_array = np.frombuffer(audio_data, dtype=np.uint8)
+                
+                # 转换为 float32 并归一化
+                audio_array = audio_array.astype(np.float32)
+                if sample_width == 2:
+                    audio_array = audio_array / 32768.0
+                elif sample_width == 4:
+                    audio_array = audio_array / 2147483648.0
+                else:
+                    audio_array = (audio_array - 128) / 128.0
+                
+                # 如果是立体声，转换为单声道
+                if channels == 2:
+                    audio_array = audio_array.reshape(-1, 2).mean(axis=1)
+                
+                # 重采样到 16kHz（如果需要）
+                if framerate != 16000:
+                    from scipy import signal
+                    num_samples = int(len(audio_array) * 16000 / framerate)
+                    audio_array = signal.resample(audio_array, num_samples)
+                
                 # 使用 Whisper 识别
-                result = model.transcribe(tmp_path, language="zh", fp16=False)
+                result = model.transcribe(audio_array, language="zh", fp16=False)
                 text = result["text"]
                 logger.info(f"识别结果: {text}")
                 return text.strip()
-            finally:
-                if os.path.exists(tmp_path):
-                    os.unlink(tmp_path)
-                    
+                
         except Exception as e:
             logger.error(f"音频处理失败: {e}")
             raise
