@@ -6,6 +6,8 @@ python-multipart==0.0.6
 
 # 本地语音识别 (ASR) - 使用 OpenAI Whisper（有预编译版本）
 openai-whisper==20231117
+soundfile==0.12.1
+scipy==1.11.4
 
 # 本地语音合成 (TTS)
 pyttsx3==2.90

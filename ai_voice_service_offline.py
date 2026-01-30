@@ -78,6 +78,9 @@ def load_tts():
 async def transcribe_audio(audio_bytes: bytes) -> str:
     """音频转文字 - 使用本地 Whisper"""
     try:
+        import soundfile as sf
+        import numpy as np
+        
         model = load_whisper()
         
         # 保存临时音频文件
@@ -87,7 +90,27 @@ async def transcribe_audio(audio_bytes: bytes) -> str:
         
         try:
             logger.info(f"开始识别音频: {len(audio_bytes)} bytes")
-            result = model.transcribe(tmp_path, language="zh")
+            
+            # 使用 soundfile 读取音频（不需要 ffmpeg）
+            audio_data, sample_rate = sf.read(tmp_path)
+            
+            # 如果是立体声，转换为单声道
+            if len(audio_data.shape) > 1:
+                audio_data = audio_data.mean(axis=1)
+            
+            # Whisper 需要 16kHz 采样率
+            if sample_rate != 16000:
+                # 简单重采样
+                import scipy.signal
+                audio_data = scipy.signal.resample(
+                    audio_data, 
+                    int(len(audio_data) * 16000 / sample_rate)
+                )
+            
+            # 转换为 float32
+            audio_data = audio_data.astype(np.float32)
+            
+            result = model.transcribe(audio_data, language="zh")
             text = result["text"]
             logger.info(f"识别结果: {text}")
             return text.strip()
