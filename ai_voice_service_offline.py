@@ -28,6 +28,12 @@ SERVICE_PORT = 8001
 # Whisper 模型大小: tiny, base, small, medium, large
 WHISPER_MODEL = "base"  # base 模型平衡速度和准确度
 
+# ffmpeg 路径（Windows 默认安装位置）
+FFMPEG_PATH = r"C:\ProgramData\chocolatey\bin\ffmpeg.exe"
+# 如果上面的路径不对，可以尝试：
+# FFMPEG_PATH = r"C:\ffmpeg\bin\ffmpeg.exe"
+# 或者使用 where 命令查找：where ffmpeg
+
 # ==================== FastAPI 应用 ====================
 app = FastAPI(title="AI Voice Service - Offline")
 
@@ -82,9 +88,17 @@ async def transcribe_audio(audio_bytes: bytes) -> str:
         output_path = input_path.replace(".webm", ".wav")
         
         try:
+            # 检查 ffmpeg 是否存在
+            if not os.path.exists(FFMPEG_PATH):
+                # 尝试使用系统 PATH 中的 ffmpeg
+                ffmpeg_cmd = "ffmpeg"
+                logger.warning(f"ffmpeg 不在 {FFMPEG_PATH}，尝试使用系统 PATH")
+            else:
+                ffmpeg_cmd = FFMPEG_PATH
+            
             # 使用 ffmpeg 转换为 16kHz 单声道 WAV
             cmd = [
-                "ffmpeg",
+                ffmpeg_cmd,
                 "-i", input_path,
                 "-ar", "16000",  # 采样率 16kHz
                 "-ac", "1",      # 单声道
