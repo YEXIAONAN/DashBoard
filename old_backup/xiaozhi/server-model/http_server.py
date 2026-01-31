@@ -6,7 +6,6 @@ import chat_local_manage
 from classfy_model import Classfy
 import socket
 import os
-import threading
 import sys
 os.environ['KMP_DUPLICATE_LIB_OK']='TRUE'
 

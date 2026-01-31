@@ -1,9 +1,7 @@
 # main/api.py
 
 import json
-from datetime import datetime
 from django.http import JsonResponse, HttpResponse
-from django.shortcuts import redirect
 from django.utils import timezone
 from django.views.decorators.http import require_POST, require_http_methods
 from django.views.decorators.csrf import csrf_exempt  # <--- 导入 csrf_exempt
@@ -11,10 +9,9 @@ from django.views.decorators.csrf import csrf_exempt  # <--- 导入 csrf_exempt
 from .models import Users, Dishes, OrderItems
 from .models import Orders
 from .models import ChatHistory
-import asyncio
 import lebai_sdk as lebai_sdk
 import nest_asyncio
-import time
+
 
 def generate_order_number(now):
     # 格式: YYMMDDHHmmss + 4位随机数 (例如: 2308101530451234)
@@ -259,9 +256,8 @@ global_lebai = None
 import sys
 import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from dish_task_config import DISH_TASK_MAPPING, DISH_CATEGORIES, YOLO_CLASS_MAPPING, ROBOT_CONFIG
+from voice_service.dish_task_config import DISH_TASK_MAPPING, DISH_CATEGORIES, YOLO_CLASS_MAPPING
 
-import requests
 import threading
 import time
 
