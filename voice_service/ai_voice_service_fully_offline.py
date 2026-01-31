@@ -43,8 +43,8 @@ SERVICE_PORT = 8001
 WHISPER_MODEL = "small"
 
 # TTS 引擎选择: "pyttsx3" 或 "coqui"
-TTS_ENGINE = "pyttsx3"  # 默认使用 pyttsx3（更简单，但质量较低）
-# TTS_ENGINE = "coqui"  # 取消注释使用 Coqui TTS（质量更高，但需要下载模型）
+# TTS_ENGINE = "pyttsx3"  # pyttsx3（更简单，但质量较低）
+TTS_ENGINE = "coqui"  # 使用 Coqui TTS（质量更高，完全离线）
 
 # ==================== FastAPI 应用 ====================
 app = FastAPI(title="AI Voice Service - Fully Offline")
@@ -103,7 +103,49 @@ def load_coqui_tts():
     if coqui_tts is None:
         try:
             from TTS.api import TTS
+            import torch
+            
             logger.info("初始化 Coqui TTS")
+            
+            # 修复 PyTorch 2.6+ 的 weights_only 问题
+            # 添加所有 Coqui TTS 需要的安全全局变量
+            try:
+                from TTS.tts.configs.xtts_config import XttsConfig
+                from TTS.tts.models.xtts import XttsAudioConfig
+                
+                # 添加所有需要的类到安全列表
+                torch.serialization.add_safe_globals([
+                    XttsConfig,
+                    XttsAudioConfig
+                ])
+                logger.info("已添加 Coqui TTS 安全全局变量")
+            except ImportError as e:
+                logger.warning(f"无法导入 Coqui TTS 配置类: {e}")
+                # 尝试添加更多可能需要的类
+                try:
+                    import TTS.tts.configs.xtts_config
+                    import TTS.tts.models.xtts
+                    
+                    # 获取所有可能的配置类
+                    safe_classes = []
+                    for attr_name in dir(TTS.tts.configs.xtts_config):
+                        attr = getattr(TTS.tts.configs.xtts_config, attr_name)
+                        if isinstance(attr, type):
+                            safe_classes.append(attr)
+                    
+                    for attr_name in dir(TTS.tts.models.xtts):
+                        attr = getattr(TTS.tts.models.xtts, attr_name)
+                        if isinstance(attr, type):
+                            safe_classes.append(attr)
+                    
+                    if safe_classes:
+                        torch.serialization.add_safe_globals(safe_classes)
+                        logger.info(f"已添加 {len(safe_classes)} 个安全全局变量")
+                except Exception as e2:
+                    logger.warning(f"无法自动添加安全全局变量: {e2}")
+            except Exception as e:
+                logger.warning(f"无法添加安全全局变量: {e}")
+            
             # 使用多语言模型
             coqui_tts = TTS(model_name="tts_models/multilingual/multi-dataset/xtts_v2")
             logger.info("Coqui TTS 初始化成功")
@@ -297,6 +339,10 @@ async def text_to_speech_coqui(text: str, language: str = "zh") -> bytes:
     Args:
         text: 要合成的文本
         language: 语言代码 (zh=中文, en=英文, vi=越南语)
+    
+    注意: XTTS v2 支持的语言:
+    ['en', 'es', 'fr', 'de', 'it', 'pt', 'pl', 'tr', 'ru', 'nl', 'cs', 'ar', 'zh-cn', 'hu', 'ko', 'ja', 'hi']
+    越南语(vi)不在支持列表中，会回退到英语
     """
     try:
         from TTS.api import TTS
@@ -305,24 +351,33 @@ async def text_to_speech_coqui(text: str, language: str = "zh") -> bytes:
         
         tts = load_coqui_tts()
         
-        # 语言映射
+        # 语言映射 - XTTS v2 支持的语言
         language_map = {
             "zh": "zh-cn",
             "en": "en",
-            "vi": "vi"
+            "vi": "en"  # 越南语不支持，回退到英语
         }
         
         coqui_lang = language_map.get(language, "en")
+        
+        if language == "vi":
+            logger.warning("⚠️ XTTS v2 不支持越南语，使用英语代替")
         
         # 保存到临时文件
         with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as tmp_file:
             tmp_path = tmp_file.name
         
         try:
-            # 生成语音
+            # XTTS v2 是多说话人模型，必须指定说话人
+            # 使用默认说话人 "Claribel Dervla"（已验证可用）
+            default_speaker = "Claribel Dervla"
+            
+            logger.info(f"使用说话人: {default_speaker}, 语言: {coqui_lang}")
+            
             tts.tts_to_file(
                 text=text,
                 file_path=tmp_path,
+                speaker=default_speaker,
                 language=coqui_lang
             )
             
@@ -330,7 +385,7 @@ async def text_to_speech_coqui(text: str, language: str = "zh") -> bytes:
             with open(tmp_path, 'rb') as f:
                 audio_data = f.read()
             
-            logger.info(f"语音合成完成 (Coqui TTS): {len(audio_data)} bytes")
+            logger.info(f"✓ 语音合成完成 (Coqui TTS): {len(audio_data)} bytes")
             return audio_data
             
         finally:

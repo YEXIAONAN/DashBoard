@@ -1,0 +1,57 @@
+# AI Voice Service - 完全离线版本依赖
+# Fully Offline Dependencies
+
+# ==================== 核心框架 ====================
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+python-multipart==0.0.6
+httpx==0.25.1
+
+# ==================== 语音识别 (ASR) ====================
+openai-whisper==20231117
+# 或者使用更快的版本：
+# faster-whisper==0.10.0
+
+# ==================== 语音合成 (TTS) - 方案1: pyttsx3 ====================
+# pyttsx3==2.90
+# Windows 需要额外安装：
+# pywin32==306  # Windows TTS 支持
+
+# ==================== 语音合成 (TTS) - 方案2: Coqui TTS (推荐，质量更高) ====================
+TTS==0.22.0
+
+# Coqui TTS 依赖的特定版本（重要！）
+transformers==4.33.0  # 必须使用此版本，更新版本会导致兼容性问题
+tokenizers==0.13.3    # 与 transformers 4.33.0 兼容
+
+# PyTorch 版本约束（避免 2.6+ 的 weights_only 问题）
+torch>=2.0.0,<2.6.0   # 推荐 2.0-2.5 版本
+# 如果需要 CUDA 支持，使用：
+# torch>=2.0.0,<2.6.0 --index-url https://download.pytorch.org/whl/cu118
+
+# 注意：Coqui TTS 需要下载模型文件（约 1.8GB），首次使用会自动下载
+
+# ==================== 音频处理 ====================
+numpy==1.24.3
+scipy==1.11.4
+soundfile==0.12.1
+
+# ==================== 其他工具 ====================
+python-dotenv==1.0.0
+
+# ==================== 注意事项 ====================
+# 1. ffmpeg 必须安装在系统中（用于音频格式转换）
+#    Windows: choco install ffmpeg
+#    Linux: sudo apt-get install ffmpeg
+#    macOS: brew install ffmpeg
+#
+# 2. pyttsx3 在不同平台的依赖：
+#    - Windows: 使用 SAPI5 (内置)
+#    - macOS: 使用 NSSpeechSynthesizer (内置)
+#    - Linux: 需要安装 espeak
+#      sudo apt-get install espeak
+#
+# 3. Coqui TTS 首次运行会下载模型：
+#    - 模型大小约 1.8GB
+#    - 下载位置: ~/.local/share/tts/
+#    - 可以提前下载避免首次使用等待

@@ -175,10 +175,16 @@ This will test functionality for all three languages.
 **A:** The Whisper model works best with standard pronunciation. Dialects may affect recognition accuracy.
 
 ### Q: 为什么语音合成需要网络？
-**A:** 我们使用 Microsoft Edge TTS，这是一个在线服务。未来可能添加离线 TTS 支持。
+**A:** 默认使用 Microsoft Edge TTS（在线服务）。如需离线使用，请参考 `OFFLINE_TTS_SETUP.md` 配置离线 TTS。
 
 ### Q: Why does text-to-speech require internet?
-**A:** We use Microsoft Edge TTS, which is an online service. Offline TTS support may be added in the future.
+**A:** By default, we use Microsoft Edge TTS (online service). For offline use, refer to `OFFLINE_TTS_SETUP.md` to configure offline TTS.
+
+### Q: 如何在离线环境使用？
+**A:** 使用 `ai_voice_service_fully_offline.py` 替代默认服务，支持 pyttsx3 或 Coqui TTS。详见 `OFFLINE_TTS_SETUP.md`。
+
+### Q: How to use in offline environment?
+**A:** Use `ai_voice_service_fully_offline.py` instead of the default service, supporting pyttsx3 or Coqui TTS. See `OFFLINE_TTS_SETUP.md` for details.
 
 ## 📞 技术支持 / Technical Support
 
