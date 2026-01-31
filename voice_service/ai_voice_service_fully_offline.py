@@ -1,12 +1,12 @@
 """
 AI Voice Service - 完全离线版本
-使用本地 ASR (faster-whisper) 和 TTS (pyttsx3)
+使用本地 ASR (Whisper) 和 TTS (pyttsx3 或 Coqui TTS)
+支持多语言：中文、英文、越南语
 """
 import os
 import base64
 import tempfile
 import logging
-import io
 import json
 from typing import Optional
 from fastapi import FastAPI, File, UploadFile, Form, HTTPException
@@ -16,16 +16,13 @@ import httpx
 import uvicorn
 
 # ==================== 设置 ffmpeg 路径到环境变量 ====================
-# Chocolatey 安装的 ffmpeg 路径
 FFMPEG_BIN_PATH = r"C:\ProgramData\chocolatey\bin"
 FFMPEG_EXE = os.path.join(FFMPEG_BIN_PATH, "ffmpeg.exe")
 
-# 设置环境变量
 if os.path.exists(FFMPEG_BIN_PATH):
     os.environ["PATH"] = FFMPEG_BIN_PATH + os.pathsep + os.environ.get("PATH", "")
     print(f"✓ 已添加 ffmpeg 路径到 PATH: {FFMPEG_BIN_PATH}")
 
-# 设置 Whisper 使用的 ffmpeg 路径
 if os.path.exists(FFMPEG_EXE):
     os.environ["FFMPEG_BINARY"] = FFMPEG_EXE
     print(f"✓ 设置 FFMPEG_BINARY: {FFMPEG_EXE}")
@@ -42,22 +39,15 @@ OLLAMA_HOST = "http://172.16.4.181:11434"
 OLLAMA_MODEL = "qwen2.5:7b"
 SERVICE_PORT = 8001
 
-# Whisper 模型大小: tiny, base, small, medium, large
-# tiny: 最快但准确度最低
-# base: 平衡速度和准确度（当前使用）
-# small: 更准确，稍慢
-# medium: 很准确，较慢
-# large: 最准确，最慢
-WHISPER_MODEL = "small"  # 升级到 small 模型，提升准确度
+# Whisper 模型大小
+WHISPER_MODEL = "small"
 
-# ffmpeg 路径（Windows 默认安装位置）
-FFMPEG_PATH = r"C:\ProgramData\chocolatey\bin\ffmpeg.exe"
-# 如果上面的路径不对，可以尝试：
-# FFMPEG_PATH = r"C:\ffmpeg\bin\ffmpeg.exe"
-# 或者使用 where 命令查找：where ffmpeg
+# TTS 引擎选择: "pyttsx3" 或 "coqui"
+TTS_ENGINE = "pyttsx3"  # 默认使用 pyttsx3（更简单，但质量较低）
+# TTS_ENGINE = "coqui"  # 取消注释使用 Coqui TTS（质量更高，但需要下载模型）
 
 # ==================== FastAPI 应用 ====================
-app = FastAPI(title="AI Voice Service - Offline")
+app = FastAPI(title="AI Voice Service - Fully Offline")
 
 app.add_middleware(
     CORSMiddleware,
@@ -70,9 +60,10 @@ app.add_middleware(
 # ==================== 全局变量（延迟加载）====================
 whisper_model = None
 tts_engine = None
+coqui_tts = None
 
 def load_whisper():
-    """延迟加载  模型"""
+    """延迟加载 Whisper 模型"""
     global whisper_model
     if whisper_model is None:
         try:
@@ -85,10 +76,42 @@ def load_whisper():
             raise
     return whisper_model
 
-def load_tts():
-    """延迟加载 TTS 引擎（edge-tts 不需要预加载）"""
-    logger.info("使用 edge-tts（无需预加载）")
-    return None
+def load_pyttsx3():
+    """延迟加载 pyttsx3 TTS 引擎"""
+    global tts_engine
+    if tts_engine is None:
+        try:
+            import pyttsx3
+            logger.info("初始化 pyttsx3 TTS 引擎")
+            tts_engine = pyttsx3.init()
+            
+            # 设置语速（可调整）
+            tts_engine.setProperty('rate', 150)  # 默认 200，降低到 150 更自然
+            
+            # 设置音量
+            tts_engine.setProperty('volume', 1.0)
+            
+            logger.info("pyttsx3 TTS 引擎初始化成功")
+        except Exception as e:
+            logger.error(f"pyttsx3 初始化失败: {e}")
+            raise
+    return tts_engine
+
+def load_coqui_tts():
+    """延迟加载 Coqui TTS"""
+    global coqui_tts
+    if coqui_tts is None:
+        try:
+            from TTS.api import TTS
+            logger.info("初始化 Coqui TTS")
+            # 使用多语言模型
+            coqui_tts = TTS(model_name="tts_models/multilingual/multi-dataset/xtts_v2")
+            logger.info("Coqui TTS 初始化成功")
+        except Exception as e:
+            logger.error(f"Coqui TTS 初始化失败: {e}")
+            logger.warning("将回退到 pyttsx3")
+            return load_pyttsx3()
+    return coqui_tts
 
 # ==================== ASR 服务（本地 Whisper）====================
 async def transcribe_audio(audio_bytes: bytes, language: str = "zh") -> str:
@@ -116,22 +139,21 @@ async def transcribe_audio(audio_bytes: bytes, language: str = "zh") -> str:
         
         try:
             # 检查 ffmpeg 是否存在
-            if not os.path.exists(FFMPEG_PATH):
-                # 尝试使用系统 PATH 中的 ffmpeg
+            if not os.path.exists(FFMPEG_EXE):
                 ffmpeg_cmd = "ffmpeg"
-                logger.warning(f"ffmpeg 不在 {FFMPEG_PATH}，尝试使用系统 PATH")
+                logger.warning(f"ffmpeg 不在 {FFMPEG_EXE}，尝试使用系统 PATH")
             else:
-                ffmpeg_cmd = FFMPEG_PATH
+                ffmpeg_cmd = FFMPEG_EXE
             
-            # 使用 ffmpeg 转换为更高质量的 WAV
+            # 使用 ffmpeg 转换为 WAV
             cmd = [
                 ffmpeg_cmd,
                 "-i", input_path,
-                "-ar", "16000",      # 采样率 16kHz（Whisper 标准）
-                "-ac", "1",          # 单声道
-                "-acodec", "pcm_s16le",  # 16-bit PCM 编码
-                "-f", "wav",         # WAV 格式
-                "-y",                # 覆盖输出文件
+                "-ar", "16000",
+                "-ac", "1",
+                "-acodec", "pcm_s16le",
+                "-f", "wav",
+                "-y",
                 output_path
             ]
             
@@ -148,14 +170,12 @@ async def transcribe_audio(audio_bytes: bytes, language: str = "zh") -> str:
             
             logger.info(f"音频转换成功: {output_path}")
             
-            # 直接读取 WAV 文件，不让 Whisper 再次调用 ffmpeg
+            # 读取 WAV 文件
             import wave
             import numpy as np
             
             with wave.open(output_path, 'rb') as wav_file:
-                # 读取音频数据
                 audio_data = wav_file.readframes(wav_file.getnframes())
-                # 转换为 numpy 数组
                 audio_array = np.frombuffer(audio_data, dtype=np.int16).astype(np.float32) / 32768.0
             
             # 根据语言设置提示词
@@ -166,23 +186,22 @@ async def transcribe_audio(audio_bytes: bytes, language: str = "zh") -> str:
             }
             initial_prompt = language_prompts.get(language, "")
             
-            # 使用 Whisper 识别（传入音频数组而不是文件路径）
+            # 使用 Whisper 识别
             whisper_result = model.transcribe(
                 audio_array, 
-                language=language,       # 使用传入的语言参数
-                fp16=False,              # 不使用 FP16（CPU 模式）
-                beam_size=5,             # 增加束搜索大小，提高准确度
-                best_of=5,               # 从多个候选中选择最佳结果
-                temperature=0.0,         # 降低随机性，提高稳定性
-                condition_on_previous_text=False,  # 不依赖前文，避免累积错误
-                initial_prompt=initial_prompt  # 根据语言设置提示
+                language=language,
+                fp16=False,
+                beam_size=5,
+                best_of=5,
+                temperature=0.0,
+                condition_on_previous_text=False,
+                initial_prompt=initial_prompt
             )
             text = whisper_result["text"]
             logger.info(f"识别结果: {text}")
             return text.strip()
             
         finally:
-            # 删除临时文件
             if os.path.exists(input_path):
                 os.unlink(input_path)
             if os.path.exists(output_path):
@@ -191,6 +210,144 @@ async def transcribe_audio(audio_bytes: bytes, language: str = "zh") -> str:
     except Exception as e:
         logger.error(f"ASR 失败: {str(e)}", exc_info=True)
         raise HTTPException(status_code=500, detail=f"语音识别失败: {str(e)}")
+
+# ==================== TTS 服务（离线）====================
+async def text_to_speech_pyttsx3(text: str, language: str = "zh") -> bytes:
+    """文字转语音 - 使用 pyttsx3（完全离线）
+    
+    Args:
+        text: 要合成的文本
+        language: 语言代码 (zh=中文, en=英文, vi=越南语)
+    """
+    try:
+        import pyttsx3
+        
+        logger.info(f"开始合成语音 (pyttsx3): {text[:50]}..., 语言: {language}")
+        
+        # 创建新的引擎实例（避免线程问题）
+        engine = pyttsx3.init()
+        
+        # 设置语速和音量
+        engine.setProperty('rate', 150)
+        engine.setProperty('volume', 1.0)
+        
+        # 根据语言选择语音
+        voices = engine.getProperty('voices')
+        
+        # 语音选择策略
+        voice_keywords = {
+            "zh": ["chinese", "mandarin", "zh", "中文"],
+            "en": ["english", "en", "us", "uk"],
+            "vi": ["vietnamese", "vi", "việt"]
+        }
+        
+        selected_voice = None
+        keywords = voice_keywords.get(language, ["english"])
+        
+        # 尝试找到匹配的语音
+        for voice in voices:
+            voice_name_lower = voice.name.lower()
+            voice_id_lower = voice.id.lower()
+            
+            for keyword in keywords:
+                if keyword in voice_name_lower or keyword in voice_id_lower:
+                    selected_voice = voice.id
+                    logger.info(f"选择语音: {voice.name} ({voice.id})")
+                    break
+            
+            if selected_voice:
+                break
+        
+        # 如果没找到匹配的，使用默认语音
+        if not selected_voice and voices:
+            selected_voice = voices[0].id
+            logger.warning(f"未找到 {language} 语音，使用默认: {voices[0].name}")
+        
+        if selected_voice:
+            engine.setProperty('voice', selected_voice)
+        
+        # 保存到临时文件
+        with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as tmp_file:
+            tmp_path = tmp_file.name
+        
+        try:
+            engine.save_to_file(text, tmp_path)
+            engine.runAndWait()
+            
+            # 读取生成的音频
+            with open(tmp_path, 'rb') as f:
+                audio_data = f.read()
+            
+            logger.info(f"语音合成完成 (pyttsx3): {len(audio_data)} bytes")
+            return audio_data
+            
+        finally:
+            if os.path.exists(tmp_path):
+                os.unlink(tmp_path)
+                
+    except Exception as e:
+        logger.error(f"pyttsx3 TTS 失败: {str(e)}", exc_info=True)
+        # 返回空音频
+        logger.warning("TTS 失败，返回空音频")
+        return b'RIFF$\x00\x00\x00WAVEfmt \x10\x00\x00\x00\x01\x00\x01\x00D\xac\x00\x00\x88X\x01\x00\x02\x00\x10\x00data\x00\x00\x00\x00'
+
+async def text_to_speech_coqui(text: str, language: str = "zh") -> bytes:
+    """文字转语音 - 使用 Coqui TTS（高质量离线）
+    
+    Args:
+        text: 要合成的文本
+        language: 语言代码 (zh=中文, en=英文, vi=越南语)
+    """
+    try:
+        from TTS.api import TTS
+        
+        logger.info(f"开始合成语音 (Coqui TTS): {text[:50]}..., 语言: {language}")
+        
+        tts = load_coqui_tts()
+        
+        # 语言映射
+        language_map = {
+            "zh": "zh-cn",
+            "en": "en",
+            "vi": "vi"
+        }
+        
+        coqui_lang = language_map.get(language, "en")
+        
+        # 保存到临时文件
+        with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as tmp_file:
+            tmp_path = tmp_file.name
+        
+        try:
+            # 生成语音
+            tts.tts_to_file(
+                text=text,
+                file_path=tmp_path,
+                language=coqui_lang
+            )
+            
+            # 读取生成的音频
+            with open(tmp_path, 'rb') as f:
+                audio_data = f.read()
+            
+            logger.info(f"语音合成完成 (Coqui TTS): {len(audio_data)} bytes")
+            return audio_data
+            
+        finally:
+            if os.path.exists(tmp_path):
+                os.unlink(tmp_path)
+                
+    except Exception as e:
+        logger.error(f"Coqui TTS 失败: {str(e)}", exc_info=True)
+        logger.warning("回退到 pyttsx3")
+        return await text_to_speech_pyttsx3(text, language)
+
+async def text_to_speech(text: str, language: str = "zh") -> bytes:
+    """文字转语音 - 根据配置选择 TTS 引擎"""
+    if TTS_ENGINE == "coqui":
+        return await text_to_speech_coqui(text, language)
+    else:
+        return await text_to_speech_pyttsx3(text, language)
 
 # ==================== Ollama LLM ====================
 async def chat_with_ollama(text: str) -> str:
@@ -213,72 +370,18 @@ async def chat_with_ollama(text: str) -> str:
         logger.error(f"Ollama 失败: {str(e)}")
         raise HTTPException(status_code=500, detail=f"AI 对话失败: {str(e)}")
 
-# ==================== TTS 服务（使用 edge-tts 中文语音）====================
-async def text_to_speech(text: str, language: str = "zh") -> bytes:
-    """文字转语音 - 使用 edge-tts（支持多语言）
-    
-    Args:
-        text: 要合成的文本
-        language: 语言代码 (zh=中文, en=英文, vi=越南语)
-    """
-    try:
-        import edge_tts
-        
-        logger.info(f"开始合成语音: {text[:50]}..., 语言: {language}")
-        
-        # 根据语言选择语音
-        voice_map = {
-            "zh": "zh-CN-XiaoxiaoNeural",  # 中文女声（晓晓）
-            "en": "en-US-JennyNeural",      # 英文女声（Jenny）
-            "vi": "vi-VN-HoaiMyNeural"      # 越南语女声（Hoai My）
-        }
-        voice = voice_map.get(language, "zh-CN-XiaoxiaoNeural")
-        
-        # 生成语音
-        communicate = edge_tts.Communicate(text, voice)
-        
-        # 保存到临时文件
-        with tempfile.NamedTemporaryFile(suffix=".mp3", delete=False) as tmp_file:
-            tmp_path = tmp_file.name
-        
-        try:
-            await communicate.save(tmp_path)
-            
-            # 读取生成的音频
-            with open(tmp_path, 'rb') as f:
-                audio_data = f.read()
-            
-            logger.info(f"语音合成完成: {len(audio_data)} bytes")
-            return audio_data
-        finally:
-            if os.path.exists(tmp_path):
-                os.unlink(tmp_path)
-                
-    except Exception as e:
-        logger.error(f"TTS 失败: {str(e)}", exc_info=True)
-        # 返回空音频而不是失败
-        logger.warning("TTS 失败，返回空音频")
-        return b'RIFF$\x00\x00\x00WAVEfmt \x10\x00\x00\x00\x01\x00\x01\x00D\xac\x00\x00\x88X\x01\x00\x02\x00\x10\x00data\x00\x00\x00\x00'
-
 # ==================== 主接口 ====================
 @app.post("/transcribe")
 async def transcribe_only(
     audio: UploadFile = File(...),
     language: str = Form("zh")
 ):
-    """
-    仅语音识别接口（快速返回识别文本）
-    
-    Args:
-        audio: 音频文件
-        language: 语言代码 (zh=中文, en=英文, vi=越南语)
-    """
+    """仅语音识别接口"""
     try:
         logger.info(f"收到语音识别请求，语言: {language}")
         audio_bytes = await audio.read()
         logger.info(f"音频大小: {len(audio_bytes)} bytes")
         
-        # 语音识别
         text = await transcribe_audio(audio_bytes, language)
         
         return {"text": text}
@@ -292,21 +395,14 @@ async def chat_stream(
     text: str = Form(...),
     language: str = Form("zh")
 ):
-    """
-    流式对话接口（打字机效果）
-    
-    Args:
-        text: 输入文本
-        language: 语言代码 (zh=中文, en=英文, vi=越南语)
-    """
+    """流式对话接口"""
     try:
         logger.info(f"收到流式对话请求: {text[:50]}..., 语言: {language}")
         
         async def generate():
             try:
-                full_text = ""  # 累积完整文本
+                full_text = ""
                 
-                # 使用 Ollama 流式 API
                 async with httpx.AsyncClient(timeout=120.0) as client:
                     payload = {
                         "model": OLLAMA_MODEL,
@@ -323,21 +419,16 @@ async def chat_stream(
                                     data = json.loads(line)
                                     if "response" in data:
                                         chunk_text = data["response"]
-                                        full_text += chunk_text  # 累积文本
-                                        # 发送每个字符
+                                        full_text += chunk_text
                                         yield f"data: {json.dumps({'text': chunk_text})}\n\n"
                                     
                                     if data.get("done", False):
-                                        # 完成后生成语音（使用完整文本）
                                         logger.info(f"流式输出完成，完整文本长度: {len(full_text)} 字符")
-                                        logger.info(f"完整文本预览: {full_text[:100]}...")
                                         logger.info(f"开始生成语音，语言: {language}...")
                                         audio_bytes = await text_to_speech(full_text, language)
                                         logger.info(f"语音生成完成，大小: {len(audio_bytes)} bytes")
                                         audio_base64 = base64.b64encode(audio_bytes).decode("utf-8")
-                                        logger.info(f"Base64 编码完成，长度: {len(audio_base64)} 字符")
                                         yield f"data: {json.dumps({'audio': audio_base64, 'done': True})}\n\n"
-                                        logger.info("音频数据已发送")
                                         break
                                 except json.JSONDecodeError:
                                     continue
@@ -358,37 +449,27 @@ async def chat(
     audio: Optional[UploadFile] = File(None),
     language: str = Form("zh")
 ):
-    """
-    统一聊天接口（兼容旧版本）
-    
-    Args:
-        text: 输入文本
-        audio: 音频文件
-        language: 语言代码 (zh=中文, en=英文, vi=越南语)
-    """
+    """统一聊天接口"""
     try:
         logger.info(f"收到请求 - text: {text}, audio: {audio is not None}, language: {language}")
         
-        # 1. 获取输入文本
         input_text = text or ""
-        recognized_text = ""  # 保存语音识别的文字
+        recognized_text = ""
         
         if audio:
             audio_bytes = await audio.read()
             logger.info(f"音频大小: {len(audio_bytes)} bytes")
             asr_text = await transcribe_audio(audio_bytes, language)
             input_text = asr_text if asr_text else input_text
-            recognized_text = asr_text  # 保存识别结果
+            recognized_text = asr_text
         
         if not input_text:
             raise HTTPException(status_code=400, detail="需要提供文本或音频")
         
         logger.info(f"处理输入: {input_text}")
         
-        # 2. LLM 生成回复
         reply_text = await chat_with_ollama(input_text)
         
-        # 3. TTS 生成语音
         audio_bytes = await text_to_speech(reply_text, language)
         audio_base64 = base64.b64encode(audio_bytes).decode("utf-8")
         
@@ -397,7 +478,7 @@ async def chat(
         return {
             "text": reply_text,
             "audio": audio_base64,
-            "recognized_text": recognized_text  # 返回识别的文字
+            "recognized_text": recognized_text
         }
     
     except HTTPException:
@@ -415,25 +496,29 @@ async def health():
         "model": OLLAMA_MODEL,
         "whisper_model": WHISPER_MODEL,
         "asr": "openai-whisper (local)",
-        "tts": "edge-tts (Microsoft Chinese)"
+        "tts": f"{TTS_ENGINE} (fully offline)",
+        "mode": "完全离线 / Fully Offline"
     }
 
 @app.on_event("startup")
 async def startup_event():
     """启动时预加载模型"""
     logger.info("=" * 50)
-    logger.info("AI 语音助手服务启动中...")
+    logger.info("AI 语音助手服务启动中（完全离线模式）...")
     logger.info(f"Ollama: {OLLAMA_HOST}")
     logger.info(f"模型: {OLLAMA_MODEL}")
     logger.info(f"Whisper: {WHISPER_MODEL}")
+    logger.info(f"TTS 引擎: {TTS_ENGINE}")
     logger.info("=" * 50)
     
-    # 预加载模型（可选，首次请求时会自动加载）
     try:
         logger.info("预加载 Whisper 模型...")
         load_whisper()
         logger.info("预加载 TTS 引擎...")
-        load_tts()
+        if TTS_ENGINE == "coqui":
+            load_coqui_tts()
+        else:
+            load_pyttsx3()
         logger.info("所有模型加载完成")
     except Exception as e:
         logger.warning(f"预加载失败，将在首次请求时加载: {e}")

@@ -61,6 +61,34 @@
             border-radius: 24px 24px 0 0;
         }
 
+        /* 语言选择器 */
+        .language-selector {
+            margin-top: 12px;
+            display: flex;
+            align-items: center;
+        }
+
+        .language-select {
+            padding: 8px 12px;
+            border: 2px solid rgba(74, 144, 226, 0.2);
+            border-radius: 12px;
+            background: var(--surface);
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        .language-select:hover {
+            border-color: var(--primary-light);
+        }
+
+        .language-select:focus {
+            border-color: var(--primary-light);
+            box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+        }
+
         .chat-title {
             font-size: 1.3rem;
             font-weight: 700;
@@ -503,6 +531,18 @@
                     智能对话助手
                 </div>
                 <div class="chat-subtitle">支持文字和语音输入，随时为您服务</div>
+                
+                <!-- 语言选择器 -->
+                <div class="language-selector">
+                    <label for="languageSelect" style="font-size: 0.9rem; color: var(--text-secondary); margin-right: 8px;">
+                        <i class="fas fa-language"></i> 语言:
+                    </label>
+                    <select id="languageSelect" class="language-select">
+                        <option value="zh" selected>中文 (Chinese)</option>
+                        <option value="en">English</option>
+                        <option value="vi">Tiếng Việt (Vietnamese)</option>
+                    </select>
+                </div>
             </div>
 
             <!-- 对话区域 -->
@@ -580,12 +620,14 @@
         const recordBtn = document.getElementById('recordBtn');
         const statusHint = document.getElementById('statusHint');
         const audioPlayer = document.getElementById('audioPlayer');
+        const languageSelect = document.getElementById('languageSelect');
         
         // ==================== 状态管理 ====================
         let isRecording = false;
         let mediaRecorder = null;
         let audioChunks = [];
         let isProcessing = false;
+        let currentLanguage = 'zh'; // 默认中文
         
         // ==================== 消息显示 ====================
         function addMessage(text, type) {
@@ -719,10 +761,11 @@
             chatDisplay.scrollTop = chatDisplay.scrollHeight;
             
             try {
-                console.log('开始语音识别');
+                console.log('开始语音识别，语言:', currentLanguage);
                 // 调用语音识别接口
                 const formData = new FormData();
                 formData.append('audio', audioBlob, 'audio.wav');
+                formData.append('language', currentLanguage);
                 
                 const response = await fetch(TRANSCRIBE_URL, {
                     method: 'POST',
@@ -738,10 +781,14 @@
                 const recognizedText = result.text;
                 console.log('识别结果:', recognizedText);
                 
+                // 根据语言显示不同的图标
+                const langIcon = currentLanguage === 'zh' ? '🎤' : 
+                                currentLanguage === 'en' ? '🎙️' : '🎧';
+                
                 // 立即显示识别结果
                 const placeholder = document.getElementById(placeholderId);
                 if (placeholder) {
-                    placeholder.innerHTML = `🎤 "${recognizedText}"`;
+                    placeholder.innerHTML = `${langIcon} "${recognizedText}"`;
                     const timeDiv = document.createElement('div');
                     timeDiv.className = 'message-time';
                     timeDiv.textContent = new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
@@ -797,10 +844,11 @@
                 chatDisplay.appendChild(messageDiv);
                 chatDisplay.scrollTop = chatDisplay.scrollHeight;
                 
-                console.log('发送流式请求到:', CHAT_STREAM_URL);
+                console.log('发送流式请求到:', CHAT_STREAM_URL, '语言:', currentLanguage);
                 // 发送流式请求
                 const formData = new FormData();
                 formData.append('text', text);
+                formData.append('language', currentLanguage);
                 
                 const response = await fetch(CHAT_STREAM_URL, {
                     method: 'POST',
@@ -942,6 +990,28 @@
         }
         
         // ==================== 事件监听 ====================
+        // 语言切换
+        languageSelect.addEventListener('change', (e) => {
+            currentLanguage = e.target.value;
+            console.log('切换语言:', currentLanguage);
+            
+            // 更新提示信息
+            const placeholders = {
+                'zh': '输入消息或点击麦克风录音...',
+                'en': 'Type a message or click microphone to record...',
+                'vi': 'Nhập tin nhắn hoặc nhấp vào micrô để ghi âm...'
+            };
+            textInput.placeholder = placeholders[currentLanguage];
+            
+            // 显示切换成功提示
+            const langNames = {
+                'zh': '中文',
+                'en': 'English',
+                'vi': 'Tiếng Việt'
+            };
+            setStatus(`已切换到 ${langNames[currentLanguage]}`, 'success');
+        });
+        
         sendBtn.addEventListener('click', () => {
             sendText(textInput.value);
         });
@@ -978,7 +1048,18 @@
         });
         
         // ==================== 初始化 ====================
-        addMessage('你好！我是 AI 语音助手，可以通过文字或语音与我交流。', 'assistant');
+        const greetings = {
+            'zh': '你好！我是 AI 语音助手，可以通过文字或语音与我交流。',
+            'en': 'Hello! I am an AI voice assistant. You can communicate with me via text or voice.',
+            'vi': 'Xin chào! Tôi là trợ lý giọng nói AI. Bạn có thể giao tiếp với tôi qua văn bản hoặc giọng nói.'
+        };
+        
+        // 根据当前语言显示欢迎消息
+        function showGreeting() {
+            addMessage(greetings[currentLanguage], 'assistant');
+        }
+        
+        showGreeting();
         
         // 初始化导航指示器
         const navContainer = document.querySelector('.nav-container');
