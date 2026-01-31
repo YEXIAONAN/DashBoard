@@ -1,12 +1,13 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>AI健康顾问 - 智能助手</title>
-    <link rel="stylesheet" href="../static/css/all.min.css">
-    <link rel="stylesheet" href="../static/css/modern-theme.css">
-     <script src="../static/js/marked.min.js"></script>
+    <link rel="stylesheet" href="{% static 'css/all.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/modern-theme.css' %}">
+     <script src="{% static 'js/marked.min.js' %}"></script>
     <style>
 
 
@@ -3960,7 +3961,7 @@
     </div>
     <div class="nav-item active" data-target="ai-assistant">
         <div class="nav-icon">
-            <i class="fas fa-robot"></i>
+            <img src="{% static 'Images/coffee-cup.png' %}" alt="AI助手" style="width: 24px; height: 24px;">
         </div>
         <div class="nav-label">AI助手</div>
     </div>
@@ -3995,7 +3996,7 @@
 
         <div class="top-header">
             <div class="header-left">
-                <div class="header-logo"><i class="fas fa-robot"></i></div>
+                <div class="header-logo"><span style="font-size: 24px; font-weight: bold; color: white;">问</span></div>
                 <div class="header-title">AI健康顾问</div>
             </div>
             <div class="header-right">

@@ -1,11 +1,12 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>AI 语音助手</title>
-    <link rel="stylesheet" href="../static/css/all.min.css">
-    <link rel="stylesheet" href="../static/css/modern-theme.css">
+    <link rel="stylesheet" href="{% static 'css/all.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/modern-theme.css' %}">
     <!-- Markdown 渲染库 -->
     <script src="https://cdn.jsdelivr.net/npm/marked@11.1.1/marked.min.js"></script>
     <style>
@@ -25,6 +26,15 @@
             animation: cascadeIn 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.0s both;
         }
 
+        /* 覆盖 header-logo 颜色 */
+        .header-logo {
+            background: #7A8B6E !important;
+        }
+
+        .header-logo i {
+            color: white;
+        }
+
         .bottom-nav {
             animation: cascadeIn 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.70s both;
         }
@@ -33,14 +43,14 @@
         .ai-chat-container {
             animation: cascadeIn 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.15s both;
             margin: 16px;
-            margin-bottom: 90px;
+            margin-bottom: 80px;
             background: var(--surface);
             border-radius: 24px;
             box-shadow: var(--shadow-card);
             border: 1px solid rgba(74, 144, 226, 0.08);
             display: flex;
             flex-direction: column;
-            height: calc(100vh - 140px);
+            height: calc(100vh - 180px);
         }
 
         /* 对话头部 */
@@ -275,9 +285,9 @@
 
         /* 输入区域 */
         .input-area {
-            padding: 20px;
+            padding: 16px 20px;
             border-top: 1px solid rgba(74, 144, 226, 0.08);
-            background: var(--surface-soft);
+            background: var(--surface);
             border-radius: 0 0 24px 24px;
         }
 
@@ -328,13 +338,18 @@
         }
 
         .btn-send {
-            background: linear-gradient(135deg, var(--primary-deep), var(--primary-light));
+            background: #4A5D4A;
             color: white;
         }
 
         .btn-send:hover:not(:disabled) {
-            transform: scale(1.1);
-            box-shadow: var(--shadow-lg);
+            background: #3d4d3d;
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(74, 93, 74, 0.3);
+        }
+
+        .btn-send:active:not(:disabled) {
+            transform: scale(0.98);
         }
 
         .btn-send:disabled {
@@ -344,13 +359,18 @@
         }
 
         .btn-record {
-            background: linear-gradient(135deg, #48bb78, #38a169);
+            background: #5B8B7A;
             color: white;
         }
 
         .btn-record:hover:not(:disabled) {
-            transform: scale(1.1);
-            box-shadow: var(--shadow-lg);
+            background: #4d7768;
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(91, 139, 122, 0.3);
+        }
+
+        .btn-record:active:not(:disabled) {
+            transform: scale(0.98);
         }
 
         .btn-record.recording {
@@ -388,7 +408,8 @@
         @media (max-width: 768px) {
             .ai-chat-container {
                 margin: 10px;
-                height: calc(100vh - 130px);
+                margin-bottom: 75px;
+                height: calc(100vh - 165px);
                 border-radius: 20px;
             }
 
@@ -410,12 +431,48 @@
             }
 
             .input-area {
-                padding: 15px;
+                padding: 12px 15px;
             }
 
             .btn {
                 width: 44px;
                 height: 44px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .ai-chat-container {
+                margin: 8px;
+                margin-bottom: 70px;
+                height: calc(100vh - 155px);
+                border-radius: 18px;
+            }
+
+            .chat-header {
+                padding: 14px;
+            }
+
+            .chat-title {
+                font-size: 1rem;
+            }
+
+            .conversation-area {
+                padding: 12px;
+            }
+
+            .input-area {
+                padding: 10px 12px;
+            }
+
+            .text-input {
+                font-size: 0.9rem;
+                padding: 12px 16px;
+            }
+
+            .btn {
+                width: 42px;
+                height: 42px;
+                font-size: 1.1rem;
             }
         }
     </style>
@@ -425,7 +482,7 @@
     <div class="top-header">
         <div class="header-left">
             <div class="header-logo">
-                <i class="fas fa-robot"></i>
+                <span style="font-size: 24px; font-weight: bold; color: white;">问</span>
             </div>
             <div class="header-title">AI 语音助手</div>
         </div>
