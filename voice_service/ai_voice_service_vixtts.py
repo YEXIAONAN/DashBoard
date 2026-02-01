@@ -8,6 +8,7 @@ import base64
 import tempfile
 import logging
 import json
+import asyncio
 from typing import Optional
 from fastapi import FastAPI, File, UploadFile, Form, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -47,6 +48,9 @@ TTS_ENGINE = "vixtts"
 
 # viXTTS 模型路径
 VIXTTS_MODEL = "capleaf/viXTTS"
+
+# 使用非流式模式（流式模式在某些 Ollama 配置下会返回 502）
+USE_STREAMING = False
 
 # ==================== FastAPI 应用 ====================
 app = FastAPI(title="AI Voice Service - viXTTS (Vietnamese Support)")
@@ -161,21 +165,25 @@ def load_vixtts():
 # 全局变量：参考音频路径（用于语音克隆）
 default_speaker_wav = None
 
-def get_default_speaker_wav():
-    """获取默认参考音频"""
+def get_default_speaker_wav(language: str = "zh"):
+    """获取默认参考音频（根据语言选择）"""
     global default_speaker_wav
+    
     if default_speaker_wav is None:
         try:
             from huggingface_hub import hf_hub_download
-            logger.info("下载默认参考音频...")
+            logger.info(f"下载默认参考音频，语言: {language}...")
+            
+            # viXTTS 需要参考音频，下载默认的
             default_speaker_wav = hf_hub_download(
                 repo_id="capleaf/viXTTS",
-                filename="vi_sample.wav"
+                filename="vi_sample.wav"  # 使用越南语样本（viXTTS 的默认样本）
             )
             logger.info(f"✓ 参考音频: {default_speaker_wav}")
         except Exception as e:
             logger.error(f"下载参考音频失败: {e}")
             default_speaker_wav = None
+    
     return default_speaker_wav
 
 # ==================== ASR 服务（本地 Whisper）====================
@@ -278,64 +286,87 @@ async def transcribe_audio(audio_bytes: bytes, language: str = "zh") -> str:
 
 # ==================== TTS 服务（viXTTS）====================
 async def text_to_speech_vixtts(text: str, language: str = "zh") -> bytes:
-    """文字转语音 - 使用 viXTTS（支持越南语）
+    """文字转语音 - 使用 pyttsx3（完全离线，快速）
     
     Args:
         text: 要合成的文本
         language: 语言代码 (zh=中文, en=英文, vi=越南语)
     """
     try:
-        logger.info(f"开始合成语音 (viXTTS): {text[:50]}..., 语言: {language}")
+        logger.info(f"开始合成语音 (pyttsx3): {text[:50]}..., 语言: {language}")
         
-        tts = load_vixtts()
-        
-        # 语言映射
-        language_map = {
-            "zh": "zh-cn",
-            "en": "en",
-            "vi": "vi"  # viXTTS 支持越南语！
-        }
-        
-        tts_lang = language_map.get(language, "en")
+        import pyttsx3
+        import concurrent.futures
         
         # 保存到临时文件
         with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as tmp_file:
             tmp_path = tmp_file.name
         
         try:
-            # viXTTS 是零样本语音克隆模型，需要参考音频
-            speaker_wav = get_default_speaker_wav()
-            
-            if speaker_wav:
-                logger.info(f"使用参考音频进行语音克隆，语言: {tts_lang}")
+            # 在线程池中运行 pyttsx3（它是同步的）
+            def generate_speech():
+                engine = pyttsx3.init()
                 
-                tts.tts_to_file(
-                    text=text,
-                    file_path=tmp_path,
-                    speaker_wav=speaker_wav,
-                    language=tts_lang
-                )
-            else:
-                logger.warning("未找到参考音频，尝试不使用参考音频")
-                tts.tts_to_file(
-                    text=text,
-                    file_path=tmp_path,
-                    language=tts_lang
-                )
+                # 获取所有可用语音
+                voices = engine.getProperty('voices')
+                logger.info(f"系统可用语音数量: {len(voices)}")
+                
+                # 打印所有语音信息（调试用）
+                for i, voice in enumerate(voices):
+                    logger.info(f"语音 {i}: {voice.name} | ID: {voice.id} | Languages: {voice.languages}")
+                
+                # 选择中文语音
+                chinese_voice = None
+                if language == "zh":
+                    # 尝试多种方式找到中文语音
+                    for voice in voices:
+                        voice_name_lower = voice.name.lower()
+                        voice_id_lower = voice.id.lower()
+                        
+                        # 检查是否包含中文相关关键词
+                        if any(keyword in voice_name_lower or keyword in voice_id_lower 
+                               for keyword in ['chinese', 'mandarin', 'zh-cn', 'huihui', 'kangkang', 'yaoyao']):
+                            chinese_voice = voice
+                            logger.info(f"✓ 找到中文语音: {voice.name}")
+                            break
+                
+                if chinese_voice:
+                    engine.setProperty('voice', chinese_voice.id)
+                else:
+                    logger.warning("⚠️ 未找到中文语音，使用默认语音（可能是英文）")
+                    logger.warning("建议安装 Windows 中文语音包")
+                
+                # 设置语速（默认 200，范围 0-400）
+                engine.setProperty('rate', 200)
+                
+                # 设置音量（0.0-1.0）
+                engine.setProperty('volume', 1.0)
+                
+                # 保存到文件
+                engine.save_to_file(text, tmp_path)
+                engine.runAndWait()
+            
+            # 在线程池中执行
+            with concurrent.futures.ThreadPoolExecutor() as executor:
+                future = executor.submit(generate_speech)
+                future.result(timeout=30)  # 30秒超时
             
             # 读取生成的音频
             with open(tmp_path, 'rb') as f:
                 audio_data = f.read()
             
-            logger.info(f"✅ 语音合成完成 (viXTTS): {len(audio_data)} bytes")
+            logger.info(f"✅ 语音合成完成 (pyttsx3): {len(audio_data)} bytes")
             return audio_data
             
         finally:
             if os.path.exists(tmp_path):
-                os.unlink(tmp_path)
+                try:
+                    os.unlink(tmp_path)
+                except:
+                    pass
                 
     except Exception as e:
-        logger.error(f"viXTTS 失败: {str(e)}", exc_info=True)
+        logger.error(f"pyttsx3 失败: {str(e)}", exc_info=True)
         # 返回空音频
         logger.warning("TTS 失败，返回空音频")
         return b'RIFF$\x00\x00\x00WAVEfmt \x10\x00\x00\x00\x01\x00\x01\x00D\xac\x00\x00\x88X\x01\x00\x02\x00\x10\x00data\x00\x00\x00\x00'
@@ -386,52 +417,81 @@ async def chat_stream(
     text: str = Form(...),
     language: str = Form("zh")
 ):
-    """流式对话接口"""
+    """流式对话接口（使用 requests 库避免 httpx 的 502 问题）"""
     try:
         logger.info(f"收到流式对话请求: {text[:50]}..., 语言: {language}")
         
         async def generate():
-            try:
-                full_text = ""
-                
-                async with httpx.AsyncClient(timeout=120.0) as client:
+            max_retries = 3
+            retry_delay = 1
+            
+            for attempt in range(max_retries):
+                try:
+                    import requests
+                    import concurrent.futures
+                    
                     payload = {
                         "model": OLLAMA_MODEL,
                         "prompt": text,
-                        "stream": True
+                        "stream": False
                     }
                     
-                    async with client.stream("POST", f"{OLLAMA_HOST}/api/generate", json=payload) as response:
-                        response.raise_for_status()
+                    logger.info(f"发送请求到 Ollama (尝试 {attempt + 1}/{max_retries})...")
+                    
+                    # 在线程池中运行同步请求
+                    with concurrent.futures.ThreadPoolExecutor() as executor:
+                        future = executor.submit(
+                            requests.post,
+                            f"{OLLAMA_HOST}/api/generate",
+                            json=payload,
+                            timeout=120
+                        )
+                        response = future.result()
+                    
+                    if response.status_code == 200:
+                        data = response.json()
+                        full_text = data.get("response", "")
                         
-                        async for line in response.aiter_lines():
-                            if line:
-                                try:
-                                    data = json.loads(line)
-                                    if "response" in data:
-                                        chunk_text = data["response"]
-                                        full_text += chunk_text
-                                        yield f"data: {json.dumps({'text': chunk_text})}\n\n"
-                                    
-                                    if data.get("done", False):
-                                        logger.info(f"流式输出完成，完整文本长度: {len(full_text)} 字符")
-                                        logger.info(f"开始生成语音，语言: {language}...")
-                                        audio_bytes = await text_to_speech_vixtts(full_text, language)
-                                        logger.info(f"语音生成完成，大小: {len(audio_bytes)} bytes")
-                                        audio_base64 = base64.b64encode(audio_bytes).decode("utf-8")
-                                        yield f"data: {json.dumps({'audio': audio_base64, 'done': True})}\n\n"
-                                        break
-                                except json.JSONDecodeError:
-                                    continue
-                        
-            except Exception as e:
-                logger.error(f"流式对话失败: {str(e)}")
-                yield f"data: {json.dumps({'error': str(e)})}\n\n"
+                        if full_text:
+                            logger.info(f"收到响应，长度: {len(full_text)} 字符")
+                            
+                            # 立即开始生成语音（不等待文本发送完成）
+                            logger.info(f"开始生成语音，语言: {language}...")
+                            audio_task = asyncio.create_task(text_to_speech_vixtts(full_text, language))
+                            
+                            # 同时发送文本（更快的分块）
+                            chunk_size = 20  # 增大分块大小
+                            for i in range(0, len(full_text), chunk_size):
+                                chunk = full_text[i:i+chunk_size]
+                                yield f"data: {json.dumps({'text': chunk})}\n\n"
+                                await asyncio.sleep(0.02)  # 减少延迟
+                            
+                            # 等待语音生成完成
+                            audio_bytes = await audio_task
+                            logger.info(f"语音完成，大小: {len(audio_bytes)} bytes")
+                            audio_base64 = base64.b64encode(audio_bytes).decode("utf-8")
+                            yield f"data: {json.dumps({'audio': audio_base64, 'done': True})}\n\n"
+                        else:
+                            yield f"data: {json.dumps({'error': 'Ollama 返回空响应'})}\n\n"
+                    else:
+                        raise Exception(f"HTTP {response.status_code}")
+                    
+                    break
+                    
+                except Exception as e:
+                    if attempt < max_retries - 1:
+                        logger.warning(f"失败 (尝试 {attempt + 1}/{max_retries}): {str(e)}, {retry_delay}秒后重试...")
+                        await asyncio.sleep(retry_delay)
+                        retry_delay *= 2
+                    else:
+                        logger.error(f"失败，已重试 {max_retries} 次: {str(e)}")
+                        yield f"data: {json.dumps({'error': f'服务暂时不可用: {str(e)}'})}\n\n"
         
         return StreamingResponse(generate(), media_type="text/event-stream")
     
     except Exception as e:
-        logger.error(f"流式对话失败: {str(e)}", exc_info=True)
+        logger.error(f"对话失败: {str(e)}", exc_info=True)
+        raise HTTPException(status_code=500, detail=str(e))
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/chat")
@@ -497,20 +557,17 @@ async def health():
 async def startup_event():
     """启动时预加载模型"""
     logger.info("=" * 50)
-    logger.info("AI 语音助手服务启动中（viXTTS - 支持越南语）...")
+    logger.info("AI 语音助手服务启动中（完全离线 - pyttsx3）...")
     logger.info(f"Ollama: {OLLAMA_HOST}")
     logger.info(f"模型: {OLLAMA_MODEL}")
     logger.info(f"Whisper: {WHISPER_MODEL}")
-    logger.info(f"TTS 引擎: {TTS_ENGINE}")
-    logger.info(f"TTS 模型: {VIXTTS_MODEL}")
+    logger.info(f"TTS 引擎: pyttsx3 (完全离线，快速)")
     logger.info("=" * 50)
     
     try:
         logger.info("预加载 Whisper 模型...")
         load_whisper()
-        logger.info("预加载 viXTTS 模型...")
-        load_vixtts()
-        logger.info("✅ 所有模型加载完成")
+        logger.info("✅ Whisper 模型加载完成")
     except Exception as e:
         logger.warning(f"预加载失败，将在首次请求时加载: {e}")
 
