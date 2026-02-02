@@ -304,7 +304,7 @@ def detect_dish_with_yolo(dish_name, timeout=5, use_yolo=False):
         start_time = time.time()
 
         # 尝试连接到YOLO检测服务
-        yolo_url = "http://172.16.4.223:5000/detect"
+        yolo_url = "http://10.0.0.104:5000/detect"
  
         while time.time() - start_time < timeout:
             try:

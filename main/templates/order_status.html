@@ -571,7 +571,7 @@
             </div>
             <div class="view-content">
                 <div class="video-container">
-                    <img src="http://172.16.4.223:5000/video_feed"
+                    <img src="http://10.0.0.104:5000/video_feed"
                          class="video-stream"
                          alt="YOLOv5 Detection Stream"
                          onerror="this.style.display='none'; document.getElementById('backup-view').style.display='block'; document.getElementById('video-controls').style.display='none';">
@@ -719,7 +719,7 @@
             backupView.style.display = 'none';
 
             // 添加时间戳避免缓存
-            img.src = `http://172.16.4.223:5000/video_feed?t=${Date.now()}`;
+            img.src = `http://10.0.0.104:5000/video_feed?t=${Date.now()}`;
 
             // 2秒后隐藏加载界面
             setTimeout(() => {
