@@ -1,0 +1,250 @@
+/**
+ * DashBoard Design System
+ * CSS Custom Properties (Design Tokens)
+ * 
+ * This file defines the foundational design tokens for the entire application.
+ * All visual values should reference these custom properties for consistency.
+ * 
+ * Color Scheme: Green (#10b981) primary with white backgrounds
+ * Typography: Roboto and Open Sans font families
+ * Spacing: 8px base grid system
+ */
+
+:root {
+  /* ===== Primary Brand Colors ===== */
+  --color-primary: #10b981;           /* Green - primary actions, brand color */
+  --color-primary-light: #34d399;     /* Light green - hover states */
+  --color-primary-dark: #059669;      /* Dark green - active states, pressed */
+  --color-primary-pale: #d1fae5;      /* Pale green - backgrounds, highlights */
+  
+  /* ===== Secondary Colors ===== */
+  --color-secondary: #ffffff;         /* White - main backgrounds */
+  --color-secondary-dark: #f9fafb;    /* Light gray - alternate backgrounds */
+  
+  /* ===== Accent Color ===== */
+  --color-accent: #3b82f6;            /* Blue - links, informational elements */
+  --color-accent-light: #60a5fa;      /* Light blue - hover states */
+  --color-accent-dark: #2563eb;       /* Dark blue - active states */
+  
+  /* ===== Semantic Colors ===== */
+  --color-success: #10b981;           /* Success messages, positive actions */
+  --color-error: #ef4444;             /* Error messages, destructive actions */
+  --color-warning: #f59e0b;           /* Warning messages, caution */
+  --color-info: #3b82f6;              /* Info messages, neutral information */
+  
+  /* ===== Neutral Colors (Text & Borders) ===== */
+  --color-text-primary: #111827;      /* Primary text - headings, important content */
+  --color-text-secondary: #6b7280;    /* Secondary text - descriptions, labels */
+  --color-text-disabled: #9ca3af;     /* Disabled text - inactive elements */
+  --color-text-inverse: #ffffff;      /* Inverse text - text on dark backgrounds */
+  
+  --color-border: #e5e7eb;            /* Default borders */
+  --color-border-light: #f3f4f6;      /* Light borders - subtle dividers */
+  --color-border-dark: #d1d5db;       /* Dark borders - emphasis */
+  
+  --color-background: #ffffff;        /* Main background color */
+  --color-surface: #f9fafb;           /* Card/surface background */
+  --color-surface-hover: #f3f4f6;     /* Surface hover state */
+  
+  /* ===== Font Families ===== */
+  --font-primary: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+  --font-secondary: 'Open Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+  --font-monospace: 'Courier New', 'Consolas', 'Monaco', monospace;
+  
+  /* ===== Font Sizes ===== */
+  --font-size-xs: 0.75rem;      /* 12px - small labels, captions */
+  --font-size-sm: 0.875rem;     /* 14px - secondary text, mobile base */
+  --font-size-base: 1rem;       /* 16px - body text, base size */
+  --font-size-lg: 1.125rem;     /* 18px - large body text, subheadings */
+  --font-size-xl: 1.25rem;      /* 20px - h4 headings */
+  --font-size-2xl: 1.5rem;      /* 24px - h3 headings */
+  --font-size-3xl: 2rem;        /* 32px - h2 headings, page titles */
+  --font-size-4xl: 2.5rem;      /* 40px - h1 headings, hero text */
+  
+  /* ===== Font Weights ===== */
+  --font-weight-normal: 400;    /* Normal text */
+  --font-weight-medium: 500;    /* Medium emphasis */
+  --font-weight-semibold: 600;  /* Semibold - buttons, labels */
+  --font-weight-bold: 700;      /* Bold - headings, emphasis */
+  
+  /* ===== Line Heights ===== */
+  --line-height-tight: 1.25;    /* Tight - headings */
+  --line-height-normal: 1.5;    /* Normal - body text */
+  --line-height-relaxed: 1.75;  /* Relaxed - long-form content */
+  
+  /* ===== Spacing System (8px base grid) ===== */
+  --spacing-0: 0;               /* 0px - no spacing */
+  --spacing-1: 0.25rem;         /* 4px - minimal spacing */
+  --spacing-2: 0.5rem;          /* 8px - base unit */
+  --spacing-3: 0.75rem;         /* 12px - small spacing */
+  --spacing-4: 1rem;            /* 16px - standard spacing */
+  --spacing-5: 1.25rem;         /* 20px - medium spacing */
+  --spacing-6: 1.5rem;          /* 24px - large spacing */
+  --spacing-8: 2rem;            /* 32px - extra large spacing */
+  --spacing-10: 2.5rem;         /* 40px - section spacing */
+  --spacing-12: 3rem;           /* 48px - large section spacing */
+  --spacing-16: 4rem;           /* 64px - extra large section spacing */
+  --spacing-20: 5rem;           /* 80px - hero spacing */
+  --spacing-24: 6rem;           /* 96px - maximum spacing */
+  
+  /* ===== Shadow System (Depth & Elevation) ===== */
+  --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-base: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  --shadow-inner: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
+  
+  /* ===== Border Radius System ===== */
+  --radius-none: 0;             /* 0px - no rounding */
+  --radius-sm: 0.25rem;         /* 4px - subtle rounding */
+  --radius-base: 0.5rem;        /* 8px - standard rounding */
+  --radius-md: 0.75rem;         /* 12px - medium rounding */
+  --radius-lg: 1rem;            /* 16px - large rounding */
+  --radius-xl: 1.25rem;         /* 20px - extra large rounding */
+  --radius-2xl: 1.5rem;         /* 24px - very large rounding */
+  --radius-3xl: 2rem;           /* 32px - maximum rounding */
+  --radius-full: 9999px;        /* Fully rounded - pills, circles */
+  
+  /* ===== Transition & Animation Timing ===== */
+  --transition-fast: 150ms ease-in-out;     /* Fast - micro-interactions */
+  --transition-base: 250ms ease-in-out;     /* Base - standard transitions */
+  --transition-slow: 400ms ease-in-out;     /* Slow - complex animations */
+  --transition-slower: 600ms ease-in-out;   /* Slower - page transitions */
+  
+  /* ===== Easing Functions ===== */
+  --ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  
+  /* ===== Z-Index Scale ===== */
+  --z-index-dropdown: 1000;     /* Dropdowns, popovers */
+  --z-index-sticky: 1020;       /* Sticky elements */
+  --z-index-fixed: 1030;        /* Fixed elements */
+  --z-index-modal-backdrop: 1040; /* Modal backdrops */
+  --z-index-modal: 1050;        /* Modals */
+  --z-index-popover: 1060;      /* Popovers */
+  --z-index-tooltip: 1070;      /* Tooltips */
+  --z-index-toast: 2000;        /* Toast notifications */
+  
+  /* ===== Breakpoints (for reference in media queries) ===== */
+  --breakpoint-sm: 640px;       /* Small devices (large phones) */
+  --breakpoint-md: 768px;       /* Medium devices (tablets) */
+  --breakpoint-lg: 1024px;      /* Large devices (desktops) */
+  --breakpoint-xl: 1280px;      /* Extra large devices (large desktops) */
+  --breakpoint-2xl: 1536px;     /* 2X large devices (very large screens) */
+  
+  /* ===== Container Max Widths ===== */
+  --container-sm: 640px;
+  --container-md: 768px;
+  --container-lg: 1024px;
+  --container-xl: 1280px;
+  --container-2xl: 1536px;
+  
+  /* ===== Opacity Scale ===== */
+  --opacity-0: 0;
+  --opacity-10: 0.1;
+  --opacity-20: 0.2;
+  --opacity-30: 0.3;
+  --opacity-40: 0.4;
+  --opacity-50: 0.5;
+  --opacity-60: 0.6;
+  --opacity-70: 0.7;
+  --opacity-80: 0.8;
+  --opacity-90: 0.9;
+  --opacity-100: 1;
+  
+  /* ===== Focus Ring ===== */
+  --focus-ring-color: var(--color-primary);
+  --focus-ring-width: 2px;
+  --focus-ring-offset: 2px;
+  --focus-ring-opacity: 0.5;
+}
+
+/* ===== Base Typography Styles ===== */
+body {
+  font-family: var(--font-primary);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-normal);
+  line-height: var(--line-height-normal);
+  color: var(--color-text-primary);
+  background-color: var(--color-surface);
+}
+
+/* ===== Heading Styles ===== */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-tight);
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-4);
+}
+
+h1 {
+  font-size: var(--font-size-3xl);
+}
+
+h2 {
+  font-size: var(--font-size-2xl);
+}
+
+h3 {
+  font-size: var(--font-size-xl);
+}
+
+h4 {
+  font-size: var(--font-size-lg);
+}
+
+h5 {
+  font-size: var(--font-size-base);
+}
+
+h6 {
+  font-size: var(--font-size-sm);
+}
+
+/* ===== Responsive Typography ===== */
+@media (max-width: 768px) {
+  :root {
+    --font-size-base: 0.875rem;   /* 14px on mobile */
+    --font-size-3xl: 1.75rem;     /* 28px on mobile */
+    --font-size-2xl: 1.375rem;    /* 22px on mobile */
+  }
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --font-size-base: 1rem;       /* 16px on desktop */
+    --font-size-3xl: 2rem;        /* 32px on desktop */
+    --font-size-2xl: 1.5rem;      /* 24px on desktop */
+  }
+}
+
+/* ===== Accessibility: High Contrast Mode Support ===== */
+@media (prefers-contrast: high) {
+  :root {
+    --color-border: #000000;
+    --color-text-secondary: #000000;
+  }
+}
+
+/* ===== Accessibility: Dark Mode Support (Future Enhancement) ===== */
+@media (prefers-color-scheme: dark) {
+  /* Dark mode variables can be added here in future iterations */
+  /* Currently maintaining light theme only as per requirements */
+}
+
+/* ===== Print Styles ===== */
+@media print {
+  :root {
+    --shadow-sm: none;
+    --shadow-base: none;
+    --shadow-md: none;
+    --shadow-lg: none;
+    --shadow-xl: none;
+    --shadow-2xl: none;
+  }
+}

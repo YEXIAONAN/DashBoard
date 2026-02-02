@@ -1534,3 +1534,17 @@ def refresh_recommendation(request):
             'success': False,
             'error': f'生成推荐时发生错误: {str(e)}'
         }, status=500)
+
+
+# Test view for form field component
+def test_form_fields(request):
+    """
+    Test page for form field component styles
+    """
+    return render(request, 'test_form_fields.html')
+
+def test_form_validation(request):
+    """
+    Test page for form validation module
+    """
+    return render(request, 'test_form_validation.html')

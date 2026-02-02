@@ -1,0 +1,1552 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>智慧餐饮 - 首页</title>
+    <link rel="stylesheet" href="../static/css/all.min.css">
+    <link rel="stylesheet" href="../static/css/modern-theme.css">
+    <style>
+        /* ========== 页面转场动画 ========== */
+        @keyframes pageTransitionOut {
+            from {
+                opacity: 1;
+                transform: scale(1);
+            }
+            to {
+                opacity: 0;
+                transform: scale(0.98);
+            }
+        }
+
+        /* ========== 统一的瀑布流加载动画 ========== */
+        @keyframes cascadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* 顶部栏瀑布流动画 */
+        .top-header {
+            animation: cascadeIn 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.0s both;
+        }
+
+        /* 底部导航瀑布流动画 */
+        .bottom-nav {
+            animation: cascadeIn 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.70s both;
+        }
+
+        /* ========== 顶部横幅（美食图片 + 蒙版 + 文字）========== */
+        .hero-banner {
+            position: relative;
+            width: calc(100% - 32px);
+            height: 280px;
+            overflow: hidden;
+            margin: 16px 16px -12px;
+            border-radius: 24px 24px 8px 8px;
+            animation: cascadeIn 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.15s both;
+            box-shadow: 
+                0 2px 8px rgba(0, 0, 0, 0.08),
+                inset 0 -1px 0 0 rgba(0, 0, 0, 0.05);
+            z-index: 1;
+        }
+
+        /* 背景图片 */
+        .hero-image {
+            position: absolute;
+            inset: 0;
+            background-image: url('../static/Images/bg.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            animation: heroImageZoom 20s ease-in-out infinite alternate;
+            will-change: transform;
+        }
+
+        /* 视差滚动效果 */
+        .hero-banner.parallax .hero-image {
+            transform: translateY(var(--parallax-offset, 0));
+            transition: transform 0.1s linear;
+        }
+
+        @keyframes heroImageZoom {
+            0% {
+                transform: scale(1);
+            }
+            100% {
+                transform: scale(1.08);
+            }
+        }
+
+        /* 图片加载骨架屏 */
+        .hero-image::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(
+                90deg,
+                rgba(139, 157, 131, 0.1) 0%,
+                rgba(139, 157, 131, 0.2) 50%,
+                rgba(139, 157, 131, 0.1) 100%
+            );
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .hero-image.loading::before {
+            opacity: 1;
+        }
+
+        @keyframes shimmer {
+            0% {
+                background-position: -200% 0;
+            }
+            100% {
+                background-position: 200% 0;
+            }
+        }
+
+        /* 深色蒙版（从下到上渐变 + 延伸到下方）*/
+        .hero-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(
+                to top,
+                rgba(0, 0, 0, 0.75) 0%,
+                rgba(0, 0, 0, 0.5) 40%,
+                rgba(0, 0, 0, 0.3) 70%,
+                rgba(0, 0, 0, 0.1) 90%,
+                rgba(0, 0, 0, 0.05) 100%
+            );
+            backdrop-filter: blur(0.5px);
+            -webkit-backdrop-filter: blur(0.5px);
+        }
+
+        /* 蒙版延伸效果（渗透到标题区域）*/
+        .hero-overlay::after {
+            content: '';
+            position: absolute;
+            bottom: -20px;
+            left: 0;
+            right: 0;
+            height: 50px;
+            background: linear-gradient(
+                to bottom,
+                rgba(0, 0, 0, 0.15) 0%,
+                rgba(0, 0, 0, 0.08) 40%,
+                rgba(0, 0, 0, 0.03) 70%,
+                transparent 100%
+            );
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        /* 底部柔和分隔线 */
+        .hero-banner::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(
+                90deg,
+                transparent 0%,
+                rgba(139, 157, 131, 0.15) 50%,
+                transparent 100%
+            );
+            opacity: 0.6;
+        }
+
+        /* 文字内容容器 */
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 32px 24px 56px;
+            animation: cascadeIn 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.35s both;
+        }
+
+        /* 左侧内容（图标 + 标题）*/
+        .hero-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        /* 圆形"养"图标 */
+        .hero-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            border: 2px solid rgba(255, 255, 255, 0.9);
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: 700;
+            color: #fff;
+            flex-shrink: 0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            cursor: pointer;
+        }
+
+        /* 悬停交互 */
+        .hero-icon:hover {
+            transform: scale(1.1) rotate(5deg);
+            box-shadow: 0 6px 20px rgba(139, 157, 131, 0.4);
+        }
+
+        /* 标题组 */
+        .hero-titles {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .hero-title-en {
+            font-size: 20px;
+            font-weight: 700;
+            color: #fff;
+            letter-spacing: 0.5px;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+            line-height: 1.2;
+        }
+
+        .hero-title-zh {
+            font-size: 13px;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.9);
+            letter-spacing: 1px;
+            text-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        /* 右侧大段文字 */
+        .hero-description {
+            font-size: 15px;
+            line-height: 1.8;
+            color: rgba(255, 255, 255, 0.95);
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+            font-weight: 400;
+            letter-spacing: 0.5px;
+            max-width: 100%;
+        }
+
+        /* 响应式 */
+        @media (max-width: 420px) {
+            .hero-banner {
+                height: 240px;
+                width: calc(100% - 24px);
+                margin: 12px 12px -10px;
+            }
+
+            .hero-content {
+                padding: 24px 20px 44px;
+            }
+
+            .hero-icon {
+                width: 48px;
+                height: 48px;
+                font-size: 20px;
+            }
+
+            .hero-title-en {
+                font-size: 18px;
+            }
+
+            .hero-title-zh {
+                font-size: 12px;
+            }
+
+            .hero-description {
+                font-size: 14px;
+                line-height: 1.7;
+            }
+
+            .nutrition-header {
+                padding: 28px 20px 16px;
+            }
+        }
+
+        /* ========== 营养摄入分析卡片（热量环形图）========== */
+        .nutrition-intake-card {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            margin: 0 16px 0;
+            border-radius: 8px 8px 0 0;
+            padding: 0 0 16px 0;
+            box-shadow: none;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            border-top: 1px solid rgba(139, 157, 131, 0.1);
+            border-bottom: none;
+            position: relative;
+            z-index: 10;
+            animation: cascadeIn 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.45s both;
+            will-change: transform, opacity, filter;
+            transform-origin: center center;
+        }
+
+        /* ========== 营养素构成卡片（液态玻璃覆盖层）========== */
+        .nutrients-card {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(20px) saturate(1.15);
+            -webkit-backdrop-filter: blur(20px) saturate(1.15);
+            margin: 0 16px 16px;
+            border-radius: 0 0 24px 24px;
+            padding: 0;
+            box-shadow: 
+                0 8px 32px rgba(139, 157, 131, 0.12),
+                0 4px 16px rgba(0, 0, 0, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            border-top: none;
+            position: relative;
+            z-index: 2;
+            animation: cascadeIn 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.60s both;
+            will-change: transform, opacity;
+            transform-origin: center top;
+        }
+
+        /* 液态玻璃纹理（营养素卡片）*/
+        .nutrients-card::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            opacity: 0.05;
+            pointer-events: none;
+            background-image: 
+                radial-gradient(circle at 20% 30%, #8B9D83 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, #9CAF88 0%, transparent 50%),
+                repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(139, 157, 131, 0.04) 2px, rgba(139, 157, 131, 0.04) 4px);
+            background-size: 600px 600px, 800px 800px, 4px 4px;
+            background-position: 0 0, 100% 100%, 0 0;
+            mix-blend-mode: overlay;
+            border-radius: 0 0 24px 24px;
+        }
+
+
+
+        /* 头部区域（半透明 + 渐变 + 图片渗透）*/
+        .nutrition-header {
+            padding: 32px 24px 20px;
+            position: relative;
+            z-index: 1;
+            background: linear-gradient(
+                to bottom,
+                rgba(255, 255, 255, 0.75) 0%,
+                rgba(255, 255, 255, 0.88) 50%,
+                rgba(255, 255, 255, 0.95) 100%
+            );
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            animation: headerBackgroundFadeIn 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) 1.0s both;
+        }
+
+        @keyframes headerBackgroundFadeIn {
+            from {
+                background: linear-gradient(
+                    to bottom,
+                    rgba(255, 255, 255, 0.3) 0%,
+                    rgba(255, 255, 255, 0.5) 50%,
+                    rgba(255, 255, 255, 0.7) 100%
+                );
+            }
+            to {
+                background: linear-gradient(
+                    to bottom,
+                    rgba(255, 255, 255, 0.75) 0%,
+                    rgba(255, 255, 255, 0.88) 50%,
+                    rgba(255, 255, 255, 0.95) 100%
+                );
+            }
+        }
+
+        /* 头部顶部微妙的暗部渗透 */
+        .nutrition-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 32px;
+            background: linear-gradient(
+                to bottom,
+                rgba(0, 0, 0, 0.03) 0%,
+                rgba(0, 0, 0, 0.015) 50%,
+                transparent 100%
+            );
+            pointer-events: none;
+            opacity: 0;
+            animation: darkBleedFadeIn 0.6s ease-out 1.2s both;
+        }
+
+        @keyframes darkBleedFadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 8px;
+        }
+
+        .nutrition-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1F2937;
+            letter-spacing: -0.02em;
+        }
+
+        .subtitle {
+            font-size: 11px;
+            color: #9CA3AF;
+            font-weight: 500;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+        }
+
+        .date-info {
+            font-size: 13px;
+            color: #6B7280;
+            font-weight: 400;
+        }
+
+        /* 热量核心区域（高光渐变 + 滚动时模糊值随速度变化）*/
+        .calorie-section {
+            padding: 32px 24px 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .calorie-ring {
+            position: relative;
+            width: 140px;
+            height: 140px;
+            margin-bottom: 16px;
+        }
+
+        .calorie-ring svg {
+            transform: rotate(-90deg);
+        }
+
+        .calorie-ring-bg {
+            fill: none;
+            stroke: rgba(139, 157, 131, 0.1);
+            stroke-width: 10;
+        }
+
+        .calorie-ring-progress {
+            fill: none;
+            stroke: #8B9D83;
+            stroke-width: 10;
+            stroke-linecap: round;
+            transition: stroke-dashoffset 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        .calorie-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+        }
+
+        .calorie-icon {
+            width: 24px;
+            height: 24px;
+            color: #8B9D83;
+            margin: 0 auto 4px;
+        }
+
+        .calorie-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1F2937;
+            letter-spacing: -0.02em;
+            line-height: 1;
+        }
+
+        .calorie-target {
+            font-size: 12px;
+            color: #6B7280;
+            margin-top: 2px;
+        }
+
+        .calorie-label {
+            text-align: center;
+        }
+
+        .calorie-label-title {
+            font-size: 12px;
+            color: #6B7280;
+            margin-bottom: 4px;
+        }
+
+        .calorie-label-unit {
+            font-size: 12px;
+            color: #374151;
+            font-weight: 600;
+        }
+
+        /* 营养素网格（液态玻璃参数增强）*/
+        .nutrients-section {
+            padding: 0 24px 24px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 16px;
+            transition: transform 0.3s ease-out;
+        }
+
+        .section-icon {
+            width: 16px;
+            height: 16px;
+            color: #8B9D83;
+        }
+
+        .section-title-text {
+            font-size: 14px;
+            color: #374151;
+            font-weight: 600;
+            letter-spacing: -0.01em;
+        }
+
+        .nutrient-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .nutrient-item {
+            background: rgba(255, 255, 255, 0.45);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 16px;
+            padding: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 
+                0 2px 8px rgba(139, 157, 131, 0.08),
+                inset 0 1px 0 0 rgba(255, 255, 255, 0.5);
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            will-change: transform;
+            position: relative;
+        }
+
+        .nutrient-item:nth-child(1) { }
+        .nutrient-item:nth-child(2) { }
+        .nutrient-item:nth-child(3) { }
+        .nutrient-item:nth-child(4) { }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .nutrient-item:hover {
+            transform: translateY(-2px) scale(1.01);
+            box-shadow: 0 4px 12px rgba(139, 157, 131, 0.15);
+        }
+
+        /* 添加微妙的悬停光泽效果 */
+        .nutrient-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 50%;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.1) 0%, transparent 100%);
+            border-radius: 16px 16px 0 0;
+            opacity: 0;
+            transition: opacity 0.3s ease-out;
+            pointer-events: none;
+        }
+
+        .nutrient-item:hover::before {
+            opacity: 1;
+        }
+
+        .nutrient-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+
+        .nutrient-info {
+            flex: 1;
+        }
+
+        .nutrient-name {
+            font-size: 13px;
+            color: #374151;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .nutrient-values {
+            font-size: 11px;
+            color: #6B7280;
+        }
+
+        .nutrient-percentage {
+            font-size: 13px;
+            font-weight: 700;
+            color: #8B9D83;
+        }
+
+        .nutrient-progress {
+            height: 6px;
+            background: rgba(139, 157, 131, 0.1);
+            border-radius: 3px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .nutrient-progress-bar {
+            height: 100%;
+            border-radius: 3px;
+            transition: width 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            width: 0%;
+        }
+
+        .progress-protein { background: linear-gradient(90deg, #8B9D83, #9CAF88); }
+        .progress-carbs { background: linear-gradient(90deg, #A4AC86, #B8C5A8); }
+        .progress-fat { background: linear-gradient(90deg, #9CAF88, #A4AC86); }
+        .progress-fiber { background: linear-gradient(90deg, #8B9D83, #9CAF88); }
+
+        /* 底部状态栏 */
+        .status-bar {
+            padding: 16px 24px;
+            border-top: 1px solid rgba(139, 157, 131, 0.1);
+            background: rgba(139, 157, 131, 0.04);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #8B9D83;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.8; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+
+        .status-text {
+            font-size: 12px;
+            color: #6B7280;
+        }
+
+        .status-value {
+            font-size: 12px;
+            color: #374151;
+            font-weight: 600;
+        }
+
+        /* ========== 推荐菜品样式 ========== */
+        .recommend-section {
+            margin: var(--space-4);
+            animation: cascadeIn 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.75s both;
+        }
+
+        .food-card {
+            background: var(--white);
+            border-radius: var(--radius-2xl);
+            overflow: hidden;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--gray-200);
+        }
+
+        .food-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--space-5);
+            border-bottom: 2px solid var(--gray-100);
+        }
+
+        .food-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--gray-800);
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+        }
+
+        .food-title i {
+            color: var(--accent-green);
+            font-size: 1.5rem;
+        }
+
+        .food-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: var(--space-4);
+            padding: var(--space-5);
+        }
+
+        .food-item {
+            background: var(--gray-50);
+            border-radius: var(--radius-xl);
+            overflow: hidden;
+            transition: all var(--transition-base);
+            border: 2px solid var(--gray-200);
+        }
+
+        .food-item:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--primary-light);
+        }
+
+        .food-img {
+            height: 140px;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+        }
+
+        .food-details {
+            padding: var(--space-4);
+        }
+
+        .food-name {
+            font-weight: 700;
+            margin-bottom: var(--space-2);
+            font-size: 1rem;
+            color: var(--gray-800);
+        }
+
+        .food-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .food-price {
+            font-weight: 700;
+            color: var(--primary-blue);
+            font-size: 1.125rem;
+        }
+
+        .food-calories {
+            font-size: 0.8125rem;
+            color: var(--gray-500);
+            display: flex;
+            align-items: center;
+            gap: var(--space-1);
+            font-weight: 600;
+        }
+
+        .food-calories i {
+            color: var(--accent-green);
+        }
+
+        .view-more-btn {
+            background: none;
+            border: none;
+            padding: 0;
+            font: inherit;
+            color: var(--primary-blue);
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-1);
+            font-weight: 700;
+            font-size: 0.9375rem;
+            transition: all var(--transition-base);
+        }
+
+        .view-more-btn:hover {
+            color: var(--primary-dark);
+            transform: translateX(4px);
+        }
+
+        /* ========== 响应式 ========== */
+        @media (max-width: 420px) {
+            .nutrition-card {
+                margin: 16px 12px;
+                border-radius: 20px;
+            }
+            
+            .nutrition-header {
+                padding: 20px 20px 16px;
+            }
+            
+            .calorie-section {
+                padding: 24px 20px;
+            }
+            
+            .nutrients-section {
+                padding: 20px;
+            }
+            
+            .nutrient-grid {
+                gap: 10px;
+            }
+
+            .food-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部栏 -->
+    <div class="top-header">
+        <div class="header-left">
+            <div class="header-logo">
+                <i class="fas fa-utensils"></i>
+            </div>
+            <div class="header-title">智慧餐饮</div>
+        </div>
+        <div class="header-right">
+            <div class="header-icon" id="profileBtn">
+                <i class="fas fa-user"></i>
+            </div>
+            <div class="header-icon">
+                <i class="fas fa-bell"></i>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- 顶部横幅（美食图片 + 蒙版 + 文字）-->
+        <div class="hero-banner">
+            <!-- 背景图片 -->
+            <div class="hero-image"></div>
+            
+            <!-- 深色蒙版 -->
+            <div class="hero-overlay"></div>
+            
+            <!-- 文字内容 -->
+            <div class="hero-content">
+                <!-- 左侧：图标 + 标题 -->
+                <div class="hero-left">
+                    <div class="hero-icon">智</div>
+                    <div class="hero-titles">
+                        <div class="hero-title-en">Healthy Intelligent</div>
+                        <div class="hero-title-zh">健康 & 智能</div>
+                    </div>
+                </div>
+                
+                <!-- 右侧：描述文字 -->
+                <div class="hero-description">
+                    智能体，让饮食更科学
+                </div>
+            </div>
+        </div>
+
+        {% with totals=today_total %}
+        <!-- 营养摄入分析卡片（热量环形图）-->
+        <div class="nutrition-intake-card">
+            <!-- 头部 -->
+            <div class="nutrition-header">
+                <div class="header-top">
+                    <h1 class="nutrition-title">营养摄入分析</h1>
+                    <span class="subtitle">NUTRITION INTAKE</span>
+                </div>
+                <p class="date-info">{{ today|date:"Y年n月j日 l" }}</p>
+            </div>
+
+            <!-- 热量核心区域 -->
+            <div class="calorie-section">
+                <div class="calorie-ring">
+                    <svg width="140" height="140">
+                        <circle class="calorie-ring-bg" cx="70" cy="70" r="60"></circle>
+                        <circle 
+                            class="calorie-ring-progress" 
+                            cx="70" 
+                            cy="70" 
+                            r="60"
+                            stroke-dasharray="376.99"
+                            stroke-dashoffset="376.99"
+                            data-progress="{% widthratio totals.calorie 10000 100 %}"
+                        ></circle>
+                    </svg>
+                    <div class="calorie-content">
+                        <svg class="calorie-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z"></path>
+                        </svg>
+                        <div class="calorie-value">{{ totals.calorie|floatformat:0 }}</div>
+                        <div class="calorie-target">/ 10000</div>
+                    </div>
+                </div>
+                <div class="calorie-label">
+                    <div class="calorie-label-title">能量摄入</div>
+                    <div class="calorie-label-unit">kcal</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 营养素构成卡片（液态玻璃覆盖层）-->
+        <div class="nutrients-card">
+            <div class="nutrients-section">
+                <div class="section-title">
+                    <svg class="section-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                    </svg>
+                    <h3 class="section-title-text">营养素构成</h3>
+                </div>
+
+                <div class="nutrient-grid">
+                    <!-- 蛋白质 -->
+                    <div class="nutrient-item">
+                        <div class="nutrient-header">
+                            <div class="nutrient-info">
+                                <div class="nutrient-name">蛋白质</div>
+                                <div class="nutrient-values">{{ totals.protein|floatformat:1 }} / 750 g</div>
+                            </div>
+                            <div class="nutrient-percentage">
+                                {% widthratio totals.protein 750 100 %}%
+                            </div>
+                        </div>
+                        <div class="nutrient-progress">
+                            <div 
+                                class="nutrient-progress-bar progress-protein"
+                                data-width="{% widthratio totals.protein 750 100 %}"
+                            ></div>
+                        </div>
+                    </div>
+
+                    <!-- 碳水化合物 -->
+                    <div class="nutrient-item">
+                        <div class="nutrient-header">
+                            <div class="nutrient-info">
+                                <div class="nutrient-name">碳水化合物</div>
+                                <div class="nutrient-values">{{ totals.carbohydrate|floatformat:1 }} / 450 g</div>
+                            </div>
+                            <div class="nutrient-percentage">
+                                {% widthratio totals.carbohydrate 450 100 %}%
+                            </div>
+                        </div>
+                        <div class="nutrient-progress">
+                            <div 
+                                class="nutrient-progress-bar progress-carbs"
+                                data-width="{% widthratio totals.carbohydrate 450 100 %}"
+                            ></div>
+                        </div>
+                    </div>
+
+                    <!-- 脂肪 -->
+                    <div class="nutrient-item">
+                        <div class="nutrient-header">
+                            <div class="nutrient-info">
+                                <div class="nutrient-name">脂肪</div>
+                                <div class="nutrient-values">{{ totals.fat|floatformat:1 }} / 550 g</div>
+                            </div>
+                            <div class="nutrient-percentage">
+                                {% if totals.fat > 550 %}100{% else %}{% widthratio totals.fat 550 100 %}{% endif %}%
+                            </div>
+                        </div>
+                        <div class="nutrient-progress">
+                            <div 
+                                class="nutrient-progress-bar progress-fat"
+                                data-width="{% if totals.fat > 550 %}100{% else %}{% widthratio totals.fat 550 100 %}{% endif %}"
+                            ></div>
+                        </div>
+                    </div>
+
+                    <!-- 膳食纤维 -->
+                    <div class="nutrient-item">
+                        <div class="nutrient-header">
+                            <div class="nutrient-info">
+                                <div class="nutrient-name">膳食纤维</div>
+                                <div class="nutrient-values">{{ totals.fiber|floatformat:1 }} / 35 g</div>
+                            </div>
+                            <div class="nutrient-percentage">
+                                {% if totals.fiber > 35 %}100{% else %}{% widthratio totals.fiber 35 100 %}{% endif %}%
+                            </div>
+                        </div>
+                        <div class="nutrient-progress">
+                            <div 
+                                class="nutrient-progress-bar progress-fiber"
+                                data-width="{% if totals.fiber > 35 %}100{% else %}{% widthratio totals.fiber 35 100 %}{% endif %}"
+                            ></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 底部状态栏 -->
+                <div class="status-bar">
+                    <div class="status-indicator">
+                        <div class="status-dot"></div>
+                        <span class="status-text">营养摄入状态</span>
+                    </div>
+                    <span class="status-value">良好</span>
+                </div>
+            </div>
+        </div>
+        {% endwith %}
+
+        <!-- 推荐菜品 -->
+        <div class="recommend-section">
+            <div class="food-card">
+                <div class="food-header">
+                    <h2 class="food-title">
+                        <i class="fas fa-fire"></i> 智能推荐菜品
+                    </h2>
+                    <button class="view-more-btn" onclick="location.href='/orders/'">
+                        更多 <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+
+                <div class="food-grid">
+                    {% load static %}
+                    {% for d in dishes %}
+                    <div class="food-item">
+                        <div class="food-img" style="background:url('{% static d.image_url %}') center/cover"></div>
+                        <div class="food-details">
+                            <div class="food-name">{{ d.name }}</div>
+                            <div class="food-info">
+                                <div class="food-calories">
+                                    <i class="fas fa-fire"></i> 
+                                    {{ d.total_calorie }} kcal
+                                </div>
+                                <div class="food-price">¥{{ d.price }}</div>
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div style="grid-column: span 2; text-align: center; color: var(--gray-400); padding: var(--space-8);">
+                        <i class="fas fa-utensils" style="font-size: 3rem; margin-bottom: var(--space-4); opacity: 0.3;"></i>
+                        <p>暂无推荐菜品</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 底部导航栏 -->
+    <div class="bottom-nav">
+        <div class="nav-container">
+            <!-- 滑动背景指示器 -->
+            <div class="nav-indicator"></div>
+            
+            <div class="nav-item active" data-index="0" data-target="index">
+                <div class="nav-icon">
+                    <i class="fas fa-home"></i>
+                </div>
+                <div class="nav-label">主页</div>
+            </div>
+            <div class="nav-item" data-index="1" data-target="orders">
+                <div class="nav-icon">
+                    <i class="fas fa-shopping-bag"></i>
+                </div>
+                <div class="nav-label">点餐</div>
+            </div>
+            <div class="nav-item" data-index="2" data-target="repo">
+                <div class="nav-icon">
+                    <i class="fas fa-chart-bar"></i>
+                </div>
+                <div class="nav-label">报告</div>
+            </div>
+            <div class="nav-item" data-index="3" data-target="ai-assistant">
+                <div class="nav-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="24" height="24">
+                        <path d="M12 0L14.59 8.41L23 11L14.59 13.59L12 22L9.41 13.59L1 11L9.41 8.41L12 0Z" opacity="0.9"/>
+                        <path d="M19 3L20.5 7.5L25 9L20.5 10.5L19 15L17.5 10.5L13 9L17.5 7.5L19 3Z" opacity="0.6" transform="translate(-1, -1) scale(0.4)"/>
+                    </svg>
+                </div>
+                <div class="nav-label">AI助手</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ========== 底部导航滑动指示器 ==========
+        (function() {
+            const navContainer = document.querySelector('.nav-container');
+            const navItems = document.querySelectorAll('.nav-container .nav-item');
+            const indicator = document.querySelector('.nav-indicator');
+            
+            if (!indicator || !navContainer || navItems.length === 0) return;
+            
+            // 初始化指示器位置和宽度
+            function initIndicator() {
+                const activeItem = document.querySelector('.nav-container .nav-item.active');
+                if (activeItem) {
+                    updateIndicator(activeItem);
+                }
+            }
+            
+            // 更新指示器位置（精确匹配导航项）
+            function updateIndicator(item) {
+                const itemRect = item.getBoundingClientRect();
+                const containerRect = navContainer.getBoundingClientRect();
+                
+                // 计算相对于 nav-container 的位置
+                const left = itemRect.left - containerRect.left;
+                const width = itemRect.width;
+                
+                indicator.style.width = width + 'px';
+                indicator.style.left = left + 'px';
+            }
+            
+            // 点击导航项
+            navItems.forEach(item => {
+                item.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    const target = this.getAttribute('data-target');
+                    
+                    // 获取目标URL
+                    let targetUrl = '';
+                    switch(target) {
+                        case 'index':
+                            targetUrl = "/";
+                            break;
+                        case 'orders':
+                            targetUrl = "/orders/";
+                            break;
+                        case 'repo':
+                            targetUrl = "/repo/";
+                            break;
+                        case 'ai-assistant':
+                            targetUrl = "/ai_health_advisor/";
+                            break;
+                    }
+                    
+                    if (!targetUrl) return;
+                    
+                    // 更新选中状态
+                    navItems.forEach(i => i.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // 移动指示器
+                    updateIndicator(this);
+                    
+                    // 添加页面淡出动画
+                    const pageContainer = document.body;
+                    
+                    // 监听动画结束事件
+                    const handleAnimationEnd = (event) => {
+                        if (event.animationName === 'pageTransitionOut') {
+                            pageContainer.removeEventListener('animationend', handleAnimationEnd);
+                            window.location.href = targetUrl;
+                        }
+                    };
+                    
+                    pageContainer.addEventListener('animationend', handleAnimationEnd);
+                    
+                    // 添加动画类
+                    pageContainer.style.animation = 'pageTransitionOut 0.35s ease-out forwards';
+                    
+                    // 安全保护:如果1.5秒内动画未触发,强制跳转
+                    setTimeout(() => {
+                        pageContainer.removeEventListener('animationend', handleAnimationEnd);
+                        window.location.href = targetUrl;
+                    }, 1500);
+                });
+            });
+            
+            // 页面加载时初始化
+            setTimeout(initIndicator, 100);
+            
+            // 窗口大小改变时重新计算
+            let resizeTimer;
+            window.addEventListener('resize', function() {
+                clearTimeout(resizeTimer);
+                resizeTimer = setTimeout(initIndicator, 100);
+            });
+        })();
+
+        // ========== 横幅增强功能 ==========
+        
+        // 图片懒加载
+        function initHeroImageLazyLoad() {
+            const heroImage = document.querySelector('.hero-image');
+            if (!heroImage) return;
+
+            // 添加 loading 类
+            heroImage.classList.add('loading');
+
+            // 创建临时图片对象预加载
+            const img = new Image();
+            img.onload = function() {
+                // 图片加载完成，移除 loading 类
+                setTimeout(function() {
+                    heroImage.classList.remove('loading');
+                }, 100);
+            };
+            img.src = '../static/Images/bg.jpg';
+        }
+
+        // 视差滚动效果
+        function initParallaxScroll() {
+            const heroBanner = document.querySelector('.hero-banner');
+            const heroImage = document.querySelector('.hero-image');
+            
+            if (!heroBanner || !heroImage) return;
+
+            let ticking = false;
+
+            window.addEventListener('scroll', function() {
+                if (!ticking) {
+                    window.requestAnimationFrame(function() {
+                        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                        const bannerRect = heroBanner.getBoundingClientRect();
+                        
+                        // 只在横幅可见时应用视差
+                        if (bannerRect.top < window.innerHeight && bannerRect.bottom > 0) {
+                            // 计算视差偏移（向下滚动时图片向上移动）
+                            const parallaxOffset = scrollTop * 0.3; // 30% 的滚动速度
+                            heroImage.style.transform = `translateY(${parallaxOffset}px) scale(1.08)`;
+                        }
+                        
+                        ticking = false;
+                    });
+                    ticking = true;
+                }
+            }, { passive: true });
+        }
+
+        // ========== iOS 风格液态玻璃滚动动效系统 ==========
+        
+        // 页面加载完成后执行动画
+        document.addEventListener('DOMContentLoaded', function() {
+            // 初始化横幅增强功能
+            initHeroImageLazyLoad();
+            initParallaxScroll();
+
+            // 热量环形图动画
+            setTimeout(function() {
+                const calorieRing = document.querySelector('.calorie-ring-progress');
+                if (calorieRing) {
+                    const progress = calorieRing.getAttribute('data-progress');
+                    const circumference = 376.99;
+                    const offset = circumference - (circumference * Math.min(progress, 100) / 100);
+                    calorieRing.style.strokeDashoffset = offset;
+                }
+            }, 300);
+
+            // 营养素进度条动画
+            setTimeout(function() {
+                document.querySelectorAll('.nutrient-progress-bar').forEach(function(bar) {
+                    const width = bar.getAttribute('data-width');
+                    bar.style.width = Math.min(width, 100) + '%';
+                });
+            }, 500);
+
+            // ========== 液态玻璃覆盖滚动动效 ==========
+            initLiquidGlassOverlay();
+        });
+
+        function initLiquidGlassOverlay() {
+            const intakeCard = document.querySelector('.nutrition-intake-card');
+            const nutrientsCard = document.querySelector('.nutrients-card');
+            
+            if (!intakeCard || !nutrientsCard) return;
+
+            let lastScrollTop = 0;
+            let scrollVelocity = 0;
+            let isScrolling = false;
+            let scrollTimeout;
+            let rafId;
+
+            // 滚动物理参数
+            const physics = {
+                friction: 0.90,
+                smoothness: 0.15
+            };
+
+            // 监听滚动事件
+            window.addEventListener('scroll', function() {
+                const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                const intakeRect = intakeCard.getBoundingClientRect();
+                const nutrientsRect = nutrientsCard.getBoundingClientRect();
+                
+                // 计算滚动速度
+                scrollVelocity = scrollTop - lastScrollTop;
+                lastScrollTop = scrollTop;
+
+                // 标记正在滚动
+                isScrolling = true;
+                clearTimeout(scrollTimeout);
+
+                // 计算覆盖进度（当营养素卡片开始覆盖营养摄入卡片时）
+                // 进度范围：0（未覆盖）到 1（完全覆盖）
+                const overlapStart = intakeRect.bottom - nutrientsRect.top;
+                const maxOverlap = intakeRect.height * 0.7; // 最大覆盖 70% 高度
+                const progress = Math.max(0, Math.min(1, overlapStart / maxOverlap));
+
+                // 应用覆盖效果
+                if (rafId) cancelAnimationFrame(rafId);
+                rafId = requestAnimationFrame(function() {
+                    applyOverlayEffect(progress, scrollVelocity);
+                });
+
+                // 滚动停止检测
+                scrollTimeout = setTimeout(function() {
+                    isScrolling = false;
+                    scrollVelocity = 0;
+                    smoothResetEffects();
+                }, 100);
+            }, { passive: true });
+
+            // 应用覆盖效果
+            function applyOverlayEffect(progress, velocity) {
+                // 1️⃣ 营养摄入卡片：被覆盖时缓慢缩小 + 变淡
+                applyIntakeCardEffect(progress, velocity);
+                
+                // 2️⃣ 营养素卡片：液态玻璃覆盖效果
+                applyNutrientsCardEffect(progress, velocity);
+            }
+
+            // 1️⃣ 营养摄入卡片效果：缓慢缩小 + 变淡
+            function applyIntakeCardEffect(progress, velocity) {
+                // 缩放：1 → 0.92（缓慢缩小）
+                const scale = 1 - (progress * 0.08);
+                
+                // 透明度：1 → 0.3（逐渐变淡）
+                const opacity = 1 - (progress * 0.7);
+                
+                // 模糊：0 → 8px（被覆盖时模糊）
+                const blur = progress * 8 + Math.abs(velocity) * 0.2;
+                
+                // 向上轻微位移：0 → -20px
+                const translateY = -progress * 20;
+                
+                // 应用变换
+                intakeCard.style.transform = `translateY(${translateY}px) scale(${scale})`;
+                intakeCard.style.opacity = opacity;
+                intakeCard.style.filter = `blur(${Math.min(blur, 10)}px)`;
+                intakeCard.style.transition = isScrolling 
+                    ? 'none' 
+                    : 'transform 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 0.6s ease-out, filter 0.5s ease-out';
+            }
+
+            // 2️⃣ 营养素卡片效果：液态玻璃覆盖
+            function applyNutrientsCardEffect(progress, velocity) {
+                // 增强模糊：20px → 28px（覆盖时更强的玻璃感）
+                const blurIntensity = 24 + (progress * 4);
+                
+                // 阴影增强：覆盖时阴影更明显
+                const shadowIntensity = 0.12 + (progress * 0.08);
+                const shadowSpread = 32 + (progress * 16);
+                
+                // 边缘光学折射（RGB 色散）- 仅在快速滚动时
+                if (isScrolling && Math.abs(velocity) > 1.5) {
+                    const chromaticIntensity = Math.min(Math.abs(velocity) * 0.1, 2);
+                    nutrientsCard.style.filter = `
+                        drop-shadow(${chromaticIntensity}px 0 0 rgba(139, 157, 131, 0.2))
+                        drop-shadow(-${chromaticIntensity * 0.8}px 0 0 rgba(156, 175, 136, 0.15))
+                    `;
+                } else {
+                    nutrientsCard.style.filter = '';
+                }
+                
+                // 更新 backdrop-filter
+                nutrientsCard.style.backdropFilter = `blur(${blurIntensity}px) saturate(1.15)`;
+                nutrientsCard.style.webkitBackdropFilter = `blur(${blurIntensity}px) saturate(1.15)`;
+                
+                // 更新阴影
+                nutrientsCard.style.boxShadow = `
+                    0 ${shadowSpread}px ${shadowSpread * 1.5}px rgba(139, 157, 131, ${shadowIntensity}),
+                    0 2px 8px rgba(0, 0, 0, 0.06),
+                    inset 0 1px 0 0 rgba(255, 255, 255, 0.7)
+                `;
+                
+                // 顶部边缘波动（仅在滚动时）
+                if (isScrolling && Math.abs(velocity) > 0.8) {
+                    const waveIntensity = Math.min(Math.abs(velocity) * 0.3, 4);
+                    const time = Date.now() * 0.001;
+                    
+                    nutrientsCard.style.clipPath = `polygon(
+                        0 ${waveIntensity * (0.8 + Math.sin(time * 3) * 0.2)}px,
+                        20% ${waveIntensity * (0.4 + Math.sin(time * 3.5) * 0.2)}px,
+                        40% ${waveIntensity * (0.7 + Math.sin(time * 4) * 0.2)}px,
+                        60% ${waveIntensity * (0.5 + Math.sin(time * 3.2) * 0.2)}px,
+                        80% ${waveIntensity * (0.6 + Math.sin(time * 3.8) * 0.2)}px,
+                        100% ${waveIntensity * (0.9 + Math.sin(time * 3.3) * 0.2)}px,
+                        100% 100%,
+                        0 100%
+                    )`;
+                } else {
+                    nutrientsCard.style.clipPath = 'none';
+                }
+            }
+
+            // 平滑恢复到静止状态
+            function smoothResetEffects() {
+                // 恢复营养摄入卡片
+                intakeCard.style.transition = 'transform 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 0.6s ease-out, filter 0.5s ease-out';
+                
+                // 清除营养素卡片的色散效果
+                setTimeout(function() {
+                    nutrientsCard.style.filter = '';
+                    nutrientsCard.style.transition = 'filter 0.3s ease-out';
+                }, 80);
+                
+                // 清除边缘波动
+                setTimeout(function() {
+                    nutrientsCard.style.clipPath = 'none';
+                }, 120);
+            }
+
+            // 移动端触摸惯性滚动
+            let touchStartY = 0;
+            let touchVelocity = 0;
+            let lastTouchY = 0;
+            let lastTouchTime = 0;
+            let touchMoveHistory = [];
+
+            nutrientsCard.addEventListener('touchstart', function(e) {
+                touchStartY = e.touches[0].clientY;
+                lastTouchY = touchStartY;
+                lastTouchTime = Date.now();
+                touchVelocity = 0;
+                touchMoveHistory = [];
+            }, { passive: true });
+
+            nutrientsCard.addEventListener('touchmove', function(e) {
+                const currentY = e.touches[0].clientY;
+                const currentTime = Date.now();
+                const deltaY = currentY - lastTouchY;
+                const deltaTime = currentTime - lastTouchTime;
+                
+                if (deltaTime > 0) {
+                    touchVelocity = deltaY / deltaTime;
+                    touchMoveHistory.push({ velocity: touchVelocity, time: currentTime });
+                    if (touchMoveHistory.length > 5) {
+                        touchMoveHistory.shift();
+                    }
+                }
+                
+                lastTouchY = currentY;
+                lastTouchTime = currentTime;
+            }, { passive: true });
+
+            nutrientsCard.addEventListener('touchend', function() {
+                if (touchMoveHistory.length > 0) {
+                    const avgVelocity = touchMoveHistory.reduce((sum, item) => sum + item.velocity, 0) / touchMoveHistory.length;
+                    touchVelocity = avgVelocity;
+                }
+                
+                if (Math.abs(touchVelocity) > 0.3) {
+                    applyInertiaScroll(touchVelocity);
+                }
+            }, { passive: true });
+
+            function applyInertiaScroll(velocity) {
+                let currentVelocity = velocity * 50;
+                
+                function animate() {
+                    if (Math.abs(currentVelocity) < 0.1) return;
+                    currentVelocity *= physics.friction;
+                    window.scrollBy(0, -currentVelocity);
+                    requestAnimationFrame(animate);
+                }
+                
+                animate();
+            }
+        }
+
+        // 底部导航点击跳转
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                const target = this.getAttribute('data-target');
+                
+                // 获取目标URL
+                let targetUrl = '';
+                switch(target) {
+                    case 'index':
+                        targetUrl = "/";
+                        break;
+                    case 'orders':
+                        targetUrl = "/orders/";
+                        break;
+                    case 'repo':
+                        targetUrl = "/repo/";
+                        break;
+                    case 'ai-assistant':
+                        targetUrl = "/ai_health_advisor/";
+                        break;
+                }
+                
+                if (!targetUrl) return;
+                
+                // 添加页面淡出动画
+                const pageContainer = document.body;
+                
+                // 监听动画结束事件
+                const handleAnimationEnd = (event) => {
+                    if (event.animationName === 'pageTransitionOut') {
+                        pageContainer.removeEventListener('animationend', handleAnimationEnd);
+                        window.location.href = targetUrl;
+                    }
+                };
+                
+                pageContainer.addEventListener('animationend', handleAnimationEnd);
+                
+                // 添加动画
+                pageContainer.style.animation = 'pageTransitionOut 0.35s ease-out forwards';
+                
+                // 安全保护:如果1.5秒内动画未触发,强制跳转
+                setTimeout(() => {
+                    pageContainer.removeEventListener('animationend', handleAnimationEnd);
+                    window.location.href = targetUrl;
+                }, 1500);
+            });
+        });
+
+        // 顶部个人按钮点击跳转
+        document.getElementById('profileBtn').addEventListener('click', function() {
+            window.location.href = '/profile/';
+        });
+    </script>
+</body>
+</html>

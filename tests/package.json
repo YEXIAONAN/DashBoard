@@ -1,0 +1,19 @@
+{
+  "name": "dashboard-frontend-tests",
+  "version": "1.0.0",
+  "description": "Property-based tests for DashBoard frontend UI optimization",
+  "type": "commonjs",
+  "scripts": {
+    "test": "node frontend/test_form_validation_property.js",
+    "test:unit": "node frontend/test_form_validation_unit.js",
+    "test:roundtrip": "node frontend/test_form_validation_roundtrip.js",
+    "test:all": "npm run test:unit && npm run test && npm run test:roundtrip",
+    "validate:lazy-loading": "node frontend/test_lazy_loading_integration.js"
+  },
+  "keywords": ["testing", "property-based-testing", "form-validation"],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "fast-check": "^3.15.0"
+  }
+}

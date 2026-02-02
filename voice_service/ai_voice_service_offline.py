@@ -38,7 +38,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 # ==================== 配置常量 ====================
-OLLAMA_HOST = "http://172.16.4.181:11434"
+OLLAMA_HOST = "http://10.0.0.10:11434"
 OLLAMA_MODEL = "qwen2.5:7b"
 SERVICE_PORT = 8001
 

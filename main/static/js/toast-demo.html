@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Toast Notification Demo</title>
+  
+  <!-- Design System CSS -->
+  <link rel="stylesheet" href="../css/design-system.css">
+  <link rel="stylesheet" href="../css/reset.css">
+  <link rel="stylesheet" href="../css/base-components.css">
+  <link rel="stylesheet" href="../css/components.css">
+  
+  <style>
+    body {
+      padding: 2rem;
+      font-family: var(--font-primary);
+    }
+    
+    .demo-container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    
+    .demo-section {
+      margin-bottom: 2rem;
+      padding: 1.5rem;
+      background-color: var(--color-surface);
+      border-radius: var(--radius-lg);
+    }
+    
+    .demo-section h2 {
+      margin-top: 0;
+      color: var(--color-text-primary);
+    }
+    
+    .demo-buttons {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    
+    .demo-info {
+      margin-top: 1rem;
+      padding: 1rem;
+      background-color: var(--color-background);
+      border-radius: var(--radius-base);
+      border-left: 4px solid var(--color-info);
+    }
+    
+    .demo-info p {
+      margin: 0.5rem 0;
+      font-size: var(--font-size-sm);
+      color: var(--color-text-secondary);
+    }
+  </style>
+</head>
+<body>
+  <div class="demo-container">
+    <h1>Toast Notification Demo</h1>
+    <p>Test the toast notification system with different types and configurations.</p>
+    
+    <!-- Basic Toast Types -->
+    <div class="demo-section">
+      <h2>Basic Toast Types</h2>
+      <div class="demo-buttons">
+        <button class="btn btn--success btn--md" onclick="showSuccessToast()">
+          Show Success Toast
+        </button>
+        <button class="btn btn--danger btn--md" onclick="showErrorToast()">
+          Show Error Toast
+        </button>
+        <button class="btn btn--secondary btn--md" onclick="showWarningToast()">
+          Show Warning Toast
+        </button>
+        <button class="btn btn--primary btn--md" onclick="showInfoToast()">
+          Show Info Toast
+        </button>
+      </div>
+      <div class="demo-info">
+        <p><strong>Default Duration:</strong> 5 seconds</p>
+        <p><strong>Position:</strong> Top-right corner</p>
+      </div>
+    </div>
+    
+    <!-- Custom Duration -->
+    <div class="demo-section">
+      <h2>Custom Duration</h2>
+      <div class="demo-buttons">
+        <button class="btn btn--primary btn--md" onclick="showShortToast()">
+          Short (2s)
+        </button>
+        <button class="btn btn--primary btn--md" onclick="showLongToast()">
+          Long (10s)
+        </button>
+        <button class="btn btn--primary btn--md" onclick="showPersistentToast()">
+          Persistent (No auto-dismiss)
+        </button>
+      </div>
+      <div class="demo-info">
+        <p><strong>Note:</strong> Persistent toasts must be manually dismissed by clicking the close button.</p>
+      </div>
+    </div>
+    
+    <!-- Multiple Toasts -->
+    <div class="demo-section">
+      <h2>Multiple Toasts</h2>
+      <div class="demo-buttons">
+        <button class="btn btn--primary btn--md" onclick="showMultipleToasts()">
+          Show 3 Toasts
+        </button>
+        <button class="btn btn--danger btn--md" onclick="dismissAllToasts()">
+          Dismiss All
+        </button>
+      </div>
+      <div class="demo-info">
+        <p><strong>Max Toasts:</strong> 5 (oldest will be removed when limit is reached)</p>
+      </div>
+    </div>
+    
+    <!-- Long Messages -->
+    <div class="demo-section">
+      <h2>Long Messages</h2>
+      <div class="demo-buttons">
+        <button class="btn btn--primary btn--md" onclick="showLongMessageToast()">
+          Show Long Message
+        </button>
+      </div>
+      <div class="demo-info">
+        <p><strong>Note:</strong> Long messages will wrap within the toast container.</p>
+      </div>
+    </div>
+    
+    <!-- Accessibility Test -->
+    <div class="demo-section">
+      <h2>Accessibility Features</h2>
+      <div class="demo-buttons">
+        <button class="btn btn--primary btn--md" onclick="testKeyboardAccess()">
+          Test Keyboard Navigation
+        </button>
+      </div>
+      <div class="demo-info">
+        <p><strong>Screen Reader:</strong> Toasts are announced via ARIA live regions</p>
+        <p><strong>Keyboard:</strong> Close button is keyboard accessible (Tab + Enter/Space)</p>
+        <p><strong>Focus:</strong> Visible focus indicators on close button</p>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Toast JavaScript -->
+  <script src="toast.js"></script>
+  
+  <script>
+    // Basic toast functions
+    function showSuccessToast() {
+      window.toast.show('Order submitted successfully!', 'success');
+    }
+    
+    function showErrorToast() {
+      window.toast.show('Failed to submit order. Please try again.', 'error');
+    }
+    
+    function showWarningToast() {
+      window.toast.show('Your session will expire in 5 minutes.', 'warning');
+    }
+    
+    function showInfoToast() {
+      window.toast.show('New dishes have been added to the menu.', 'info');
+    }
+    
+    // Custom duration
+    function showShortToast() {
+      window.toast.show('This toast will disappear quickly!', 'info', 2000);
+    }
+    
+    function showLongToast() {
+      window.toast.show('This toast will stay for 10 seconds.', 'info', 10000);
+    }
+    
+    function showPersistentToast() {
+      window.toast.show('This toast will not auto-dismiss. Click the X to close.', 'warning', 0);
+    }
+    
+    // Multiple toasts
+    function showMultipleToasts() {
+      window.toast.show('First notification', 'success', 8000);
+      setTimeout(() => {
+        window.toast.show('Second notification', 'info', 8000);
+      }, 500);
+      setTimeout(() => {
+        window.toast.show('Third notification', 'warning', 8000);
+      }, 1000);
+    }
+    
+    function dismissAllToasts() {
+      window.toast.dismissAll();
+    }
+    
+    // Long message
+    function showLongMessageToast() {
+      window.toast.show(
+        'This is a very long message that demonstrates how the toast notification handles text wrapping. The message should wrap nicely within the toast container without breaking the layout.',
+        'info',
+        10000
+      );
+    }
+    
+    // Accessibility test
+    function testKeyboardAccess() {
+      const toast = window.toast.show(
+        'Try pressing Tab to focus the close button, then press Enter or Space to dismiss.',
+        'info',
+        0
+      );
+      
+      // Focus the close button after a short delay
+      setTimeout(() => {
+        const closeButton = toast.querySelector('.toast__close');
+        if (closeButton) {
+          closeButton.focus();
+        }
+      }, 500);
+    }
+    
+    // Show welcome toast on page load
+    window.addEventListener('DOMContentLoaded', () => {
+      setTimeout(() => {
+        window.toast.show('Welcome to the Toast Notification Demo!', 'success', 3000);
+      }, 500);
+    });
+  </script>
+</body>
+</html>

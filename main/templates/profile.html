@@ -6,6 +6,8 @@
     <title>智慧餐饮 - 个人中心</title>
     <link rel="stylesheet" href="../static/css/all.min.css">
     <link rel="stylesheet" href="../static/css/modern-theme.css">
+    <link rel="stylesheet" href="../static/css/components.css">
+    <script src="../static/js/toast.js"></script>
     <style>
         /* ========== 页面转场动画 ========== */
         @keyframes pageTransitionOut {
@@ -798,7 +800,7 @@
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('订单提交时发生网络错误，请稍后重试。');
+                Toast.show('订单提交时发生网络错误，请稍后重试。', 'error');
             })
             });
         });

@@ -6,6 +6,8 @@
     <title>智慧餐饮 - 登录</title>
     <link rel="stylesheet" href="../static/css/all.min.css">
     <link rel="stylesheet" href="../static/css/modern-theme.css">
+    <link rel="stylesheet" href="../static/css/components.css">
+    <script src="../static/js/toast.js"></script>
     <style>
         :root {
             --theme-primary: #7A8B6E;
@@ -510,13 +512,13 @@
                             document.getElementById('password-error').textContent = data.message;
                             document.getElementById('password-error').style.display = 'block';
                         } else {
-                            alert(data.message);
+                            Toast.show(data.message, 'error');
                         }
                     }
                 })
                 .catch(error => {
                     console.error('登录错误:', error);
-                    alert(error.message || '登录失败，请稍后再试');
+                    Toast.show(error.message || '登录失败，请稍后再试', 'error');
                 })
                 .finally(() => {
                     submitBtn.disabled = false;

@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Design System Test - DashBoard</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/reset.css' %}">
+    <link rel="stylesheet" href="{% static 'css/design-system.css' %}">
+    <style>
+        /* Test styles to verify design tokens */
+        .test-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: var(--spacing-8);
+        }
+        
+        .test-section {
+            background: var(--color-background);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-6);
+            margin-bottom: var(--spacing-6);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .test-heading {
+            color: var(--color-primary);
+            font-size: var(--font-size-2xl);
+            font-weight: var(--font-weight-bold);
+            margin-bottom: var(--spacing-4);
+        }
+        
+        .color-swatch {
+            display: inline-block;
+            width: 100px;
+            height: 100px;
+            border-radius: var(--radius-base);
+            margin: var(--spacing-2);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .spacing-box {
+            background: var(--color-primary-pale);
+            border: 2px solid var(--color-primary);
+            display: inline-block;
+            margin: var(--spacing-2);
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1 style="color: var(--color-primary); text-align: center; margin-bottom: var(--spacing-8);">
+            Design System Test Page
+        </h1>
+        
+        <!-- Colors Test -->
+        <div class="test-section">
+            <h2 class="test-heading">Color Palette</h2>
+            <div>
+                <div class="color-swatch" style="background: var(--color-primary);" title="Primary"></div>
+                <div class="color-swatch" style="background: var(--color-primary-light);" title="Primary Light"></div>
+                <div class="color-swatch" style="background: var(--color-primary-dark);" title="Primary Dark"></div>
+                <div class="color-swatch" style="background: var(--color-accent);" title="Accent"></div>
+                <div class="color-swatch" style="background: var(--color-success);" title="Success"></div>
+                <div class="color-swatch" style="background: var(--color-error);" title="Error"></div>
+                <div class="color-swatch" style="background: var(--color-warning);" title="Warning"></div>
+            </div>
+        </div>
+        
+        <!-- Typography Test -->
+        <div class="test-section">
+            <h2 class="test-heading">Typography Scale</h2>
+            <h1>Heading 1 (32px)</h1>
+            <h2>Heading 2 (24px)</h2>
+            <h3>Heading 3 (20px)</h3>
+            <h4>Heading 4 (18px)</h4>
+            <h5>Heading 5 (16px)</h5>
+            <h6>Heading 6 (14px)</h6>
+            <p style="font-size: var(--font-size-base);">Body text (16px) - The quick brown fox jumps over the lazy dog.</p>
+            <p style="font-size: var(--font-size-sm); color: var(--color-text-secondary);">Small text (14px) - Secondary information</p>
+        </div>
+        
+        <!-- Spacing Test -->
+        <div class="test-section">
+            <h2 class="test-heading">Spacing System (8px grid)</h2>
+            <div>
+                <div class="spacing-box" style="padding: var(--spacing-2);">8px</div>
+                <div class="spacing-box" style="padding: var(--spacing-4);">16px</div>
+                <div class="spacing-box" style="padding: var(--spacing-6);">24px</div>
+                <div class="spacing-box" style="padding: var(--spacing-8);">32px</div>
+            </div>
+        </div>
+        
+        <!-- Shadow Test -->
+        <div class="test-section">
+            <h2 class="test-heading">Shadow Depths</h2>
+            <div style="display: flex; gap: var(--spacing-4); flex-wrap: wrap;">
+                <div style="width: 150px; height: 100px; background: white; box-shadow: var(--shadow-sm); border-radius: var(--radius-base); display: flex; align-items: center; justify-content: center;">SM</div>
+                <div style="width: 150px; height: 100px; background: white; box-shadow: var(--shadow-base); border-radius: var(--radius-base); display: flex; align-items: center; justify-content: center;">BASE</div>
+                <div style="width: 150px; height: 100px; background: white; box-shadow: var(--shadow-md); border-radius: var(--radius-base); display: flex; align-items: center; justify-content: center;">MD</div>
+                <div style="width: 150px; height: 100px; background: white; box-shadow: var(--shadow-lg); border-radius: var(--radius-base); display: flex; align-items: center; justify-content: center;">LG</div>
+                <div style="width: 150px; height: 100px; background: white; box-shadow: var(--shadow-xl); border-radius: var(--radius-base); display: flex; align-items: center; justify-content: center;">XL</div>
+            </div>
+        </div>
+        
+        <!-- Border Radius Test -->
+        <div class="test-section">
+            <h2 class="test-heading">Border Radius</h2>
+            <div style="display: flex; gap: var(--spacing-4); flex-wrap: wrap;">
+                <div style="width: 100px; height: 100px; background: var(--color-primary); border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; color: white;">SM</div>
+                <div style="width: 100px; height: 100px; background: var(--color-primary); border-radius: var(--radius-base); display: flex; align-items: center; justify-content: center; color: white;">BASE</div>
+                <div style="width: 100px; height: 100px; background: var(--color-primary); border-radius: var(--radius-lg); display: flex; align-items: center; justify-content: center; color: white;">LG</div>
+                <div style="width: 100px; height: 100px; background: var(--color-primary); border-radius: var(--radius-xl); display: flex; align-items: center; justify-content: center; color: white;">XL</div>
+                <div style="width: 100px; height: 100px; background: var(--color-primary); border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; color: white;">FULL</div>
+            </div>
+        </div>
+        
+        <div style="text-align: center; margin-top: var(--spacing-12); color: var(--color-text-secondary);">
+            <p>✓ Design System Foundation Successfully Loaded</p>
+            <p style="font-size: var(--font-size-sm);">All CSS custom properties are working correctly</p>
+        </div>
+    </div>
+</body>
+</html>
