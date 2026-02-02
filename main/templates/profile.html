@@ -7,6 +7,18 @@
     <link rel="stylesheet" href="../static/css/all.min.css">
     <link rel="stylesheet" href="../static/css/modern-theme.css">
     <style>
+        /* ========== 页面转场动画 ========== */
+        @keyframes pageTransitionOut {
+            from {
+                opacity: 1;
+                transform: scale(1);
+            }
+            to {
+                opacity: 0;
+                transform: scale(0.98);
+            }
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -859,32 +871,55 @@
                 item.addEventListener('click', function(e) {
                     e.preventDefault();
                     
+                    const target = this.getAttribute('data-target');
+                    
+                    // 获取目标URL
+                    let targetUrl = '';
+                    switch(target) {
+                        case 'index':
+                            targetUrl = "/";
+                            break;
+                        case 'orders':
+                            targetUrl = "/orders/";
+                            break;
+                        case 'repo':
+                            targetUrl = "/repo/";
+                            break;
+                        case 'ai-assistant':
+                            targetUrl = "/ai_health_advisor/";
+                            break;
+                    }
+                    
+                    if (!targetUrl) return;
+                    
+                    // 更新选中状态
                     navItems.forEach(i => i.classList.remove('active'));
                     this.classList.add('active');
                     
+                    // 移动指示器
                     updateIndicator(this);
                     
-                    const target = this.getAttribute('data-target');
-                    setTimeout(() => {
-                        let targetUrl = '';
-                        switch(target) {
-                            case 'index':
-                                targetUrl = "/";
-                                break;
-                            case 'orders':
-                                targetUrl = "/orders/";
-                                break;
-                            case 'repo':
-                                targetUrl = "/repo/";
-                                break;
-                            case 'ai-assistant':
-                                targetUrl = "/ai_health_advisor/";
-                                break;
-                        }
-                        if (targetUrl) {
+                    // 添加页面淡出动画
+                    const pageContainer = document.body;
+                    
+                    // 监听动画结束事件
+                    const handleAnimationEnd = (event) => {
+                        if (event.animationName === 'pageTransitionOut') {
+                            pageContainer.removeEventListener('animationend', handleAnimationEnd);
                             window.location.href = targetUrl;
                         }
-                    }, 400);
+                    };
+                    
+                    pageContainer.addEventListener('animationend', handleAnimationEnd);
+                    
+                    // 添加动画
+                    pageContainer.style.animation = 'pageTransitionOut 0.35s ease-out forwards';
+                    
+                    // 安全保护:如果1.5秒内动画未触发,强制跳转
+                    setTimeout(() => {
+                        pageContainer.removeEventListener('animationend', handleAnimationEnd);
+                        window.location.href = targetUrl;
+                    }, 1500);
                 });
             });
             
@@ -899,8 +934,12 @@
 
         // 底部导航点击跳转（保留旧代码以防兼容性问题）
         document.querySelectorAll('.nav-item').forEach(item => {
-            item.addEventListener('click', function() {
+            item.addEventListener('click', function(e) {
+                e.preventDefault();
+                
                 const target = this.getAttribute('data-target');
+                
+                // 获取目标URL
                 let targetUrl = '';
                 switch(target) {
                     case 'index':
@@ -916,9 +955,30 @@
                         targetUrl = "/ai_health_advisor/";
                         break;
                 }
-                if (targetUrl) {
+                
+                if (!targetUrl) return;
+                
+                // 添加页面淡出动画
+                const pageContainer = document.body;
+                
+                // 监听动画结束事件
+                const handleAnimationEnd = (event) => {
+                    if (event.animationName === 'pageTransitionOut') {
+                        pageContainer.removeEventListener('animationend', handleAnimationEnd);
+                        window.location.href = targetUrl;
+                    }
+                };
+                
+                pageContainer.addEventListener('animationend', handleAnimationEnd);
+                
+                // 添加动画
+                pageContainer.style.animation = 'pageTransitionOut 0.35s ease-out forwards';
+                
+                // 安全保护:如果1.5秒内动画未触发,强制跳转
+                setTimeout(() => {
+                    pageContainer.removeEventListener('animationend', handleAnimationEnd);
                     window.location.href = targetUrl;
-                }
+                }, 1500);
             });
         });
     </script>
