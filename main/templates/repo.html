@@ -2587,8 +2587,8 @@
             console.error("AI 元素未找到");
         } else {
             // 定义请求的 URL 和 API Key
-            const OPENAI_API_URL = 'http://172.16.4.181:3099/v1/chat/completions';
-            const OPENAI_API_KEY = 'http://172.16.4.181:180/v1|app-bzBAseue8wuzdhSCG8O05fkI|Chat'; // 用户提供的API Key
+            const OPENAI_API_URL = 'http://10.0.0.10:3099/v1/chat/completions';
+            const OPENAI_API_KEY = 'http://10.0.0.10:180/v1|app-bzBAseue8wuzdhSCG8O05fkI|Chat'; // 用户提供的API Key
 
             // app-bzBAseue8wuzdhSCG8O05fkI
 
@@ -2604,7 +2604,7 @@
 
                 try {
                     // 先获取营养数据作为系统提示词
-                    const nutritionResponse = await fetch(`http://172.16.4.181:8120/nutrition_by_name?user_name={{user_name_only}}`);
+                    const nutritionResponse = await fetch(`http://10.0.0.10:8120/nutrition_by_name?user_name={{user_name_only}}`);
                     
                     if (!nutritionResponse.ok) {
                         throw new Error(`获取营养数据失败: ${nutritionResponse.status}`);
