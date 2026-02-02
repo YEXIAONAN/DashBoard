@@ -1,0 +1,160 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Button Component Test - DashBoard{% endblock %}
+
+{% block content %}
+<div style="max-width: 1200px; margin: 0 auto; padding: var(--spacing-8);">
+    <h1>Button Component Test</h1>
+    <p style="color: var(--color-text-secondary); margin-bottom: var(--spacing-8);">
+        Testing button component styles with all variants, sizes, and states.
+    </p>
+    
+    <!-- Button Variants -->
+    <section style="margin-bottom: var(--spacing-8);">
+        <h2>Button Variants</h2>
+        <div class="btn-group" style="margin-top: var(--spacing-4);">
+            <button class="btn btn--primary btn--md">Primary Button</button>
+            <button class="btn btn--secondary btn--md">Secondary Button</button>
+            <button class="btn btn--tertiary btn--md">Tertiary Button</button>
+            <button class="btn btn--danger btn--md">Danger Button</button>
+            <button class="btn btn--success btn--md">Success Button</button>
+        </div>
+    </section>
+    
+    <!-- Button Sizes -->
+    <section style="margin-bottom: var(--spacing-8);">
+        <h2>Button Sizes</h2>
+        <div class="btn-group" style="margin-top: var(--spacing-4);">
+            <button class="btn btn--primary btn--sm">Small Button</button>
+            <button class="btn btn--primary btn--md">Medium Button</button>
+            <button class="btn btn--primary btn--lg">Large Button</button>
+        </div>
+    </section>
+    
+    <!-- Button States -->
+    <section style="margin-bottom: var(--spacing-8);">
+        <h2>Button States</h2>
+        <div class="btn-group" style="margin-top: var(--spacing-4);">
+            <button class="btn btn--primary btn--md">Normal State</button>
+            <button class="btn btn--primary btn--md" disabled>Disabled State</button>
+            <button class="btn btn--primary btn--md is-loading">Loading State</button>
+        </div>
+    </section>
+    
+    <!-- Buttons with Icons -->
+    <section style="margin-bottom: var(--spacing-8);">
+        <h2>Buttons with Icons</h2>
+        <div class="btn-group" style="margin-top: var(--spacing-4);">
+            <button class="btn btn--primary btn--md">
+                <i class="fas fa-shopping-cart btn__icon"></i>
+                <span class="btn__text">Add to Cart</span>
+            </button>
+            <button class="btn btn--secondary btn--md">
+                <i class="fas fa-heart btn__icon"></i>
+                <span class="btn__text">Favorite</span>
+            </button>
+            <button class="btn btn--success btn--md">
+                <span class="btn__text">Submit Order</span>
+                <i class="fas fa-arrow-right btn__icon"></i>
+            </button>
+        </div>
+    </section>
+    
+    <!-- Icon-only Buttons -->
+    <section style="margin-bottom: var(--spacing-8);">
+        <h2>Icon-only Buttons</h2>
+        <div class="btn-group" style="margin-top: var(--spacing-4);">
+            <button class="btn btn--primary btn--icon btn--sm" aria-label="Edit">
+                <i class="fas fa-edit"></i>
+            </button>
+            <button class="btn btn--primary btn--icon btn--md" aria-label="Delete">
+                <i class="fas fa-trash"></i>
+            </button>
+            <button class="btn btn--primary btn--icon btn--lg" aria-label="Settings">
+                <i class="fas fa-cog"></i>
+            </button>
+        </div>
+    </section>
+    
+    <!-- Full Width Button -->
+    <section style="margin-bottom: var(--spacing-8);">
+        <h2>Full Width Button</h2>
+        <button class="btn btn--primary btn--md btn--full" style="margin-top: var(--spacing-4);">
+            Full Width Button
+        </button>
+    </section>
+    
+    <!-- Button Groups -->
+    <section style="margin-bottom: var(--spacing-8);">
+        <h2>Button Groups</h2>
+        <div style="margin-top: var(--spacing-4);">
+            <h3 style="font-size: var(--font-size-base); margin-bottom: var(--spacing-3);">Spaced Group</h3>
+            <div class="btn-group">
+                <button class="btn btn--secondary btn--md">Left</button>
+                <button class="btn btn--secondary btn--md">Center</button>
+                <button class="btn btn--secondary btn--md">Right</button>
+            </div>
+        </div>
+        
+        <div style="margin-top: var(--spacing-6);">
+            <h3 style="font-size: var(--font-size-base); margin-bottom: var(--spacing-3);">Attached Group</h3>
+            <div class="btn-group btn-group--attached">
+                <button class="btn btn--secondary btn--md">Left</button>
+                <button class="btn btn--secondary btn--md">Center</button>
+                <button class="btn btn--secondary btn--md">Right</button>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Keyboard Focus Test -->
+    <section style="margin-bottom: var(--spacing-8);">
+        <h2>Keyboard Focus Test</h2>
+        <p style="color: var(--color-text-secondary); margin-bottom: var(--spacing-4);">
+            Press Tab to navigate through buttons and verify visible focus indicators.
+        </p>
+        <div class="btn-group" style="margin-top: var(--spacing-4);">
+            <button class="btn btn--primary btn--md">Button 1</button>
+            <button class="btn btn--secondary btn--md">Button 2</button>
+            <button class="btn btn--tertiary btn--md">Button 3</button>
+        </div>
+    </section>
+    
+    <!-- Interactive Test -->
+    <section style="margin-bottom: var(--spacing-8);">
+        <h2>Interactive Test</h2>
+        <p style="color: var(--color-text-secondary); margin-bottom: var(--spacing-4);">
+            Click the button to test hover and active states.
+        </p>
+        <button class="btn btn--primary btn--lg" id="test-button" style="margin-top: var(--spacing-4);">
+            Click Me!
+        </button>
+        <p id="click-count" style="margin-top: var(--spacing-4); font-weight: var(--font-weight-semibold);">
+            Clicks: 0
+        </p>
+    </section>
+</div>
+
+<script>
+    // Interactive test
+    let clickCount = 0;
+    const testButton = document.getElementById('test-button');
+    const clickCountDisplay = document.getElementById('click-count');
+    
+    if (testButton && clickCountDisplay) {
+        testButton.addEventListener('click', function() {
+            clickCount++;
+            clickCountDisplay.textContent = 'Clicks: ' + clickCount;
+            
+            // Simulate loading state
+            this.classList.add('is-loading');
+            this.disabled = true;
+            
+            setTimeout(() => {
+                this.classList.remove('is-loading');
+                this.disabled = false;
+            }, 1000);
+        });
+    }
+</script>
+{% endblock %}

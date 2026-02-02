@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Form Validation Test</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/design-system.css' %}">
+    <link rel="stylesheet" href="{% static 'css/components.css' %}">
+    <style>
+        body {
+            font-family: var(--font-primary, 'Roboto', sans-serif);
+            max-width: 600px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background-color: var(--color-surface, #f9fafb);
+        }
+        
+        .test-container {
+            background-color: var(--color-background, white);
+            padding: 2rem;
+            border-radius: var(--radius-lg, 1rem);
+            box-shadow: var(--shadow-base, 0 1px 3px rgba(0,0,0,0.1));
+        }
+        
+        h1 {
+            color: var(--color-text-primary, #111827);
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-field {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-field__label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--color-text-primary, #111827);
+            margin-bottom: 0.5rem;
+        }
+        
+        .form-field__input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            font-size: 1rem;
+            color: var(--color-text-primary, #111827);
+            background-color: var(--color-background, white);
+            border: 1px solid var(--color-border, #e5e7eb);
+            border-radius: var(--radius-base, 0.5rem);
+            transition: all 150ms ease-in-out;
+        }
+        
+        .form-field__input:focus {
+            outline: none;
+            border-color: var(--color-primary, #10b981);
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+        }
+        
+        .form-field__input.is-invalid {
+            border-color: var(--color-error, #ef4444);
+        }
+        
+        .form-field__input.is-valid {
+            border-color: var(--color-success, #10b981);
+        }
+        
+        .form-field__error {
+            display: none;
+            font-size: 0.875rem;
+            color: var(--color-error, #ef4444);
+            margin-top: 0.5rem;
+        }
+        
+        .form-field__input.is-invalid ~ .form-field__error {
+            display: block;
+        }
+        
+        .form-field__helper {
+            display: block;
+            font-size: 0.75rem;
+            color: var(--color-text-secondary, #6b7280);
+            margin-top: 0.5rem;
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+            font-weight: 500;
+            color: white;
+            background-color: var(--color-primary, #10b981);
+            border: none;
+            border-radius: var(--radius-base, 0.5rem);
+            cursor: pointer;
+            transition: all 250ms ease-in-out;
+        }
+        
+        .btn:hover:not(:disabled) {
+            background-color: var(--color-primary-dark, #059669);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md, 0 4px 6px rgba(0,0,0,0.1));
+        }
+        
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .success-message {
+            display: none;
+            padding: 1rem;
+            margin-top: 1rem;
+            background-color: #d1fae5;
+            color: #065f46;
+            border-radius: var(--radius-base, 0.5rem);
+            border: 1px solid #10b981;
+        }
+        
+        .success-message.show {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>Form Validation Test</h1>
+        
+        <form id="testForm">
+            <div class="form-field">
+                <label class="form-field__label" for="email">Email Address *</label>
+                <input 
+                    type="email" 
+                    id="email" 
+                    name="email"
+                    class="form-field__input" 
+                    placeholder="you@example.com"
+                    aria-describedby="email-error"
+                >
+                <span class="form-field__error" id="email-error" role="alert"></span>
+                <span class="form-field__helper">We'll never share your email</span>
+            </div>
+            
+            <div class="form-field">
+                <label class="form-field__label" for="password">Password *</label>
+                <input 
+                    type="password" 
+                    id="password" 
+                    name="password"
+                    class="form-field__input" 
+                    placeholder="Enter password"
+                    aria-describedby="password-error"
+                >
+                <span class="form-field__error" id="password-error" role="alert"></span>
+                <span class="form-field__helper">Minimum 8 characters</span>
+            </div>
+            
+            <div class="form-field">
+                <label class="form-field__label" for="phone">Phone Number</label>
+                <input 
+                    type="tel" 
+                    id="phone" 
+                    name="phone"
+                    class="form-field__input" 
+                    placeholder="1234567890"
+                    aria-describedby="phone-error"
+                >
+                <span class="form-field__error" id="phone-error" role="alert"></span>
+                <span class="form-field__helper">Optional: 10-11 digits</span>
+            </div>
+            
+            <div class="form-field">
+                <label class="form-field__label" for="quantity">Quantity *</label>
+                <input 
+                    type="number" 
+                    id="quantity" 
+                    name="quantity"
+                    class="form-field__input" 
+                    placeholder="1"
+                    aria-describedby="quantity-error"
+                >
+                <span class="form-field__error" id="quantity-error" role="alert"></span>
+                <span class="form-field__helper">Between 1 and 99</span>
+            </div>
+            
+            <button type="submit" class="btn">Submit Form</button>
+        </form>
+        
+        <div id="successMessage" class="success-message">
+            Form submitted successfully! All validation passed.
+        </div>
+    </div>
+    
+    <script src="{% static 'js/form-validation.js' %}"></script>
+    <script>
+        // Initialize form validator with validation rules
+        const validationRules = {
+            email: {
+                required: true,
+                pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                message: 'Please enter a valid email address'
+            },
+            password: {
+                required: true,
+                minLength: 8,
+                message: 'Password must be at least 8 characters'
+            },
+            phone: {
+                required: false,
+                pattern: /^\d{10,11}$/,
+                message: 'Please enter a valid phone number (10-11 digits)'
+            },
+            quantity: {
+                required: true,
+                min: 1,
+                max: 99,
+                message: 'Quantity must be between 1 and 99'
+            }
+        };
+        
+        const form = document.getElementById('testForm');
+        const validator = new FormValidator(form, validationRules);
+        
+        // Set custom submit handler
+        validator.setSubmitHandler((formData) => {
+            console.log('Form submitted with data:', Object.fromEntries(formData));
+            
+            // Show success message
+            const successMessage = document.getElementById('successMessage');
+            successMessage.classList.add('show');
+            
+            // Hide success message after 3 seconds
+            setTimeout(() => {
+                successMessage.classList.remove('show');
+                form.reset();
+                validator.clearAllErrors();
+            }, 3000);
+        });
+        
+        // Initialize validation
+        validator.init();
+        
+        console.log('Form validation initialized');
+    </script>
+</body>
+</html>

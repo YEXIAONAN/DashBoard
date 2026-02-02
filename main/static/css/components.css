@@ -1,0 +1,1838 @@
+/**
+ * Reusable UI Components
+ * Styles for buttons, cards, forms, and other reusable interface elements
+ * 
+ * Uses BEM naming convention:
+ * .block { }
+ * .block__element { }
+ * .block--modifier { }
+ */
+
+/* ===== Button Component ===== */
+
+/**
+ * Base Button Styles
+ * 
+ * Usage:
+ * <button class="btn btn--primary btn--md">Submit</button>
+ * <button class="btn btn--secondary btn--sm">Cancel</button>
+ * <a href="#" class="btn btn--tertiary btn--lg">Learn More</a>
+ */
+
+.btn {
+  /* Layout */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-2);
+  
+  /* Typography */
+  font-family: var(--font-primary);
+  font-weight: var(--font-weight-medium);
+  text-decoration: none;
+  text-align: center;
+  white-space: nowrap;
+  
+  /* Visual */
+  border: none;
+  border-radius: var(--radius-base);
+  cursor: pointer;
+  
+  /* Transitions */
+  transition: all var(--transition-base);
+  
+  /* Accessibility */
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+/* Focus State - Visible keyboard focus indicator */
+.btn:focus {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.btn:focus:not(:focus-visible) {
+  outline: none;
+}
+
+.btn:focus-visible {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+}
+
+/* Disabled State */
+.btn:disabled,
+.btn.is-disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* Loading State */
+.btn.is-loading {
+  position: relative;
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+.btn.is-loading::after {
+  content: '';
+  position: absolute;
+  right: var(--spacing-3);
+  width: 16px;
+  height: 16px;
+  border: 2px solid currentColor;
+  border-top-color: transparent;
+  border-radius: var(--radius-full);
+  animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+  to { 
+    transform: rotate(360deg); 
+  }
+}
+
+/* ===== Button Variants ===== */
+
+/* Primary Button - Main actions */
+.btn--primary {
+  background-color: var(--color-primary);
+  color: var(--color-text-inverse);
+  box-shadow: var(--shadow-sm);
+}
+
+.btn--primary:hover:not(:disabled):not(.is-disabled) {
+  background-color: var(--color-primary-dark);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.btn--primary:active:not(:disabled):not(.is-disabled) {
+  background-color: var(--color-primary-dark);
+  transform: translateY(0);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Secondary Button - Alternative actions */
+.btn--secondary {
+  background-color: var(--color-surface);
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-xs);
+}
+
+.btn--secondary:hover:not(:disabled):not(.is-disabled) {
+  background-color: var(--color-surface-hover);
+  border-color: var(--color-border-dark);
+  box-shadow: var(--shadow-sm);
+}
+
+.btn--secondary:active:not(:disabled):not(.is-disabled) {
+  background-color: var(--color-border-light);
+  transform: translateY(0);
+}
+
+/* Tertiary Button - Subtle actions, links */
+.btn--tertiary {
+  background-color: transparent;
+  color: var(--color-primary);
+  border: none;
+  box-shadow: none;
+}
+
+.btn--tertiary:hover:not(:disabled):not(.is-disabled) {
+  background-color: var(--color-primary-pale);
+  color: var(--color-primary-dark);
+}
+
+.btn--tertiary:active:not(:disabled):not(.is-disabled) {
+  background-color: var(--color-primary-pale);
+  color: var(--color-primary-dark);
+}
+
+/* Danger/Destructive Button - Delete, remove actions */
+.btn--danger {
+  background-color: var(--color-error);
+  color: var(--color-text-inverse);
+  box-shadow: var(--shadow-sm);
+}
+
+.btn--danger:hover:not(:disabled):not(.is-disabled) {
+  background-color: #dc2626; /* Darker red */
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.btn--danger:active:not(:disabled):not(.is-disabled) {
+  background-color: #dc2626;
+  transform: translateY(0);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Success Button - Confirm, complete actions */
+.btn--success {
+  background-color: var(--color-success);
+  color: var(--color-text-inverse);
+  box-shadow: var(--shadow-sm);
+}
+
+.btn--success:hover:not(:disabled):not(.is-disabled) {
+  background-color: var(--color-primary-dark);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.btn--success:active:not(:disabled):not(.is-disabled) {
+  background-color: var(--color-primary-dark);
+  transform: translateY(0);
+  box-shadow: var(--shadow-sm);
+}
+
+/* ===== Button Sizes ===== */
+
+/* Small Button */
+.btn--sm {
+  padding: var(--spacing-2) var(--spacing-4);
+  font-size: var(--font-size-sm);
+  min-height: 32px;
+}
+
+/* Medium Button (Default) */
+.btn--md {
+  padding: var(--spacing-3) var(--spacing-6);
+  font-size: var(--font-size-base);
+  min-height: 40px;
+}
+
+/* Large Button */
+.btn--lg {
+  padding: var(--spacing-4) var(--spacing-8);
+  font-size: var(--font-size-lg);
+  min-height: 48px;
+}
+
+/* ===== Button Modifiers ===== */
+
+/* Full Width Button */
+.btn--full {
+  width: 100%;
+  display: flex;
+}
+
+/* Icon-only Button */
+.btn--icon {
+  padding: var(--spacing-2);
+  min-width: 40px;
+  min-height: 40px;
+}
+
+.btn--icon.btn--sm {
+  min-width: 32px;
+  min-height: 32px;
+  padding: var(--spacing-1);
+}
+
+.btn--icon.btn--lg {
+  min-width: 48px;
+  min-height: 48px;
+  padding: var(--spacing-3);
+}
+
+/* Button with Icon */
+.btn__icon {
+  display: inline-flex;
+  align-items: center;
+  font-size: 1.2em;
+}
+
+.btn__text {
+  display: inline-flex;
+  align-items: center;
+}
+
+/* ===== Button Groups ===== */
+
+.btn-group {
+  display: inline-flex;
+  gap: var(--spacing-2);
+  flex-wrap: wrap;
+}
+
+.btn-group--attached {
+  gap: 0;
+}
+
+.btn-group--attached .btn {
+  border-radius: 0;
+  margin-left: -1px;
+}
+
+.btn-group--attached .btn:first-child {
+  border-top-left-radius: var(--radius-base);
+  border-bottom-left-radius: var(--radius-base);
+  margin-left: 0;
+}
+
+.btn-group--attached .btn:last-child {
+  border-top-right-radius: var(--radius-base);
+  border-bottom-right-radius: var(--radius-base);
+}
+
+.btn-group--attached .btn:focus {
+  z-index: 1;
+  position: relative;
+}
+
+/* ===== Responsive Button Styles ===== */
+
+@media (max-width: 768px) {
+  /* Make buttons slightly smaller on mobile */
+  .btn--md {
+    padding: var(--spacing-2) var(--spacing-5);
+    font-size: var(--font-size-sm);
+    min-height: 36px;
+  }
+  
+  .btn--lg {
+    padding: var(--spacing-3) var(--spacing-6);
+    font-size: var(--font-size-base);
+    min-height: 44px;
+  }
+  
+  /* Stack button groups on mobile */
+  .btn-group {
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .btn-group .btn {
+    width: 100%;
+  }
+  
+  .btn-group--attached {
+    flex-direction: row;
+  }
+}
+
+/* ===== Accessibility: Reduced Motion ===== */
+@media (prefers-reduced-motion: reduce) {
+  .btn,
+  .btn::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  
+  .btn:hover:not(:disabled):not(.is-disabled) {
+    transform: none;
+  }
+}
+
+/* ===== Print Styles ===== */
+@media print {
+  .btn {
+    box-shadow: none !important;
+    border: 1px solid var(--color-border) !important;
+  }
+  
+  .btn--primary,
+  .btn--danger,
+  .btn--success {
+    background-color: transparent !important;
+    color: var(--color-text-primary) !important;
+  }
+}
+
+/* ===== Card Component ===== */
+
+/**
+ * Card Component
+ * 
+ * A flexible container for grouping related content with consistent styling.
+ * Used for dishes, orders, nutrition data, and other content displays.
+ * 
+ * Usage:
+ * <div class="card">
+ *   <div class="card__image">
+ *     <img src="dish.webp" alt="Dish name" loading="lazy">
+ *   </div>
+ *   <div class="card__content">
+ *     <h3 class="card__title">Dish Name</h3>
+ *     <p class="card__description">Description text</p>
+ *   </div>
+ *   <div class="card__actions">
+ *     <button class="btn btn--primary btn--sm">Add to Order</button>
+ *   </div>
+ * </div>
+ * 
+ * Requirements: 4.1, 4.2, 4.3, 4.4, 5.2
+ */
+
+.card {
+  /* Layout */
+  display: flex;
+  flex-direction: column;
+  
+  /* Visual */
+  background-color: var(--color-background);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-base);
+  overflow: hidden;
+  
+  /* Transitions */
+  transition: all var(--transition-base);
+  
+  /* Ensure proper stacking context */
+  position: relative;
+}
+
+/* Hover Effect - Elevation change (Requirement 4.3) */
+.card:hover {
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-2px);
+}
+
+/* Focus State for keyboard navigation */
+.card:focus {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.card:focus:not(:focus-visible) {
+  outline: none;
+}
+
+.card:focus-visible {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+}
+
+/* ===== Card Image Section ===== */
+
+.card__image {
+  /* Layout */
+  width: 100%;
+  aspect-ratio: 16 / 9; /* Consistent aspect ratio (Requirement 4.4) */
+  overflow: hidden;
+  
+  /* Visual */
+  background-color: var(--color-surface);
+  
+  /* Ensure proper positioning for image zoom */
+  position: relative;
+}
+
+.card__image img {
+  /* Layout */
+  width: 100%;
+  height: 100%;
+  
+  /* Visual */
+  object-fit: cover;
+  object-position: center;
+  
+  /* Transitions */
+  transition: transform var(--transition-slow);
+  
+  /* Prevent image dragging */
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+/* Image Zoom Effect on Card Hover (Requirement 5.2) */
+.card:hover .card__image img {
+  transform: scale(1.05);
+}
+
+/* Loading State for Images */
+.card__image img[loading="lazy"] {
+  background: linear-gradient(
+    90deg,
+    var(--color-surface) 0%,
+    var(--color-border-light) 50%,
+    var(--color-surface) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* ===== Card Content Section ===== */
+
+.card__content {
+  /* Layout */
+  padding: var(--spacing-4);
+  flex: 1; /* Allow content to grow and push actions to bottom */
+  
+  /* Typography */
+  color: var(--color-text-primary);
+}
+
+/* Card Title */
+.card__title {
+  /* Typography */
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  font-family: var(--font-primary);
+  color: var(--color-text-primary);
+  line-height: var(--line-height-tight);
+  
+  /* Spacing */
+  margin: 0 0 var(--spacing-2) 0;
+  
+  /* Prevent text overflow */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+/* Card Description */
+.card__description {
+  /* Typography */
+  font-size: var(--font-size-sm);
+  font-family: var(--font-primary);
+  color: var(--color-text-secondary);
+  line-height: var(--line-height-normal);
+  
+  /* Spacing */
+  margin: 0;
+  
+  /* Prevent text overflow */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+}
+
+/* Card Metadata (optional) */
+.card__meta {
+  /* Layout */
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-3);
+  flex-wrap: wrap;
+  
+  /* Typography */
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  
+  /* Spacing */
+  margin-top: var(--spacing-3);
+}
+
+.card__meta-item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-1);
+}
+
+/* ===== Card Actions Section ===== */
+
+.card__actions {
+  /* Layout */
+  padding: var(--spacing-4);
+  display: flex;
+  justify-content: flex-end; /* Position buttons consistently (Requirement 4.6) */
+  align-items: center;
+  gap: var(--spacing-2);
+  flex-wrap: wrap;
+  
+  /* Visual */
+  border-top: 1px solid var(--color-border);
+  background-color: var(--color-surface);
+}
+
+/* Center-aligned actions variant */
+.card__actions--center {
+  justify-content: center;
+}
+
+/* Space-between actions variant */
+.card__actions--between {
+  justify-content: space-between;
+}
+
+/* ===== Card Variants ===== */
+
+/* Horizontal Card Layout */
+.card--horizontal {
+  flex-direction: row;
+}
+
+.card--horizontal .card__image {
+  width: 40%;
+  aspect-ratio: 1 / 1;
+  flex-shrink: 0;
+}
+
+.card--horizontal .card__content {
+  width: 60%;
+}
+
+/* Featured Card - Highlighted styling */
+.card--featured {
+  border: 2px solid var(--color-primary);
+  box-shadow: var(--shadow-md);
+}
+
+.card--featured:hover {
+  box-shadow: var(--shadow-xl);
+  transform: translateY(-4px);
+}
+
+/* Compact Card - Reduced padding */
+.card--compact .card__content {
+  padding: var(--spacing-3);
+}
+
+.card--compact .card__actions {
+  padding: var(--spacing-3);
+}
+
+/* Borderless Card - No shadow, subtle background */
+.card--borderless {
+  box-shadow: none;
+  background-color: transparent;
+  border: 1px solid var(--color-border);
+}
+
+.card--borderless:hover {
+  box-shadow: var(--shadow-sm);
+  border-color: var(--color-border-dark);
+  transform: translateY(-1px);
+}
+
+/* Interactive Card - Clickable card */
+.card--interactive {
+  cursor: pointer;
+  user-select: none;
+}
+
+.card--interactive:active {
+  transform: translateY(0);
+  box-shadow: var(--shadow-base);
+}
+
+/* Disabled Card */
+.card--disabled {
+  opacity: 0.6;
+  pointer-events: none;
+  cursor: not-allowed;
+}
+
+/* ===== Card Badge/Label ===== */
+
+.card__badge {
+  /* Layout */
+  position: absolute;
+  top: var(--spacing-3);
+  right: var(--spacing-3);
+  z-index: 1;
+  
+  /* Visual */
+  padding: var(--spacing-1) var(--spacing-3);
+  background-color: var(--color-primary);
+  color: var(--color-text-inverse);
+  border-radius: var(--radius-base);
+  
+  /* Typography */
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  
+  /* Shadow for visibility */
+  box-shadow: var(--shadow-md);
+}
+
+.card__badge--success {
+  background-color: var(--color-success);
+}
+
+.card__badge--error {
+  background-color: var(--color-error);
+}
+
+.card__badge--warning {
+  background-color: var(--color-warning);
+}
+
+.card__badge--info {
+  background-color: var(--color-info);
+}
+
+/* ===== Card Grid Layout ===== */
+
+/**
+ * Card Grid Container
+ * 
+ * Usage:
+ * <div class="card-grid">
+ *   <div class="card">...</div>
+ *   <div class="card">...</div>
+ *   <div class="card">...</div>
+ * </div>
+ */
+
+.card-grid {
+  display: grid;
+  gap: var(--spacing-4);
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+
+/* Fixed column grids */
+.card-grid--2 {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.card-grid--3 {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.card-grid--4 {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+/* ===== Responsive Card Styles (Requirement 4.5) ===== */
+
+/* Tablet and below */
+@media (max-width: 1024px) {
+  .card-grid--4 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  /* Single column on mobile (Requirement 4.5) */
+  .card-grid,
+  .card-grid--2,
+  .card-grid--3,
+  .card-grid--4 {
+    grid-template-columns: 1fr;
+  }
+  
+  /* Horizontal cards become vertical on mobile */
+  .card--horizontal {
+    flex-direction: column;
+  }
+  
+  .card--horizontal .card__image {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+  }
+  
+  .card--horizontal .card__content {
+    width: 100%;
+  }
+  
+  /* Reduce padding on mobile */
+  .card__content {
+    padding: var(--spacing-3);
+  }
+  
+  .card__actions {
+    padding: var(--spacing-3);
+  }
+  
+  /* Stack actions on mobile if needed */
+  .card__actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .card__actions .btn {
+    width: 100%;
+  }
+  
+  /* Keep horizontal layout for actions--between */
+  .card__actions--between {
+    flex-direction: row;
+  }
+  
+  .card__actions--between .btn {
+    width: auto;
+  }
+}
+
+/* ===== Accessibility: Reduced Motion ===== */
+@media (prefers-reduced-motion: reduce) {
+  .card,
+  .card__image img {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  
+  .card:hover {
+    transform: none;
+  }
+  
+  .card:hover .card__image img {
+    transform: none;
+  }
+}
+
+/* ===== Print Styles ===== */
+@media print {
+  .card {
+    box-shadow: none !important;
+    border: 1px solid var(--color-border) !important;
+    page-break-inside: avoid;
+  }
+  
+  .card__actions {
+    display: none !important;
+  }
+  
+  .card__badge {
+    box-shadow: none !important;
+  }
+}
+/* ===== Form Field Component ===== */
+
+/**
+ * Form Field Component
+ * 
+ * A comprehensive form field component with label, input, error, and helper text.
+ * Supports various input types: text, email, password, number, tel, url, date, time, textarea, select.
+ * Includes validation states (valid, invalid) and accessibility features.
+ * 
+ * Usage:
+ * <div class="form-field">
+ *   <label class="form-field__label" for="email">Email Address</label>
+ *   <input 
+ *     type="email" 
+ *     id="email" 
+ *     name="email"
+ *     class="form-field__input" 
+ *     placeholder="you@example.com"
+ *     aria-describedby="email-error email-helper"
+ *   >
+ *   <span class="form-field__error" id="email-error" role="alert"></span>
+ *   <span class="form-field__helper" id="email-helper">We'll never share your email</span>
+ * </div>
+ * 
+ * Requirements: 6.1, 6.2, 12.4
+ */
+
+.form-field {
+  /* Layout */
+  display: flex;
+  flex-direction: column;
+  
+  /* Spacing */
+  margin-bottom: var(--spacing-4);
+  
+  /* Ensure proper stacking context */
+  position: relative;
+}
+
+/* Compact variant - reduced spacing */
+.form-field--compact {
+  margin-bottom: var(--spacing-3);
+}
+
+/* Inline variant - label and input side by side */
+.form-field--inline {
+  flex-direction: row;
+  align-items: center;
+  gap: var(--spacing-3);
+}
+
+.form-field--inline .form-field__label {
+  margin-bottom: 0;
+  flex-shrink: 0;
+  min-width: 120px;
+}
+
+/* ===== Form Field Label ===== */
+
+.form-field__label {
+  /* Layout */
+  display: block;
+  
+  /* Typography */
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  font-family: var(--font-primary);
+  color: var(--color-text-primary);
+  line-height: var(--line-height-normal);
+  
+  /* Spacing */
+  margin-bottom: var(--spacing-2);
+  
+  /* Accessibility - ensure proper label association (Requirement 12.4) */
+  cursor: pointer;
+}
+
+/* Required field indicator */
+.form-field__label--required::after {
+  content: ' *';
+  color: var(--color-error);
+  font-weight: var(--font-weight-bold);
+}
+
+/* Optional field indicator */
+.form-field__label--optional::after {
+  content: ' (optional)';
+  color: var(--color-text-secondary);
+  font-weight: var(--font-weight-normal);
+  font-size: var(--font-size-xs);
+}
+
+/* Disabled label */
+.form-field__label--disabled {
+  color: var(--color-text-disabled);
+  cursor: not-allowed;
+}
+
+/* ===== Form Field Input ===== */
+
+.form-field__input,
+.form-field__textarea,
+.form-field__select {
+  /* Layout */
+  width: 100%;
+  display: block;
+  
+  /* Typography */
+  font-size: var(--font-size-base);
+  font-family: var(--font-primary);
+  color: var(--color-text-primary);
+  line-height: var(--line-height-normal);
+  
+  /* Visual */
+  background-color: var(--color-background);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-base);
+  
+  /* Spacing */
+  padding: var(--spacing-3) var(--spacing-4);
+  
+  /* Transitions */
+  transition: all var(--transition-fast);
+  
+  /* Ensure proper box sizing */
+  box-sizing: border-box;
+}
+
+/* Placeholder styling */
+.form-field__input::placeholder,
+.form-field__textarea::placeholder {
+  color: var(--color-text-disabled);
+  opacity: 1;
+}
+
+/* Focus State - Visual indicator (Requirement 6.1) */
+.form-field__input:focus,
+.form-field__textarea:focus,
+.form-field__select:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+  background-color: var(--color-background);
+}
+
+/* Hover State */
+.form-field__input:hover:not(:disabled):not(:focus),
+.form-field__textarea:hover:not(:disabled):not(:focus),
+.form-field__select:hover:not(:disabled):not(:focus) {
+  border-color: var(--color-border-dark);
+}
+
+/* Disabled State */
+.form-field__input:disabled,
+.form-field__textarea:disabled,
+.form-field__select:disabled {
+  background-color: var(--color-surface);
+  color: var(--color-text-disabled);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* Read-only State */
+.form-field__input:read-only,
+.form-field__textarea:read-only {
+  background-color: var(--color-surface);
+  cursor: default;
+}
+
+/* ===== Validation States (Requirement 6.2) ===== */
+
+/* Invalid State - Error styling */
+.form-field__input.is-invalid,
+.form-field__textarea.is-invalid,
+.form-field__select.is-invalid {
+  border-color: var(--color-error);
+  background-color: rgba(239, 68, 68, 0.05);
+}
+
+.form-field__input.is-invalid:focus,
+.form-field__textarea.is-invalid:focus,
+.form-field__select.is-invalid:focus {
+  border-color: var(--color-error);
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+/* Valid State - Success styling */
+.form-field__input.is-valid,
+.form-field__textarea.is-valid,
+.form-field__select.is-valid {
+  border-color: var(--color-success);
+  background-color: rgba(16, 185, 129, 0.05);
+}
+
+.form-field__input.is-valid:focus,
+.form-field__textarea.is-valid:focus,
+.form-field__select.is-valid:focus {
+  border-color: var(--color-success);
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+}
+
+/* Validation Icons */
+.form-field__input.is-valid,
+.form-field__input.is-invalid {
+  padding-right: var(--spacing-10);
+  background-repeat: no-repeat;
+  background-position: right var(--spacing-3) center;
+  background-size: 20px 20px;
+}
+
+.form-field__input.is-valid {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%2310b981'%3E%3Cpath fill-rule='evenodd' d='M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z' clip-rule='evenodd'/%3E%3C/svg%3E");
+}
+
+.form-field__input.is-invalid {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%23ef4444'%3E%3Cpath fill-rule='evenodd' d='M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z' clip-rule='evenodd'/%3E%3C/svg%3E");
+}
+
+/* ===== Textarea Specific Styles ===== */
+
+.form-field__textarea {
+  /* Layout */
+  min-height: 120px;
+  resize: vertical;
+  
+  /* Typography */
+  line-height: var(--line-height-relaxed);
+}
+
+/* Prevent textarea from being resized too small */
+.form-field__textarea {
+  max-height: 400px;
+}
+
+/* Fixed height textarea variant */
+.form-field__textarea--fixed {
+  resize: none;
+}
+
+/* ===== Select Specific Styles ===== */
+
+.form-field__select {
+  /* Add dropdown arrow */
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  
+  /* Custom dropdown arrow */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%236b7280'%3E%3Cpath fill-rule='evenodd' d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z' clip-rule='evenodd'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right var(--spacing-3) center;
+  background-size: 20px 20px;
+  
+  /* Add padding for arrow */
+  padding-right: var(--spacing-10);
+  
+  /* Cursor */
+  cursor: pointer;
+}
+
+.form-field__select:disabled {
+  cursor: not-allowed;
+}
+
+/* Multiple select */
+.form-field__select[multiple] {
+  background-image: none;
+  padding-right: var(--spacing-4);
+  min-height: 120px;
+}
+
+/* ===== Error Message (Requirement 6.2) ===== */
+
+.form-field__error {
+  /* Layout */
+  display: none;
+  
+  /* Typography */
+  font-size: var(--font-size-sm);
+  font-family: var(--font-primary);
+  color: var(--color-error);
+  line-height: var(--line-height-normal);
+  
+  /* Spacing */
+  margin-top: var(--spacing-2);
+  
+  /* Icon */
+  padding-left: var(--spacing-5);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%23ef4444'%3E%3Cpath fill-rule='evenodd' d='M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z' clip-rule='evenodd'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: left center;
+  background-size: 16px 16px;
+}
+
+/* Show error when input is invalid */
+.form-field__input.is-invalid ~ .form-field__error,
+.form-field__textarea.is-invalid ~ .form-field__error,
+.form-field__select.is-invalid ~ .form-field__error {
+  display: block;
+}
+
+/* Error without icon variant */
+.form-field__error--plain {
+  padding-left: 0;
+  background-image: none;
+}
+
+/* ===== Helper Text ===== */
+
+.form-field__helper {
+  /* Layout */
+  display: block;
+  
+  /* Typography */
+  font-size: var(--font-size-xs);
+  font-family: var(--font-primary);
+  color: var(--color-text-secondary);
+  line-height: var(--line-height-normal);
+  
+  /* Spacing */
+  margin-top: var(--spacing-2);
+}
+
+/* Hide helper text when error is shown */
+.form-field__input.is-invalid ~ .form-field__helper,
+.form-field__textarea.is-invalid ~ .form-field__helper,
+.form-field__select.is-invalid ~ .form-field__helper {
+  display: none;
+}
+
+/* ===== Input Sizes ===== */
+
+/* Small Input */
+.form-field__input--sm,
+.form-field__textarea--sm,
+.form-field__select--sm {
+  padding: var(--spacing-2) var(--spacing-3);
+  font-size: var(--font-size-sm);
+}
+
+/* Large Input */
+.form-field__input--lg,
+.form-field__textarea--lg,
+.form-field__select--lg {
+  padding: var(--spacing-4) var(--spacing-5);
+  font-size: var(--font-size-lg);
+}
+
+/* ===== Input with Icon ===== */
+
+.form-field--with-icon {
+  position: relative;
+}
+
+.form-field__icon {
+  position: absolute;
+  left: var(--spacing-3);
+  top: 50%;
+  transform: translateY(-50%);
+  width: 20px;
+  height: 20px;
+  color: var(--color-text-secondary);
+  pointer-events: none;
+}
+
+.form-field--with-icon .form-field__input,
+.form-field--with-icon .form-field__select {
+  padding-left: var(--spacing-10);
+}
+
+/* Icon on the right */
+.form-field--with-icon-right .form-field__icon {
+  left: auto;
+  right: var(--spacing-3);
+}
+
+.form-field--with-icon-right .form-field__input {
+  padding-right: var(--spacing-10);
+  padding-left: var(--spacing-4);
+}
+
+/* ===== Input Group (Multiple inputs in a row) ===== */
+
+.form-field-group {
+  display: flex;
+  gap: var(--spacing-3);
+  align-items: flex-start;
+}
+
+.form-field-group .form-field {
+  flex: 1;
+}
+
+/* ===== Checkbox and Radio Styles ===== */
+
+.form-field--checkbox,
+.form-field--radio {
+  flex-direction: row;
+  align-items: center;
+  margin-bottom: var(--spacing-3);
+}
+
+.form-field__checkbox,
+.form-field__radio {
+  /* Layout */
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  
+  /* Visual */
+  border: 1px solid var(--color-border);
+  background-color: var(--color-background);
+  
+  /* Spacing */
+  margin: 0;
+  margin-right: var(--spacing-2);
+  
+  /* Cursor */
+  cursor: pointer;
+  
+  /* Transitions */
+  transition: all var(--transition-fast);
+}
+
+.form-field__checkbox {
+  border-radius: var(--radius-sm);
+}
+
+.form-field__radio {
+  border-radius: var(--radius-full);
+}
+
+/* Focus State */
+.form-field__checkbox:focus,
+.form-field__radio:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+}
+
+/* Checked State */
+.form-field__checkbox:checked,
+.form-field__radio:checked {
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+/* Disabled State */
+.form-field__checkbox:disabled,
+.form-field__radio:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.form-field--checkbox .form-field__label,
+.form-field--radio .form-field__label {
+  margin-bottom: 0;
+  font-weight: var(--font-weight-normal);
+  cursor: pointer;
+}
+
+/* ===== Number Input Specific ===== */
+
+/* Remove spinner buttons in number inputs (optional) */
+.form-field__input[type="number"].no-spinner::-webkit-inner-spin-button,
+.form-field__input[type="number"].no-spinner::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.form-field__input[type="number"].no-spinner {
+  -moz-appearance: textfield;
+}
+
+/* ===== Search Input Specific ===== */
+
+.form-field__input[type="search"] {
+  padding-left: var(--spacing-10);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%236b7280'%3E%3Cpath fill-rule='evenodd' d='M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z' clip-rule='evenodd'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: left var(--spacing-3) center;
+  background-size: 20px 20px;
+}
+
+/* Remove default search cancel button */
+.form-field__input[type="search"]::-webkit-search-cancel-button {
+  -webkit-appearance: none;
+}
+
+/* ===== File Input Specific ===== */
+
+.form-field__file {
+  /* Layout */
+  width: 100%;
+  padding: var(--spacing-3) var(--spacing-4);
+  
+  /* Visual */
+  border: 2px dashed var(--color-border);
+  border-radius: var(--radius-base);
+  background-color: var(--color-surface);
+  
+  /* Typography */
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  
+  /* Cursor */
+  cursor: pointer;
+  
+  /* Transitions */
+  transition: all var(--transition-fast);
+}
+
+.form-field__file:hover {
+  border-color: var(--color-primary);
+  background-color: rgba(16, 185, 129, 0.05);
+}
+
+.form-field__file:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+}
+
+/* ===== Responsive Form Field Styles ===== */
+
+@media (max-width: 768px) {
+  /* Stack inline forms on mobile */
+  .form-field--inline {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .form-field--inline .form-field__label {
+    margin-bottom: var(--spacing-2);
+    min-width: auto;
+  }
+  
+  /* Stack form field groups on mobile */
+  .form-field-group {
+    flex-direction: column;
+  }
+  
+  /* Reduce input padding on mobile */
+  .form-field__input,
+  .form-field__textarea,
+  .form-field__select {
+    padding: var(--spacing-2) var(--spacing-3);
+    font-size: var(--font-size-sm);
+  }
+  
+  /* Adjust large inputs on mobile */
+  .form-field__input--lg,
+  .form-field__textarea--lg,
+  .form-field__select--lg {
+    padding: var(--spacing-3) var(--spacing-4);
+    font-size: var(--font-size-base);
+  }
+}
+
+/* ===== Accessibility: Reduced Motion ===== */
+@media (prefers-reduced-motion: reduce) {
+  .form-field__input,
+  .form-field__textarea,
+  .form-field__select,
+  .form-field__checkbox,
+  .form-field__radio {
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ===== Print Styles ===== */
+@media print {
+  .form-field__input,
+  .form-field__textarea,
+  .form-field__select {
+    border: 1px solid var(--color-border) !important;
+    box-shadow: none !important;
+  }
+  
+  .form-field__error {
+    color: #000 !important;
+  }
+  
+  .form-field__helper {
+    display: none !important;
+  }
+}
+
+/* ===== Form Layout Utilities ===== */
+
+/**
+ * Form Container
+ * 
+ * Usage:
+ * <form class="form">
+ *   <div class="form-field">...</div>
+ *   <div class="form-field">...</div>
+ * </form>
+ */
+
+.form {
+  /* Layout */
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-4);
+  
+  /* Max width for better readability */
+  max-width: 600px;
+}
+
+.form--wide {
+  max-width: 100%;
+}
+
+.form--narrow {
+  max-width: 400px;
+}
+
+/* Form Section - Group related fields */
+.form-section {
+  /* Layout */
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-4);
+  
+  /* Visual */
+  padding: var(--spacing-6);
+  background-color: var(--color-surface);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
+  
+  /* Spacing */
+  margin-bottom: var(--spacing-6);
+}
+
+.form-section__title {
+  /* Typography */
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  
+  /* Spacing */
+  margin: 0 0 var(--spacing-4) 0;
+  
+  /* Visual */
+  padding-bottom: var(--spacing-3);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.form-section__description {
+  /* Typography */
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  line-height: var(--line-height-normal);
+  
+  /* Spacing */
+  margin: calc(var(--spacing-4) * -1) 0 var(--spacing-4) 0;
+}
+
+/* Form Actions - Submit/Cancel buttons */
+.form-actions {
+  /* Layout */
+  display: flex;
+  gap: var(--spacing-3);
+  align-items: center;
+  justify-content: flex-end;
+  
+  /* Spacing */
+  margin-top: var(--spacing-6);
+  padding-top: var(--spacing-6);
+  border-top: 1px solid var(--color-border);
+}
+
+.form-actions--center {
+  justify-content: center;
+}
+
+.form-actions--start {
+  justify-content: flex-start;
+}
+
+.form-actions--between {
+  justify-content: space-between;
+}
+
+@media (max-width: 768px) {
+  .form-section {
+    padding: var(--spacing-4);
+  }
+  
+  .form-actions {
+    flex-direction: column-reverse;
+    align-items: stretch;
+  }
+  
+  .form-actions .btn {
+    width: 100%;
+  }
+}
+
+/* ===== Toast Notification Component ===== */
+
+/**
+ * Toast Notification Component
+ * 
+ * Provides visual feedback for user actions with auto-dismiss functionality.
+ * Supports different types: success, error, warning, info.
+ * Includes screen reader accessibility with ARIA live regions.
+ * 
+ * Usage:
+ * // JavaScript
+ * window.toast.show('Order submitted successfully', 'success', 5000);
+ * window.toast.show('Failed to submit order', 'error');
+ * 
+ * Requirements: 15.3, 15.4, 12.5
+ */
+
+.toast {
+  /* Layout */
+  position: relative;
+  min-width: 300px;
+  max-width: 400px;
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-3);
+  
+  /* Visual */
+  background-color: var(--color-background);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-xl);
+  border: 1px solid var(--color-border);
+  
+  /* Spacing */
+  padding: var(--spacing-4);
+  margin-bottom: var(--spacing-3);
+  
+  /* Animation */
+  animation: slideIn 0.3s ease-out;
+  
+  /* Ensure proper stacking */
+  z-index: var(--z-index-toast);
+}
+
+/* Slide in animation */
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* Slide out animation */
+@keyframes slideOut {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+/* ===== Toast Icon ===== */
+
+.toast__icon {
+  /* Layout */
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  /* Visual */
+  border-radius: var(--radius-full);
+  
+  /* Typography */
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-sm);
+  line-height: 1;
+}
+
+/* ===== Toast Content ===== */
+
+.toast__content {
+  /* Layout */
+  flex: 1;
+  min-width: 0; /* Allow text to wrap */
+}
+
+.toast__title {
+  /* Typography */
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-base);
+  color: var(--color-text-primary);
+  line-height: var(--line-height-tight);
+  
+  /* Spacing */
+  margin: 0 0 var(--spacing-1) 0;
+}
+
+.toast__message {
+  /* Typography */
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  line-height: var(--line-height-normal);
+  
+  /* Spacing */
+  margin: 0;
+  
+  /* Allow text wrapping */
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+/* ===== Toast Close Button ===== */
+
+.toast__close {
+  /* Layout */
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  /* Visual */
+  background: none;
+  border: none;
+  border-radius: var(--radius-sm);
+  
+  /* Typography */
+  font-size: var(--font-size-2xl);
+  color: var(--color-text-secondary);
+  line-height: 1;
+  
+  /* Cursor */
+  cursor: pointer;
+  
+  /* Transitions */
+  transition: all var(--transition-fast);
+  
+  /* Remove default button styles */
+  padding: 0;
+  margin: 0;
+}
+
+.toast__close:hover {
+  color: var(--color-text-primary);
+  background-color: var(--color-surface);
+}
+
+.toast__close:focus {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.toast__close:focus:not(:focus-visible) {
+  outline: none;
+}
+
+.toast__close:focus-visible {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.toast__close:active {
+  transform: scale(0.95);
+}
+
+/* ===== Toast Type Variants ===== */
+
+/* Success Toast */
+.toast--success {
+  border-left: 4px solid var(--color-success);
+}
+
+.toast--success .toast__icon {
+  background-color: var(--color-success);
+  color: var(--color-text-inverse);
+}
+
+/* Error Toast */
+.toast--error {
+  border-left: 4px solid var(--color-error);
+}
+
+.toast--error .toast__icon {
+  background-color: var(--color-error);
+  color: var(--color-text-inverse);
+}
+
+/* Warning Toast */
+.toast--warning {
+  border-left: 4px solid var(--color-warning);
+}
+
+.toast--warning .toast__icon {
+  background-color: var(--color-warning);
+  color: var(--color-text-inverse);
+}
+
+/* Info Toast */
+.toast--info {
+  border-left: 4px solid var(--color-info);
+}
+
+.toast--info .toast__icon {
+  background-color: var(--color-info);
+  color: var(--color-text-inverse);
+}
+
+/* ===== Toast Container Position Variants ===== */
+
+.toast-container--top-right {
+  top: var(--spacing-6);
+  right: var(--spacing-6);
+}
+
+.toast-container--top-left {
+  top: var(--spacing-6);
+  left: var(--spacing-6);
+}
+
+.toast-container--top-center {
+  top: var(--spacing-6);
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.toast-container--bottom-right {
+  bottom: var(--spacing-6);
+  right: var(--spacing-6);
+  top: auto;
+}
+
+.toast-container--bottom-left {
+  bottom: var(--spacing-6);
+  left: var(--spacing-6);
+  top: auto;
+}
+
+.toast-container--bottom-center {
+  bottom: var(--spacing-6);
+  left: 50%;
+  transform: translateX(-50%);
+  top: auto;
+}
+
+/* ===== Screen Reader Only Class (Requirement 12.5) ===== */
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* ===== Responsive Toast Styles ===== */
+
+@media (max-width: 768px) {
+  .toast {
+    min-width: 280px;
+    max-width: calc(100vw - var(--spacing-8));
+  }
+  
+  .toast-container {
+    top: var(--spacing-4);
+    right: var(--spacing-4);
+    left: var(--spacing-4);
+  }
+  
+  .toast-container--top-right,
+  .toast-container--top-left,
+  .toast-container--top-center {
+    left: var(--spacing-4);
+    right: var(--spacing-4);
+    transform: none;
+  }
+  
+  .toast-container--bottom-right,
+  .toast-container--bottom-left,
+  .toast-container--bottom-center {
+    left: var(--spacing-4);
+    right: var(--spacing-4);
+    bottom: var(--spacing-4);
+    transform: none;
+  }
+}
+
+/* ===== Accessibility: Reduced Motion ===== */
+@media (prefers-reduced-motion: reduce) {
+  .toast {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+  
+  @keyframes slideIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  
+  @keyframes slideOut {
+    from {
+      opacity: 1;
+    }
+    to {
+      opacity: 0;
+    }
+  }
+}
+
+/* ===== Print Styles ===== */
+@media print {
+  .toast,
+  .toast-container {
+    display: none !important;
+  }
+}

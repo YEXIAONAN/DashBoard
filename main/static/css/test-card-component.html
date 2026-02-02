@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Card Component Test</title>
+  <link rel="stylesheet" href="design-system.css">
+  <link rel="stylesheet" href="components.css">
+  <style>
+    body {
+      padding: 2rem;
+      background-color: var(--color-surface);
+    }
+    .test-section {
+      margin-bottom: 3rem;
+    }
+    .test-section h2 {
+      margin-bottom: 1rem;
+      color: var(--color-text-primary);
+    }
+  </style>
+</head>
+<body>
+  <h1>Card Component Test</h1>
+  
+  <!-- Basic Card -->
+  <div class="test-section">
+    <h2>Basic Card</h2>
+    <div class="card-grid--3">
+      <div class="card">
+        <div class="card__image">
+          <img src="../Images/dish1.jpg" alt="Dish 1" loading="lazy">
+        </div>
+        <div class="card__content">
+          <h3 class="card__title">Grilled Chicken Breast</h3>
+          <p class="card__description">Tender grilled chicken breast served with seasonal vegetables and herbs. A healthy and delicious option.</p>
+          <div class="card__meta">
+            <span class="card__meta-item">🔥 250 cal</span>
+            <span class="card__meta-item">💰 ¥45</span>
+          </div>
+        </div>
+        <div class="card__actions">
+          <button class="btn btn--secondary btn--sm">Details</button>
+          <button class="btn btn--primary btn--sm">Add to Order</button>
+        </div>
+      </div>
+      
+      <div class="card">
+        <div class="card__image">
+          <img src="../Images/dish2.jpg" alt="Dish 2" loading="lazy">
+        </div>
+        <div class="card__content">
+          <h3 class="card__title">Fresh Garden Salad</h3>
+          <p class="card__description">Mixed greens with cherry tomatoes, cucumbers, and house dressing.</p>
+          <div class="card__meta">
+            <span class="card__meta-item">🔥 120 cal</span>
+            <span class="card__meta-item">💰 ¥28</span>
+          </div>
+        </div>
+        <div class="card__actions">
+          <button class="btn btn--secondary btn--sm">Details</button>
+          <button class="btn btn--primary btn--sm">Add to Order</button>
+        </div>
+      </div>
+      
+      <div class="card card--featured">
+        <div class="card__badge">Popular</div>
+        <div class="card__image">
+          <img src="../Images/dish3.jpg" alt="Dish 3" loading="lazy">
+        </div>
+        <div class="card__content">
+          <h3 class="card__title">Steamed Rice Bowl</h3>
+          <p class="card__description">Perfectly steamed jasmine rice, a staple for any meal.</p>
+          <div class="card__meta">
+            <span class="card__meta-item">🔥 180 cal</span>
+            <span class="card__meta-item">💰 ¥15</span>
+          </div>
+        </div>
+        <div class="card__actions">
+          <button class="btn btn--secondary btn--sm">Details</button>
+          <button class="btn btn--primary btn--sm">Add to Order</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Horizontal Card -->
+  <div class="test-section">
+    <h2>Horizontal Card</h2>
+    <div class="card card--horizontal">
+      <div class="card__image">
+        <img src="../Images/dish1.jpg" alt="Dish" loading="lazy">
+      </div>
+      <div class="card__content">
+        <h3 class="card__title">Horizontal Layout Card</h3>
+        <p class="card__description">This card uses a horizontal layout with the image on the left and content on the right. Perfect for list views.</p>
+        <div class="card__meta">
+          <span class="card__meta-item">🔥 300 cal</span>
+          <span class="card__meta-item">💰 ¥55</span>
+        </div>
+      </div>
+      <div class="card__actions">
+        <button class="btn btn--primary btn--sm">Add to Order</button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Compact Card -->
+  <div class="test-section">
+    <h2>Compact Cards</h2>
+    <div class="card-grid--4">
+      <div class="card card--compact">
+        <div class="card__image">
+          <img src="../Images/dish1.jpg" alt="Dish" loading="lazy">
+        </div>
+        <div class="card__content">
+          <h3 class="card__title">Compact Card 1</h3>
+          <p class="card__description">Reduced padding for denser layouts.</p>
+        </div>
+        <div class="card__actions">
+          <button class="btn btn--primary btn--sm">Add</button>
+        </div>
+      </div>
+      
+      <div class="card card--compact">
+        <div class="card__image">
+          <img src="../Images/dish2.jpg" alt="Dish" loading="lazy">
+        </div>
+        <div class="card__content">
+          <h3 class="card__title">Compact Card 2</h3>
+          <p class="card__description">Reduced padding for denser layouts.</p>
+        </div>
+        <div class="card__actions">
+          <button class="btn btn--primary btn--sm">Add</button>
+        </div>
+      </div>
+      
+      <div class="card card--compact">
+        <div class="card__image">
+          <img src="../Images/dish3.jpg" alt="Dish" loading="lazy">
+        </div>
+        <div class="card__content">
+          <h3 class="card__title">Compact Card 3</h3>
+          <p class="card__description">Reduced padding for denser layouts.</p>
+        </div>
+        <div class="card__actions">
+          <button class="btn btn--primary btn--sm">Add</button>
+        </div>
+      </div>
+      
+      <div class="card card--compact">
+        <div class="card__image">
+          <img src="../Images/dish1.jpg" alt="Dish" loading="lazy">
+        </div>
+        <div class="card__content">
+          <h3 class="card__title">Compact Card 4</h3>
+          <p class="card__description">Reduced padding for denser layouts.</p>
+        </div>
+        <div class="card__actions">
+          <button class="btn btn--primary btn--sm">Add</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Borderless Card -->
+  <div class="test-section">
+    <h2>Borderless Card</h2>
+    <div class="card card--borderless">
+      <div class="card__content">
+        <h3 class="card__title">Borderless Card</h3>
+        <p class="card__description">This card has no shadow and a subtle border. Good for minimal designs.</p>
+      </div>
+      <div class="card__actions">
+        <button class="btn btn--tertiary btn--sm">Learn More</button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Interactive Card -->
+  <div class="test-section">
+    <h2>Interactive Card (Clickable)</h2>
+    <div class="card-grid--2">
+      <div class="card card--interactive" tabindex="0" onclick="alert('Card clicked!')">
+        <div class="card__image">
+          <img src="../Images/dish1.jpg" alt="Dish" loading="lazy">
+        </div>
+        <div class="card__content">
+          <h3 class="card__title">Clickable Card</h3>
+          <p class="card__description">This entire card is clickable. Try clicking anywhere on it!</p>
+        </div>
+      </div>
+      
+      <div class="card card--disabled">
+        <div class="card__image">
+          <img src="../Images/dish2.jpg" alt="Dish" loading="lazy">
+        </div>
+        <div class="card__content">
+          <h3 class="card__title">Disabled Card</h3>
+          <p class="card__description">This card is disabled and cannot be interacted with.</p>
+        </div>
+        <div class="card__actions">
+          <button class="btn btn--primary btn--sm" disabled>Unavailable</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Card with Badges -->
+  <div class="test-section">
+    <h2>Cards with Badges</h2>
+    <div class="card-grid--4">
+      <div class="card">
+        <div class="card__badge">New</div>
+        <div class="card__image">
+          <img src="../Images/dish1.jpg" alt="Dish" loading="lazy">
+        </div>
+        <div class="card__content">
+          <h3 class="card__title">New Dish</h3>
+          <p class="card__description">Just added to our menu!</p>
+        </div>
+      </div>
+      
+      <div class="card">
+        <div class="card__badge card__badge--success">Available</div>
+        <div class="card__image">
+          <img src="../Images/dish2.jpg" alt="Dish" loading="lazy">
+        </div>
+        <div class="card__content">
+          <h3 class="card__title">Available Now</h3>
+          <p class="card__description">Ready to order.</p>
+        </div>
+      </div>
+      
+      <div class="card">
+        <div class="card__badge card__badge--warning">Low Stock</div>
+        <div class="card__image">
+          <img src="../Images/dish3.jpg" alt="Dish" loading="lazy">
+        </div>
+        <div class="card__content">
+          <h3 class="card__title">Limited</h3>
+          <p class="card__description">Only a few left!</p>
+        </div>
+      </div>
+      
+      <div class="card">
+        <div class="card__badge card__badge--error">Sold Out</div>
+        <div class="card__image">
+          <img src="../Images/dish1.jpg" alt="Dish" loading="lazy">
+        </div>
+        <div class="card__content">
+          <h3 class="card__title">Unavailable</h3>
+          <p class="card__description">Check back later.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Card without Image -->
+  <div class="test-section">
+    <h2>Card without Image</h2>
+    <div class="card-grid--3">
+      <div class="card">
+        <div class="card__content">
+          <h3 class="card__title">Order #12345</h3>
+          <p class="card__description">Placed on: 2024-01-15<br>Status: Delivered<br>Total: ¥128</p>
+        </div>
+        <div class="card__actions">
+          <button class="btn btn--tertiary btn--sm">View Details</button>
+          <button class="btn btn--secondary btn--sm">Reorder</button>
+        </div>
+      </div>
+      
+      <div class="card">
+        <div class="card__content">
+          <h3 class="card__title">Nutrition Summary</h3>
+          <p class="card__description">Today's intake:<br>Calories: 1,850 / 2,000<br>Protein: 85g / 100g</p>
+        </div>
+        <div class="card__actions--center">
+          <button class="btn btn--primary btn--sm">View Report</button>
+        </div>
+      </div>
+      
+      <div class="card">
+        <div class="card__content">
+          <h3 class="card__title">Health Score</h3>
+          <p class="card__description">Your current health score is 85/100. Keep up the good work!</p>
+        </div>
+        <div class="card__actions">
+          <button class="btn btn--tertiary btn--sm">Learn More</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+</body>
+</html>

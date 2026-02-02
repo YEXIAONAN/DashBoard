@@ -46,6 +46,9 @@ urlpatterns = [
     path('api/save_chat_message/', api.save_chat_message, name='save_chat_message'),
     path('api/get_chat_history/', api.get_chat_history, name='get_chat_history'),
     path('api/clear_chat_history/', api.clear_chat_history, name='clear_chat_history'),
+    # Test routes
+    path('test/form-fields/', views.test_form_fields, name='test_form_fields'),
+    path('test/form-validation/', views.test_form_validation, name='test_form_validation'),
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATICFILES_DIRS[0])
