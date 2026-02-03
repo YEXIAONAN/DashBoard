@@ -439,12 +439,17 @@ async def text_to_speech_vixtts(text: str, language: str = "zh") -> bytes:
 async def chat_with_dify(text: str, user_name: str = "用户", language: str = "zh") -> str:
     """与 Dify 工作流对话（非流式）
     
-    注意：Dify 主要支持中文和英文，越南语会自动使用 Ollama
+    注意：优先使用 Ollama 处理越南语，如果失败则尝试 Dify
     """
-    # 越南语直接使用 Ollama（Dify 可能不支持）
+    # 越南语优先使用 Ollama，如果失败则尝试 Dify
     if language == "vi":
-        logger.info("检测到越南语，直接使用 Ollama 服务")
-        return await chat_with_ollama_fallback(text, language)
+        logger.info("检测到越南语，优先使用 Ollama 服务")
+        try:
+            return await chat_with_ollama_fallback(text, language)
+        except Exception as e:
+            logger.warning(f"Ollama 失败: {e}")
+            logger.info("尝试使用 Dify 处理越南语（可能效果不佳）")
+            # 继续执行 Dify 调用
     
     try:
         logger.info(f"发送到 Dify 工作流: {text[:50]}... (语言: {language})")
@@ -496,7 +501,7 @@ async def chat_with_dify(text: str, user_name: str = "用户", language: str = "
 async def chat_with_ollama_fallback(text: str, language: str = "zh") -> str:
     """备用 Ollama 对话（当 Dify 不可用或使用越南语时）"""
     try:
-        logger.info(f"发送到 Ollama (备用/越南语): {text[:50]}... (语言: {language})")
+        logger.info(f"发送到 Ollama: {text[:50]}... (语言: {language})")
         
         # 根据语言添加提示
         language_prompts = {
@@ -519,9 +524,18 @@ async def chat_with_ollama_fallback(text: str, language: str = "zh") -> str:
             reply = result.get("response", "")
             logger.info(f"Ollama 回复: {reply[:50]}...")
             return reply
+    except httpx.ConnectError as e:
+        error_msg = f"无法连接到 Ollama 服务 ({OLLAMA_HOST})"
+        logger.error(f"{error_msg}: {str(e)}")
+        raise Exception(error_msg)
+    except httpx.TimeoutException as e:
+        error_msg = "Ollama 服务响应超时"
+        logger.error(f"{error_msg}: {str(e)}")
+        raise Exception(error_msg)
     except Exception as e:
-        logger.error(f"Ollama 备用服务也失败: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"AI 对话失败: {str(e)}")
+        error_msg = f"Ollama 服务错误: {str(e)}"
+        logger.error(error_msg)
+        raise Exception(error_msg)
 
 # ==================== 主接口 ====================
 @app.post("/transcribe")

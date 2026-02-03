@@ -1,97 +1,79 @@
 """
-测试 Ollama 连接和模型可用性
+测试 Ollama 连接
 """
-import httpx
+import requests
 import json
-import asyncio
 
-OLLAMA_HOST = "http://172.16.4.181:11434"
-OLLAMA_MODEL = "qwen2.5:7b"
+OLLAMA_HOST = "http://10.0.0.10:11434"
 
-async def test_ollama():
-    """测试 Ollama 服务"""
+def test_ollama():
+    """测试 Ollama 服务连接"""
     print("=" * 60)
-    print("测试 Ollama 连接")
+    print("Ollama 连接测试")
     print("=" * 60)
     
     # 测试 1: 检查服务是否运行
-    print("\n1. 检查 Ollama 服务状态...")
-    models = []
+    print(f"\n测试 1: 检查 Ollama 服务 ({OLLAMA_HOST})")
     try:
-        async with httpx.AsyncClient(timeout=10.0) as client:
-            response = await client.get(f"{OLLAMA_HOST}/api/tags")
-            if response.status_code == 200:
-                print("✅ Ollama 服务运行正常")
-                data = response.json()
-                models = [m['name'] for m in data.get('models', [])]
-                print(f"   可用模型: {', '.join(models)}")
-            else:
-                print(f"❌ 服务响应异常: {response.status_code}")
-                print(f"   这可能是 Ollama 服务本身的问题")
-                return
+        response = requests.get(f"{OLLAMA_HOST}/api/tags", timeout=5)
+        if response.status_code == 200:
+            print("✅ Ollama 服务运行正常")
+            data = response.json()
+            models = data.get("models", [])
+            print(f"\n可用模型数量: {len(models)}")
+            for model in models:
+                print(f"  - {model.get('name')}")
+        else:
+            print(f"❌ Ollama 响应异常: HTTP {response.status_code}")
+    except requests.exceptions.ConnectionError:
+        print(f"❌ 无法连接到 Ollama 服务")
+        print(f"   请检查:")
+        print(f"   1. Ollama 是否运行")
+        print(f"   2. 地址是否正确: {OLLAMA_HOST}")
+        print(f"   3. 防火墙是否阻止连接")
+        return False
     except Exception as e:
-        print(f"❌ 无法连接到 Ollama 服务: {e}")
-        return
+        print(f"❌ 连接失败: {e}")
+        return False
     
-    # 测试 2: 检查目标模型是否存在
-    print(f"\n2. 检查模型 '{OLLAMA_MODEL}' 是否可用...")
-    if OLLAMA_MODEL in models:
-        print(f"✅ 模型 '{OLLAMA_MODEL}' 已安装")
-    else:
-        print(f"⚠️  模型 '{OLLAMA_MODEL}' 未找到")
-        print(f"   建议使用: {models[0] if models else 'N/A'}")
-    
-    # 测试 3: 测试非流式生成
-    print(f"\n3. 测试非流式生成...")
+    # 测试 2: 测试生成接口
+    print(f"\n测试 2: 测试文本生成")
     try:
-        async with httpx.AsyncClient(timeout=30.0) as client:
-            payload = {
-                "model": OLLAMA_MODEL,
-                "prompt": "Say hello in one sentence",
-                "stream": False
-            }
-            response = await client.post(f"{OLLAMA_HOST}/api/generate", json=payload)
-            if response.status_code == 200:
-                data = response.json()
-                print(f"✅ 非流式生成成功")
-                print(f"   响应: {data.get('response', '')[:100]}...")
-            else:
-                print(f"❌ 生成失败: {response.status_code}")
+        payload = {
+            "model": "qwen2.5:7b",
+            "prompt": "Xin chào",
+            "stream": False
+        }
+        
+        response = requests.post(
+            f"{OLLAMA_HOST}/api/generate",
+            json=payload,
+            timeout=30
+        )
+        
+        if response.status_code == 200:
+            result = response.json()
+            reply = result.get("response", "")
+            print(f"✅ 生成成功")
+            print(f"   回复: {reply[:100]}...")
+        else:
+            print(f"❌ 生成失败: HTTP {response.status_code}")
+            print(f"   响应: {response.text}")
     except Exception as e:
-        print(f"❌ 非流式生成失败: {e}")
-    
-    # 测试 4: 测试流式生成
-    print(f"\n4. 测试流式生成...")
-    try:
-        async with httpx.AsyncClient(timeout=30.0) as client:
-            payload = {
-                "model": OLLAMA_MODEL,
-                "prompt": "Count from 1 to 3",
-                "stream": True
-            }
-            full_response = ""
-            async with client.stream("POST", f"{OLLAMA_HOST}/api/generate", json=payload) as response:
-                if response.status_code == 200:
-                    async for line in response.aiter_lines():
-                        if line:
-                            try:
-                                data = json.loads(line)
-                                if "response" in data:
-                                    full_response += data["response"]
-                                if data.get("done", False):
-                                    break
-                            except json.JSONDecodeError:
-                                continue
-                    print(f"✅ 流式生成成功")
-                    print(f"   响应: {full_response[:100]}...")
-                else:
-                    print(f"❌ 流式生成失败: {response.status_code}")
-    except Exception as e:
-        print(f"❌ 流式生成失败: {e}")
+        print(f"❌ 生成失败: {e}")
+        return False
     
     print("\n" + "=" * 60)
-    print("测试完成")
+    print("✅ 所有测试通过！Ollama 服务正常")
     print("=" * 60)
+    return True
 
 if __name__ == "__main__":
-    asyncio.run(test_ollama())
+    success = test_ollama()
+    if not success:
+        print("\n⚠️ Ollama 服务不可用")
+        print("\n解决方案:")
+        print("1. 检查 Ollama 是否运行")
+        print("2. 检查地址配置是否正确")
+        print("3. 尝试重启 Ollama 服务")
+        print("4. 检查网络连接")
