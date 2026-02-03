@@ -182,7 +182,7 @@ def init_mechanical_arm():
     nest_asyncio.apply()
 
     try:
-        robot_ip = "172.16.4.78"
+        robot_ip = "10.0.0.78"
         print(f"尝试连接机器人 {robot_ip}...")
 
         lebai = lebai_sdk.connect(robot_ip, False)
