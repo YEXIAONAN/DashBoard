@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 语音服务测试 - Dify 工作流</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            text-align: center;
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .status {
+            background: #f0f0f0;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .status.connected {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        input[type="text"],
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus,
+        select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .button-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        button {
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: white;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(245, 87, 108, 0.4);
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .output {
+            background: #f8f9fa;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 20px;
+            min-height: 150px;
+            margin-bottom: 20px;
+            font-size: 15px;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .loading {
+            text-align: center;
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        .audio-player {
+            width: 100%;
+            margin-top: 15px;
+        }
+
+        .recording {
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        .info {
+            background: #e7f3ff;
+            border-left: 4px solid #2196F3;
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .info strong {
+            color: #2196F3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎤 AI 语音服务测试</h1>
+        <div class="subtitle">Dify 工作流集成版本</div>
+
+        <div id="status" class="status">
+            正在连接服务...
+        </div>
+
+        <div class="input-group">
+            <label for="userName">用户名:</label>
+            <input type="text" id="userName" value="测试用户" placeholder="输入您的名字">
+        </div>
+
+        <div class="input-group">
+            <label for="language">语言:</label>
+            <select id="language">
+                <option value="zh">中文 (Chinese)</option>
+                <option value="en">英文 (English)</option>
+                <option value="vi">越南语 (Vietnamese)</option>
+            </select>
+        </div>
+
+        <div class="input-group">
+            <label for="textInput">输入文本:</label>
+            <input type="text" id="textInput" placeholder="输入您想说的话..." value="你好，请介绍一下健康饮食的重要性">
+        </div>
+
+        <div class="button-group">
+            <button class="btn-primary" onclick="sendText()">📝 发送文本</button>
+            <button class="btn-secondary" onclick="sendTextStream()">🌊 流式对话</button>
+        </div>
+
+        <div class="input-group">
+            <label>输出结果:</label>
+            <div id="output" class="output">等待输入...</div>
+        </div>
+
+        <audio id="audioPlayer" class="audio-player" controls style="display: none;"></audio>
+
+        <div class="info">
+            <strong>使用说明:</strong><br>
+            1. 确保语音服务已启动 (端口 8001)<br>
+            2. 输入文本后点击"发送文本"进行普通对话<br>
+            3. 点击"流式对话"可以看到实时响应<br>
+            4. 回复会自动转换为语音播放<br>
+            <br>
+            <strong>🌐 智能语言路由:</strong><br>
+            • 中文/英文 → Dify 工作流（更强大）<br>
+            • 越南语 → Ollama（Dify 不支持时）<br>
+            • 自动故障切换到备用服务
+        </div>
+    </div>
+
+    <script>
+        const SERVICE_URL = 'http://localhost:8001';
+        let isProcessing = false;
+
+        // 检查服务状态
+        async function checkHealth() {
+            try {
+                const response = await fetch(`${SERVICE_URL}/health`);
+                if (response.ok) {
+                    const data = await response.json();
+                    document.getElementById('status').className = 'status connected';
+                    
+                    // 显示路由信息
+                    let routingInfo = '';
+                    if (data.routing) {
+                        routingInfo = `<br><small>路由: 中文→${data.routing.zh} | 英文→${data.routing.en} | 越南语→${data.routing.vi}</small>`;
+                    }
+                    
+                    document.getElementById('status').innerHTML = `
+                        ✅ 服务已连接<br>
+                        LLM: ${data.llm_service}<br>
+                        ASR: ${data.asr}<br>
+                        TTS: ${data.tts}
+                        ${routingInfo}
+                    `;
+                } else {
+                    throw new Error('服务响应异常');
+                }
+            } catch (error) {
+                document.getElementById('status').className = 'status error';
+                document.getElementById('status').textContent = `❌ 服务未连接: ${error.message}`;
+            }
+        }
+
+        // 发送文本（非流式）
+        async function sendText() {
+            if (isProcessing) return;
+            
+            const text = document.getElementById('textInput').value.trim();
+            const language = document.getElementById('language').value;
+            const userName = document.getElementById('userName').value.trim();
+            
+            if (!text) {
+                alert('请输入文本');
+                return;
+            }
+
+            isProcessing = true;
+            const output = document.getElementById('output');
+            output.className = 'output loading';
+            output.textContent = '🤔 AI 正在思考中...';
+
+            try {
+                const formData = new FormData();
+                formData.append('text', text);
+                formData.append('language', language);
+                formData.append('user_name', userName);
+
+                const response = await fetch(`${SERVICE_URL}/chat`, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+
+                const data = await response.json();
+                
+                output.className = 'output';
+                output.textContent = `📝 AI 回复:\n\n${data.text}`;
+
+                // 播放音频
+                if (data.audio) {
+                    playAudio(data.audio);
+                }
+
+            } catch (error) {
+                output.className = 'output';
+                output.textContent = `❌ 错误: ${error.message}`;
+            } finally {
+                isProcessing = false;
+            }
+        }
+
+        // 发送文本（流式）
+        async function sendTextStream() {
+            if (isProcessing) return;
+            
+            const text = document.getElementById('textInput').value.trim();
+            const language = document.getElementById('language').value;
+            const userName = document.getElementById('userName').value.trim();
+            
+            if (!text) {
+                alert('请输入文本');
+                return;
+            }
+
+            isProcessing = true;
+            const output = document.getElementById('output');
+            output.className = 'output loading';
+            output.textContent = '🌊 正在接收流式响应...\n\n';
+
+            try {
+                const formData = new FormData();
+                formData.append('text', text);
+                formData.append('language', language);
+                formData.append('user_name', userName);
+
+                const response = await fetch(`${SERVICE_URL}/chat-stream`, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+                let fullText = '';
+
+                output.className = 'output';
+
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+
+                    const chunk = decoder.decode(value);
+                    const lines = chunk.split('\n');
+
+                    for (const line of lines) {
+                        if (line.startsWith('data: ')) {
+                            const data = line.slice(6);
+                            try {
+                                const parsed = JSON.parse(data);
+                                
+                                if (parsed.text) {
+                                    fullText += parsed.text;
+                                    output.textContent = `📝 AI 回复:\n\n${fullText}`;
+                                }
+                                
+                                if (parsed.audio) {
+                                    playAudio(parsed.audio);
+                                }
+                                
+                                if (parsed.error) {
+                                    output.textContent = `❌ 错误: ${parsed.error}`;
+                                }
+                            } catch (e) {
+                                // 忽略解析错误
+                            }
+                        }
+                    }
+                }
+
+            } catch (error) {
+                output.className = 'output';
+                output.textContent = `❌ 错误: ${error.message}`;
+            } finally {
+                isProcessing = false;
+            }
+        }
+
+        // 播放音频
+        function playAudio(base64Audio) {
+            const audioPlayer = document.getElementById('audioPlayer');
+            audioPlayer.src = `data:audio/wav;base64,${base64Audio}`;
+            audioPlayer.style.display = 'block';
+            audioPlayer.play();
+        }
+
+        // 页面加载时检查服务
+        window.onload = () => {
+            checkHealth();
+            setInterval(checkHealth, 30000); // 每30秒检查一次
+        };
+    </script>
+</body>
+</html>

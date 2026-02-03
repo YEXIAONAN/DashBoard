@@ -36,8 +36,15 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 # ==================== 配置常量 ====================
+# Dify 工作流配置
+DIFY_API_URL = "http://10.0.0.10:3099/v1/chat/completions"
+DIFY_API_KEY = "http://10.0.0.10:180/v1|app-bzBAseue8wuzdhSCG8O05fkI|Chat"
+DIFY_MODEL = "dify"
+
+# 备用 Ollama 配置（如果 Dify 不可用）
 OLLAMA_HOST = "http://10.0.0.10:11434"
 OLLAMA_MODEL = "qwen2.5:7b"
+
 SERVICE_PORT = 8001
 
 # Whisper 模型大小
@@ -311,40 +318,97 @@ async def text_to_speech_vixtts(text: str, language: str = "zh") -> bytes:
                 voices = engine.getProperty('voices')
                 logger.info(f"系统可用语音数量: {len(voices)}")
                 
-                # 打印所有语音信息（调试用）
+                # 打印所有语音的详细信息（用于调试）
+                logger.info("=== 所有可用语音详情 ===")
                 for i, voice in enumerate(voices):
-                    logger.info(f"语音 {i}: {voice.name} | ID: {voice.id} | Languages: {voice.languages}")
+                    logger.info(f"语音 {i}:")
+                    logger.info(f"  名称: {voice.name}")
+                    logger.info(f"  ID: {voice.id}")
+                    logger.info(f"  语言: {voice.languages}")
+                logger.info("=== 语音列表结束 ===")
                 
-                # 选择中文语音
-                chinese_voice = None
-                if language == "zh":
-                    # 尝试多种方式找到中文语音
-                    for voice in voices:
-                        voice_name_lower = voice.name.lower()
-                        voice_id_lower = voice.id.lower()
-                        
-                        # 检查是否包含中文相关关键词
-                        if any(keyword in voice_name_lower or keyword in voice_id_lower 
-                               for keyword in ['chinese', 'mandarin', 'zh-cn', 'huihui', 'kangkang', 'yaoyao']):
-                            chinese_voice = voice
-                            logger.info(f"✓ 找到中文语音: {voice.name}")
-                            break
+                # 根据语言选择合适的语音
+                selected_voice = None
                 
-                if chinese_voice:
-                    engine.setProperty('voice', chinese_voice.id)
+                # 语言关键词映射（扩展版本，包含更多可能的匹配）
+                language_keywords = {
+                    "zh": [
+                        'chinese', 'mandarin', 'zh-cn', 'zh_cn', 'chs', 'prc',
+                        'huihui', 'kangkang', 'yaoyao', 'simplified', 'china'
+                    ],
+                    "en": [
+                        'english', 'en-us', 'en_us', 'eng', 'usa', 'us',
+                        'david', 'zira', 'mark', 'united states'
+                    ],
+                    "vi": [
+                        'vietnamese', 'vietnam', 'vi-vn', 'vi_vn', 'vie', 'viet',
+                        'an', 'tiếng việt', 'tieng viet'
+                    ]
+                }
+                
+                keywords = language_keywords.get(language, [])
+                logger.info(f"查找 {language} 语音，关键词: {keywords}")
+                
+                # 查找匹配的语音
+                for voice in voices:
+                    voice_name_lower = voice.name.lower()
+                    voice_id_lower = voice.id.lower()
+                    
+                    # 检查语言属性
+                    voice_languages = []
+                    if hasattr(voice, 'languages') and voice.languages:
+                        voice_languages = [str(lang).lower() for lang in voice.languages]
+                    
+                    logger.info(f"检查语音: {voice.name}")
+                    logger.info(f"  名称(小写): {voice_name_lower}")
+                    logger.info(f"  ID(小写): {voice_id_lower}")
+                    logger.info(f"  语言属性: {voice_languages}")
+                    
+                    # 检查是否包含语言相关关键词
+                    name_match = any(keyword in voice_name_lower for keyword in keywords)
+                    id_match = any(keyword in voice_id_lower for keyword in keywords)
+                    lang_match = any(any(keyword in lang for keyword in keywords) for lang in voice_languages)
+                    
+                    if name_match or id_match or lang_match:
+                        selected_voice = voice
+                        logger.info(f"✓ 找到 {language} 语音: {voice.name}")
+                        logger.info(f"  匹配方式: 名称={name_match}, ID={id_match}, 语言属性={lang_match}")
+                        break
+                
+                if selected_voice:
+                    engine.setProperty('voice', selected_voice.id)
+                    logger.info(f"✅ 使用语音: {selected_voice.name}")
                 else:
-                    logger.warning("⚠️ 未找到中文语音，使用默认语音（可能是英文）")
-                    logger.warning("建议安装 Windows 中文语音包")
+                    logger.warning(f"⚠️ 未找到 {language} 语音，使用默认语音")
+                    logger.warning(f"建议安装 Windows {language} 语音包")
+                    logger.info("可用语音列表:")
+                    for i, voice in enumerate(voices):
+                        logger.info(f"  {i}: {voice.name}")
+                    
+                    # 对于越南语，如果找不到专用语音，尝试使用英文语音
+                    if language == "vi":
+                        logger.warning("⚠️ 越南语语音不可用，将使用英文语音（发音可能不准确）")
+                        # 尝试找一个英文语音
+                        for voice in voices:
+                            if 'english' in voice.name.lower() or 'en' in voice.id.lower():
+                                engine.setProperty('voice', voice.id)
+                                logger.info(f"使用英文语音作为备选: {voice.name}")
+                                break
                 
                 # 设置语速（默认 200，范围 0-400）
-                engine.setProperty('rate', 200)
+                # 越南语可能需要稍慢一点
+                rate = 180 if language == "vi" else 200
+                engine.setProperty('rate', rate)
+                logger.info(f"语速设置: {rate}")
                 
                 # 设置音量（0.0-1.0）
                 engine.setProperty('volume', 1.0)
                 
                 # 保存到文件
+                logger.info(f"开始生成音频文件: {tmp_path}")
                 engine.save_to_file(text, tmp_path)
                 engine.runAndWait()
+                logger.info("音频生成完成")
             
             # 在线程池中执行
             with concurrent.futures.ThreadPoolExecutor() as executor:
@@ -371,15 +435,82 @@ async def text_to_speech_vixtts(text: str, language: str = "zh") -> bytes:
         logger.warning("TTS 失败，返回空音频")
         return b'RIFF$\x00\x00\x00WAVEfmt \x10\x00\x00\x00\x01\x00\x01\x00D\xac\x00\x00\x88X\x01\x00\x02\x00\x10\x00data\x00\x00\x00\x00'
 
-# ==================== Ollama LLM ====================
-async def chat_with_ollama(text: str) -> str:
-    """与 Ollama 对话"""
+# ==================== Dify 工作流 LLM ====================
+async def chat_with_dify(text: str, user_name: str = "用户", language: str = "zh") -> str:
+    """与 Dify 工作流对话（非流式）
+    
+    注意：Dify 主要支持中文和英文，越南语会自动使用 Ollama
+    """
+    # 越南语直接使用 Ollama（Dify 可能不支持）
+    if language == "vi":
+        logger.info("检测到越南语，直接使用 Ollama 服务")
+        return await chat_with_ollama_fallback(text, language)
+    
     try:
-        logger.info(f"发送到 Ollama: {text[:50]}...")
+        logger.info(f"发送到 Dify 工作流: {text[:50]}... (语言: {language})")
+        async with httpx.AsyncClient(timeout=120.0) as client:
+            payload = {
+                "model": DIFY_MODEL,
+                "messages": [
+                    {
+                        "role": "system",
+                        "content": f"用户名：{user_name}"
+                    },
+                    {
+                        "role": "user",
+                        "content": text
+                    }
+                ],
+                "max_tokens": 2000,
+                "temperature": 0.7,
+                "stream": False
+            }
+            
+            headers = {
+                "Content-Type": "application/json",
+                "Authorization": f"Bearer {DIFY_API_KEY}"
+            }
+            
+            response = await client.post(DIFY_API_URL, json=payload, headers=headers)
+            response.raise_for_status()
+            result = response.json()
+            
+            # 解析 Dify 返回的响应
+            reply = result.get("choices", [{}])[0].get("message", {}).get("content", "")
+            
+            if not reply:
+                logger.warning("Dify 返回空响应，尝试使用备用 Ollama")
+                return await chat_with_ollama_fallback(text, language)
+            
+            logger.info(f"Dify 回复: {reply[:50]}...")
+            return reply
+            
+    except Exception as e:
+        logger.error(f"Dify 工作流失败: {str(e)}")
+        logger.info("尝试使用备用 Ollama 服务...")
+        try:
+            return await chat_with_ollama_fallback(text, language)
+        except:
+            raise HTTPException(status_code=500, detail=f"AI 对话失败: {str(e)}")
+
+async def chat_with_ollama_fallback(text: str, language: str = "zh") -> str:
+    """备用 Ollama 对话（当 Dify 不可用或使用越南语时）"""
+    try:
+        logger.info(f"发送到 Ollama (备用/越南语): {text[:50]}... (语言: {language})")
+        
+        # 根据语言添加提示
+        language_prompts = {
+            "zh": "请用中文回答：",
+            "en": "Please answer in English: ",
+            "vi": "Vui lòng trả lời bằng tiếng Việt: "
+        }
+        prompt_prefix = language_prompts.get(language, "")
+        full_prompt = f"{prompt_prefix}{text}" if prompt_prefix else text
+        
         async with httpx.AsyncClient(timeout=60.0) as client:
             payload = {
                 "model": OLLAMA_MODEL,
-                "prompt": text,
+                "prompt": full_prompt,
                 "stream": False
             }
             response = await client.post(f"{OLLAMA_HOST}/api/generate", json=payload)
@@ -389,7 +520,7 @@ async def chat_with_ollama(text: str) -> str:
             logger.info(f"Ollama 回复: {reply[:50]}...")
             return reply
     except Exception as e:
-        logger.error(f"Ollama 失败: {str(e)}")
+        logger.error(f"Ollama 备用服务也失败: {str(e)}")
         raise HTTPException(status_code=500, detail=f"AI 对话失败: {str(e)}")
 
 # ==================== 主接口 ====================
@@ -415,13 +546,37 @@ async def transcribe_only(
 @app.post("/chat-stream")
 async def chat_stream(
     text: str = Form(...),
-    language: str = Form("zh")
+    language: str = Form("zh"),
+    user_name: str = Form("用户")
 ):
-    """流式对话接口（使用 requests 库避免 httpx 的 502 问题）"""
+    """流式对话接口（中文/英文使用 Dify，越南语使用 Ollama）"""
     try:
-        logger.info(f"收到流式对话请求: {text[:50]}..., 语言: {language}")
+        logger.info(f"收到流式对话请求: {text[:50]}..., 语言: {language}, 用户: {user_name}")
         
         async def generate():
+            # 越南语直接使用 Ollama（非流式，因为 Dify 可能不支持越南语）
+            if language == "vi":
+                logger.info("检测到越南语，使用 Ollama 服务（非流式）")
+                try:
+                    reply_text = await chat_with_ollama_fallback(text, language)
+                    
+                    # 分块发送文本
+                    chunk_size = 20
+                    for i in range(0, len(reply_text), chunk_size):
+                        chunk = reply_text[i:i+chunk_size]
+                        yield f"data: {json.dumps({'text': chunk})}\n\n"
+                        await asyncio.sleep(0.02)
+                    
+                    # 生成语音
+                    audio_bytes = await text_to_speech_vixtts(reply_text, language)
+                    audio_base64 = base64.b64encode(audio_bytes).decode("utf-8")
+                    yield f"data: {json.dumps({'audio': audio_base64, 'done': True})}\n\n"
+                    return
+                except Exception as e:
+                    yield f"data: {json.dumps({'error': f'Ollama 服务失败: {str(e)}'})}\n\n"
+                    return
+            
+            # 中文/英文使用 Dify 工作流（流式）
             max_retries = 3
             retry_delay = 1
             
@@ -430,49 +585,77 @@ async def chat_stream(
                     import requests
                     import concurrent.futures
                     
+                    # 使用 Dify 工作流 API
                     payload = {
-                        "model": OLLAMA_MODEL,
-                        "prompt": text,
-                        "stream": False
+                        "model": DIFY_MODEL,
+                        "messages": [
+                            {
+                                "role": "system",
+                                "content": f"用户名：{user_name}"
+                            },
+                            {
+                                "role": "user",
+                                "content": text
+                            }
+                        ],
+                        "max_tokens": 2000,
+                        "temperature": 0.7,
+                        "stream": True  # 启用流式响应
                     }
                     
-                    logger.info(f"发送请求到 Ollama (尝试 {attempt + 1}/{max_retries})...")
+                    headers = {
+                        "Content-Type": "application/json",
+                        "Authorization": f"Bearer {DIFY_API_KEY}"
+                    }
+                    
+                    logger.info(f"发送请求到 Dify 工作流 (尝试 {attempt + 1}/{max_retries})...")
                     
                     # 在线程池中运行同步请求
                     with concurrent.futures.ThreadPoolExecutor() as executor:
                         future = executor.submit(
                             requests.post,
-                            f"{OLLAMA_HOST}/api/generate",
+                            DIFY_API_URL,
                             json=payload,
-                            timeout=120
+                            headers=headers,
+                            timeout=120,
+                            stream=True
                         )
                         response = future.result()
                     
                     if response.status_code == 200:
-                        data = response.json()
-                        full_text = data.get("response", "")
+                        full_text = ""
+                        
+                        # 流式读取响应
+                        for line in response.iter_lines():
+                            if line:
+                                line_str = line.decode('utf-8')
+                                if line_str.startswith('data: '):
+                                    data_str = line_str[6:]
+                                    if data_str == '[DONE]':
+                                        break
+                                    
+                                    try:
+                                        data = json.loads(data_str)
+                                        content = data.get("choices", [{}])[0].get("delta", {}).get("content", "")
+                                        
+                                        if content:
+                                            full_text += content
+                                            # 实时发送文本片段
+                                            yield f"data: {json.dumps({'text': content})}\n\n"
+                                    except json.JSONDecodeError:
+                                        continue
                         
                         if full_text:
-                            logger.info(f"收到响应，长度: {len(full_text)} 字符")
+                            logger.info(f"收到完整响应，长度: {len(full_text)} 字符")
                             
-                            # 立即开始生成语音（不等待文本发送完成）
+                            # 生成语音
                             logger.info(f"开始生成语音，语言: {language}...")
-                            audio_task = asyncio.create_task(text_to_speech_vixtts(full_text, language))
-                            
-                            # 同时发送文本（更快的分块）
-                            chunk_size = 20  # 增大分块大小
-                            for i in range(0, len(full_text), chunk_size):
-                                chunk = full_text[i:i+chunk_size]
-                                yield f"data: {json.dumps({'text': chunk})}\n\n"
-                                await asyncio.sleep(0.02)  # 减少延迟
-                            
-                            # 等待语音生成完成
-                            audio_bytes = await audio_task
+                            audio_bytes = await text_to_speech_vixtts(full_text, language)
                             logger.info(f"语音完成，大小: {len(audio_bytes)} bytes")
                             audio_base64 = base64.b64encode(audio_bytes).decode("utf-8")
                             yield f"data: {json.dumps({'audio': audio_base64, 'done': True})}\n\n"
                         else:
-                            yield f"data: {json.dumps({'error': 'Ollama 返回空响应'})}\n\n"
+                            yield f"data: {json.dumps({'error': 'Dify 返回空响应'})}\n\n"
                     else:
                         raise Exception(f"HTTP {response.status_code}")
                     
@@ -492,21 +675,22 @@ async def chat_stream(
     except Exception as e:
         logger.error(f"对话失败: {str(e)}", exc_info=True)
         raise HTTPException(status_code=500, detail=str(e))
-        raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/chat")
 async def chat(
     text: Optional[str] = Form(None),
     audio: Optional[UploadFile] = File(None),
-    language: str = Form("zh")
+    language: str = Form("zh"),
+    user_name: str = Form("用户")
 ):
-    """统一聊天接口"""
+    """统一聊天接口（中文/英文使用 Dify，越南语使用 Ollama）"""
     try:
-        logger.info(f"收到请求 - text: {text}, audio: {audio is not None}, language: {language}")
+        logger.info(f"收到请求 - text: {text}, audio: {audio is not None}, language: {language}, user: {user_name}")
         
         input_text = text or ""
         recognized_text = ""
         
+        # 如果有音频，先进行语音识别
         if audio:
             audio_bytes = await audio.read()
             logger.info(f"音频大小: {len(audio_bytes)} bytes")
@@ -519,8 +703,12 @@ async def chat(
         
         logger.info(f"处理输入: {input_text}")
         
-        reply_text = await chat_with_ollama(input_text)
+        # 根据语言选择 LLM 服务
+        # 中文/英文 → Dify 工作流
+        # 越南语 → Ollama（因为 Dify 可能不支持）
+        reply_text = await chat_with_dify(input_text, user_name, language)
         
+        # 将回复转换为语音
         audio_bytes = await text_to_speech_vixtts(reply_text, language)
         audio_base64 = base64.b64encode(audio_bytes).decode("utf-8")
         
@@ -543,23 +731,37 @@ async def health():
     """健康检查"""
     return {
         "status": "ok",
-        "ollama": OLLAMA_HOST,
-        "model": OLLAMA_MODEL,
+        "llm_service": "Dify Workflow (中文/英文) + Ollama (越南语)",
+        "dify_api": DIFY_API_URL,
+        "dify_model": DIFY_MODEL,
+        "dify_languages": ["zh", "en"],
+        "ollama_host": OLLAMA_HOST,
+        "ollama_model": OLLAMA_MODEL,
+        "ollama_languages": ["vi", "fallback"],
         "whisper_model": WHISPER_MODEL,
         "asr": "openai-whisper (local)",
-        "tts": f"viXTTS (supports Vietnamese)",
+        "tts": "pyttsx3 (完全离线，快速)",
+        "tts_fallback": f"viXTTS (supports Vietnamese)",
         "tts_model": VIXTTS_MODEL,
         "supported_languages": ["zh-cn", "en", "vi"],
-        "mode": "完全离线 / Fully Offline"
+        "mode": "智能语言路由 + 本地语音",
+        "routing": {
+            "zh": "Dify Workflow",
+            "en": "Dify Workflow",
+            "vi": "Ollama (Dify 不支持越南语)"
+        }
     }
 
 @app.on_event("startup")
 async def startup_event():
     """启动时预加载模型"""
     logger.info("=" * 50)
-    logger.info("AI 语音助手服务启动中（完全离线 - pyttsx3）...")
-    logger.info(f"Ollama: {OLLAMA_HOST}")
-    logger.info(f"模型: {OLLAMA_MODEL}")
+    logger.info("AI 语音助手服务启动中（Dify 工作流 + 本地语音）...")
+    logger.info(f"LLM 服务: Dify Workflow")
+    logger.info(f"Dify API: {DIFY_API_URL}")
+    logger.info(f"Dify 模型: {DIFY_MODEL}")
+    logger.info(f"备用 Ollama: {OLLAMA_HOST}")
+    logger.info(f"备用模型: {OLLAMA_MODEL}")
     logger.info(f"Whisper: {WHISPER_MODEL}")
     logger.info(f"TTS 引擎: pyttsx3 (完全离线，快速)")
     logger.info("=" * 50)
