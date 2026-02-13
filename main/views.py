@@ -1312,7 +1312,7 @@ def register(request):
     """
     渲染注册页面
     """
-    return render(request, 'register.html')
+    return render(request, 'registe.html')
 
 
 def getUserSession(request):

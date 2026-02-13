@@ -35,7 +35,7 @@ urlpatterns = [
     path('ai_health_advisor/', views.ai_health_advisor, name='ai_health_advisor'),
     path('refresh_recommendation/', views.refresh_recommendation, name='refresh_recommendation'),
     path('login/', views.login, name='login'),
-    path('register/', views.register, name='login'),
+    path('register/', views.register, name='register'),
     path('get_weekly_nutrient_radar_data/', views.get_weekly_nutrient_radar_data, name='get_weekly_nutrient_radar_data'),
     ##api
     path('submit-order/', api.submit_order, name='submit-order'),
