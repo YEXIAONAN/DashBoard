@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>待评价 - 智慧食堂</title>
-    <link rel="stylesheet" href="../static/css/all.min.css">`n    <link rel="stylesheet" href="../static/css/modern-theme.css">
+    <link rel="stylesheet" href="../static/css/all.min.css">    <link rel="stylesheet" href="../static/css/modern-theme.css">
     <link rel="stylesheet" href="../static/css/font-awesome/fontawesome-local.css">
     <style>
         * {
@@ -16,7 +16,7 @@
         }
 
         body {
-            background: linear-gradient(135deg, #f8f9fa 0%, #eef2f7 100%);
+            background: linear-gradient(135deg, #E8F0E3 0%, #F5F8F2 50%, #EBF3E6 100%);
             color: #333;
             font-size: 14px;
             line-height: 1.6;
@@ -38,18 +38,21 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* 顶部标题栏 */
+        /* 顶部标题栏 - 柔和绿色玻璃效果 */
         .header {
-            background: linear-gradient(135deg, #4A90E2, #2E5C8A);
+            background: linear-gradient(135deg, rgba(122, 139, 110, 0.95) 0%, rgba(155, 170, 142, 0.95) 100%);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
             color: white;
             padding: 15px 16px;
             position: sticky;
             top: 0;
             z-index: 100;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 16px rgba(122, 139, 110, 0.2);
             display: flex;
             align-items: center;
             height: 54px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
         }
 
         .back-btn, .search-btn {
@@ -92,7 +95,7 @@
             font-size: 16px;
             font-weight: 700;
             margin: 20px 0 15px 8px;
-            color: #2E5C8A;
+            color: #5F6E56;
             display: flex;
             align-items: center;
             padding-left: 10px;
@@ -104,21 +107,23 @@
             display: inline-block;
             width: 4px;
             height: 18px;
-            background: linear-gradient(to bottom, #4A90E2, #2E5C8A);
+            background: linear-gradient(to bottom, #7A8B6E, #5F6E56);
             margin-right: 10px;
             border-radius: 2px;
         }
 
-        /* 评论卡片 */
+        /* 评论卡片 - 玻璃模糊效果 */
         .review-card {
-            background: white;
-            border-radius: 16px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.05);
-            padding: 18px;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px) saturate(180%);
+            -webkit-backdrop-filter: blur(12px) saturate(180%);
+            border-radius: 24px;
+            box-shadow: 0 8px 24px rgba(122, 139, 110, 0.12);
+            padding: 20px;
             margin-bottom: 20px;
             position: relative;
             overflow: hidden;
-            border: 1px solid rgba(75, 108, 183, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.6);
             transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
             animation: cardAppear 0.6s ease-out;
             animation-fill-mode: backwards;
@@ -135,8 +140,8 @@
 
         .review-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 12px 25px rgba(0,0,0,0.08);
-            border-color: rgba(75, 108, 183, 0.2);
+            box-shadow: 0 12px 32px rgba(122, 139, 110, 0.18);
+            border-color: rgba(122, 139, 110, 0.3);
         }
 
         .order-header {
@@ -144,7 +149,7 @@
             justify-content: space-between;
             padding-bottom: 12px;
             margin-bottom: 12px;
-            border-bottom: 1px dashed #f0f0f0;
+            border-bottom: 1px dashed rgba(122, 139, 110, 0.2);
         }
 
         .order-id {
@@ -165,14 +170,14 @@
         .order-time i {
             margin-right: 8px;
             font-size: 14px;
-            color: #4A90E2;
+            color: #7A8B6E;
         }
 
         /* 菜品项 */
         .food-item {
             display: flex;
             padding: 15px 0;
-            border-bottom: 1px solid #f9f9f9;
+            border-bottom: 1px solid rgba(122, 139, 110, 0.08);
             transition: all 0.3s ease;
         }
 
@@ -181,19 +186,19 @@
         }
 
         .food-image {
-            width: 80px;
-            height: 80px;
-            border-radius: 12px;
+            width: 85px;
+            height: 85px;
+            border-radius: 18px;
             overflow: hidden;
             margin-right: 15px;
             flex-shrink: 0;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+            box-shadow: 0 4px 12px rgba(122, 139, 110, 0.15);
             transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
         .food-item:hover .food-image {
             transform: scale(1.05);
-            box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+            box-shadow: 0 8px 20px rgba(122, 139, 110, 0.2);
         }
 
         .food-image img {
@@ -240,35 +245,39 @@
         }
 
         .star {
-            font-size: 22px;
-            color: #ddd;
+            font-size: 24px;
+            color: #e0e0e0;
             cursor: pointer;
-            margin-right: 5px;
+            margin-right: 6px;
             transition: all 0.2s;
             position: relative;
         }
 
         .star.active, .star.hovered {
-            color: #ffc107;
-            transform: scale(1.1);
+            color: #FFB74D;
+            transform: scale(1.15);
+            filter: drop-shadow(0 2px 4px rgba(255, 183, 77, 0.3));
         }
 
         .comment-box {
             width: 100%;
             height: 90px;
             padding: 12px;
-            border: 1px solid #e0e0e0;
-            border-radius: 12px;
+            border: 2px solid rgba(122, 139, 110, 0.2);
+            border-radius: 16px;
             font-size: 14px;
             resize: none;
             outline: none;
             transition: all 0.3s;
-            background: #f9fbfd;
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
         }
 
         .comment-box:focus {
-            border-color: #4A90E2;
-            box-shadow: 0 0 0 2px rgba(75, 108, 183, 0.2);
+            border-color: #7A8B6E;
+            box-shadow: 0 0 0 3px rgba(122, 139, 110, 0.15);
+            background: rgba(255, 255, 255, 0.9);
         }
 
         .comment-box::placeholder {
@@ -278,24 +287,26 @@
         .submit-btn {
             display: block;
             width: 100%;
-            padding: 12px;
+            padding: 13px;
             margin-top: 15px;
-            background: linear-gradient(135deg, #4A90E2, #2E5C8A);
+            background: linear-gradient(135deg, rgba(122, 139, 110, 0.95) 0%, rgba(95, 110, 86, 0.95) 100%);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
             color: white;
-            border: none;
-            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 18px;
             font-size: 15px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            box-shadow: 0 4px 12px rgba(75, 108, 183, 0.3);
+            box-shadow: 0 6px 16px rgba(122, 139, 110, 0.25);
             position: relative;
             overflow: hidden;
         }
 
         .submit-btn:hover {
-            background: linear-gradient(135deg, #3a5ca5, #0f1e40);
-            box-shadow: 0 6px 16px rgba(75, 108, 183, 0.4);
+            background: linear-gradient(135deg, rgba(122, 139, 110, 1) 0%, rgba(95, 110, 86, 1) 100%);
+            box-shadow: 0 8px 20px rgba(122, 139, 110, 0.35);
             transform: translateY(-2px);
         }
 
@@ -304,27 +315,29 @@
         }
 
         .submit-btn:disabled {
-            background: #ccc;
+            background: linear-gradient(135deg, #81C784 0%, #66BB6A 100%);
             cursor: not-allowed;
-            box-shadow: none;
+            box-shadow: 0 4px 12px rgba(129, 199, 132, 0.3);
             transform: none;
         }
 
-        /* 底部导航 */
+        /* 底部导航 - 柔和绿色主题 */
         .bottom-nav {
             position: fixed;
             bottom: 0;
             left: 0;
             right: 0;
             display: flex;
-            background: white;
-            box-shadow: 0 -5px 20px rgba(0,0,0,0.08);
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            box-shadow: 0 -5px 20px rgba(122, 139, 110, 0.12);
             padding: 12px 0 10px;
             max-width: 500px;
             margin: 0 auto;
             z-index: 100;
             justify-content: space-around;
-            border-top: 1px solid rgba(0,0,0,0.05);
+            border-top: 1px solid rgba(122, 139, 110, 0.1);
             border-radius: 20px 20px 0 0;
         }
 
@@ -349,12 +362,12 @@
         }
 
         .nav-item.active {
-            color: #4A90E2;
+            color: #7A8B6E;
             transform: translateY(-8px);
         }
 
         .nav-item.active i {
-            color: #4A90E2;
+            color: #7A8B6E;
             transform: translateY(-5px);
         }
 
@@ -364,7 +377,7 @@
             top: -10px;
             width: 40px;
             height: 40px;
-            background: linear-gradient(135deg, #4A90E2, #2E5C8A);
+            background: linear-gradient(135deg, rgba(122, 139, 110, 0.9) 0%, rgba(95, 110, 86, 0.9) 100%);
             border-radius: 50%;
             z-index: -1;
             opacity: 0;
@@ -387,15 +400,14 @@
         }
 
         .nav-item.active .nav-label {
-            color: #4A90E2;
+            color: #7A8B6E;
             font-weight: 700;
         }
 
-        /* 响应式调整 */
         @media (max-width: 480px) {
             .food-image {
-                width: 70px;
-                height: 70px;
+                width: 75px;
+                height: 75px;
             }
 
             .food-name {
@@ -403,14 +415,14 @@
             }
 
             .star {
-                font-size: 20px;
+                font-size: 22px;
             }
         }
 
         @media (max-width: 380px) {
             .food-image {
-                width: 65px;
-                height: 65px;
+                width: 70px;
+                height: 70px;
             }
 
             .nav-item i {
@@ -435,14 +447,14 @@
             }
         }
 
-        /* 页面加载动画 */
+        /* 页面加载动画 - 柔和绿色 */
         .loader {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(135deg, #4A90E2, #2E5C8A);
+            background: linear-gradient(135deg, rgba(122, 139, 110, 0.95) 0%, rgba(155, 170, 142, 0.95) 100%);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -477,16 +489,19 @@
             to { opacity: 0; visibility: hidden; }
         }
 
-        /* 评价成功动画 */
+        /* 评价成功动画 - 玻璃效果 */
         .success-animation {
             position: fixed;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
             background: rgba(255, 255, 255, 0.95);
-            border-radius: 16px;
-            padding: 30px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 35px;
+            box-shadow: 0 12px 40px rgba(122, 139, 110, 0.25);
+            border: 1px solid rgba(255, 255, 255, 0.6);
             text-align: center;
             z-index: 1000;
             animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
@@ -499,10 +514,11 @@
         }
 
         .checkmark {
-            font-size: 60px;
-            color: #4caf50;
+            font-size: 64px;
+            color: #81C784;
             margin-bottom: 20px;
             animation: checkmark 0.5s;
+            filter: drop-shadow(0 4px 12px rgba(129, 199, 132, 0.3));
         }
 
         @keyframes checkmark {
@@ -518,20 +534,24 @@
         }
 
         .close-btn {
-            padding: 10px 25px;
-            background: linear-gradient(135deg, #4A90E2, #2E5C8A);
+            padding: 11px 28px;
+            background: linear-gradient(135deg, rgba(122, 139, 110, 0.95) 0%, rgba(95, 110, 86, 0.95) 100%);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
             color: white;
-            border: none;
-            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 20px;
             font-size: 15px;
-            font-weight: 500;
+            font-weight: 600;
             cursor: pointer;
             transition: all 0.3s;
+            box-shadow: 0 4px 12px rgba(122, 139, 110, 0.25);
         }
 
         .close-btn:hover {
             transform: translateY(-3px);
-            box-shadow: 0 4px 10px rgba(75, 108, 183, 0.3);
+            box-shadow: 0 6px 16px rgba(122, 139, 110, 0.35);
+            background: linear-gradient(135deg, rgba(122, 139, 110, 1) 0%, rgba(95, 110, 86, 1) 100%);
         }
     </style>
 </head>
@@ -742,7 +762,8 @@
                 // 模拟提交成功
                 this.textContent = '已提交';
                 this.disabled = true;
-                this.style.background = '#4caf50';
+                this.style.background = 'linear-gradient(135deg, #81C784 0%, #66BB6A 100%)';
+                this.style.boxShadow = '0 4px 12px rgba(129, 199, 132, 0.3)';
 
                 // 显示成功动画
                 document.getElementById('successMessage').textContent = `感谢您对${foodName}的评价！`;

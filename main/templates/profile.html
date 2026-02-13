@@ -29,7 +29,7 @@
         }
 
         body {
-            background: linear-gradient(145deg, #E3F2FD 0%, #FFFFFF 50%, #E8F5E9 100%);
+            background: linear-gradient(145deg, #E8F0E3 0%, #F5F8F2 50%, #EBF3E6 100%);
             color: var(--gray-800);
             font-size: 15px;
             overflow-x: hidden;
@@ -55,20 +55,22 @@
             padding-bottom: 76px;
         }
 
-        /* 用户信息卡片 - 现代主题统一 */
+        /* 用户信息卡片 - 柔和绿色玻璃效果 */
         .user-info-section {
             padding: 20px 15px 15px;
         }
 
         .user-info-card {
-            background: var(--gradient-primary);
+            background: linear-gradient(135deg, rgba(122, 139, 110, 0.85) 0%, rgba(155, 170, 142, 0.85) 100%);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
             color: white;
-            border-radius: var(--radius-3xl);
-            padding: 25px 20px;
+            border-radius: 28px;
+            padding: 30px 20px;
             position: relative;
             overflow: hidden;
-            box-shadow: var(--shadow-xl);
-            border: 1px solid var(--primary-light);
+            box-shadow: 0 12px 40px rgba(122, 139, 110, 0.25);
+            border: 1px solid rgba(255, 255, 255, 0.3);
         }
 
         .profile-card {
@@ -82,22 +84,24 @@
         }
 
         .user-avatar {
-            width: 80px;
-            height: 80px;
+            width: 85px;
+            height: 85px;
             border-radius: 50%;
-            background: var(--white);
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
             display: flex;
             align-items: center;
             justify-content: center;
             overflow: hidden;
-            border: 3px solid rgba(255, 255, 255, 0.3);
-            box-shadow: var(--shadow-lg);
+            border: 3px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
             transition: all var(--transition-base);
         }
 
         .user-avatar:hover {
             transform: scale(1.05);
-            box-shadow: var(--shadow-xl);
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.2);
         }
 
         .user-avatar img {
@@ -119,12 +123,15 @@
 
         .user-subtitle {
             font-size: 0.9rem;
-            color: rgba(255, 255, 255, 0.8);
-            background: rgba(255, 255, 255, 0.15);
-            padding: 5px 15px;
-            border-radius: 15px;
+            color: rgba(255, 255, 255, 0.95);
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            padding: 6px 16px;
+            border-radius: 18px;
             display: inline-block;
-            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
 
         .section-title {
@@ -138,20 +145,22 @@
         }
 
         .section-title i {
-            color: var(--primary-blue);
+            color: #7A8B6E;
         }
 
-        /* 订单状态卡片 - 现代主题统一 */
+        /* 订单状态卡片 - 玻璃效果 */
         .order-section {
             padding: 0 15px 15px;
         }
 
         .order-card {
-            background: var(--white);
-            border-radius: var(--radius-3xl);
-            padding: 20px;
-            box-shadow: var(--shadow-lg);
-            border: 1px solid var(--gray-200);
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px) saturate(180%);
+            -webkit-backdrop-filter: blur(12px) saturate(180%);
+            border-radius: 28px;
+            padding: 22px;
+            box-shadow: 0 8px 24px rgba(122, 139, 110, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.6);
         }
 
         .order-status {
@@ -168,17 +177,17 @@
             cursor: pointer;
             background: none;
             border: none;
-            padding: 10px 5px;
+            padding: 12px 8px;
             margin: 0;
             outline: none;
-            border-radius: var(--radius-xl);
+            border-radius: 20px;
             transition: all var(--transition-base);
         }
 
         .status-item:hover {
             transform: translateY(-3px);
-            background: var(--gray-100);
-            box-shadow: var(--shadow-md);
+            background: rgba(122, 139, 110, 0.08);
+            box-shadow: 0 6px 16px rgba(122, 139, 110, 0.15);
         }
 
         .status-item:active {
@@ -187,38 +196,38 @@
         }
 
         .status-icon {
-            width: 48px;
-            height: 48px;
-            border-radius: var(--radius-xl);
-            margin: 0 auto 8px;
+            width: 52px;
+            height: 52px;
+            border-radius: 18px;
+            margin: 0 auto 10px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.3rem;
+            font-size: 1.4rem;
             color: white;
-            box-shadow: var(--shadow-md);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
             transition: all var(--transition-base);
         }
 
         .status-item:hover .status-icon {
-            transform: scale(1.05);
-            box-shadow: var(--shadow-lg);
+            transform: scale(1.08);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
         }
 
-        .status-1 { background: var(--gradient-primary); }
-        .status-2 { background: var(--gradient-green); }
-        .status-3 { background: linear-gradient(135deg, var(--warning), #e65100); }
-        .status-4 { background: linear-gradient(135deg, var(--accent-green), var(--accent-green-light)); }
+        .status-1 { background: linear-gradient(135deg, rgba(122, 139, 110, 0.9) 0%, rgba(95, 110, 86, 0.9) 100%); }
+        .status-2 { background: linear-gradient(135deg, #81C784 0%, #66BB6A 100%); }
+        .status-3 { background: linear-gradient(135deg, #FFB74D 0%, #FFA726 100%); }
+        .status-4 { background: linear-gradient(135deg, #4DB6AC 0%, #26A69A 100%); }
 
         .status-label {
             font-size: 0.8rem;
-            font-weight: 500;
+            font-weight: 600;
             color: var(--gray-600);
             transition: color var(--transition-base);
         }
 
         .status-item:hover .status-label {
-            color: var(--primary-blue);
+            color: #7A8B6E;
         }
 
         .order-count {
@@ -251,18 +260,19 @@
         .recent-order {
             display: flex;
             padding: 12px 0;
-            border-bottom: 1px solid var(--gray-200);
+            border-bottom: 1px solid rgba(122, 139, 110, 0.1);
             gap: 15px;
             align-items: center;
             transition: all var(--transition-base);
-            border-radius: var(--radius-xl);
+            border-radius: 18px;
             margin: 0 -10px;
-            padding: 12px 10px;
+            padding: 14px 12px;
         }
 
         .recent-order:hover {
-            background: var(--gray-100);
+            background: rgba(122, 139, 110, 0.05);
             transform: translateX(5px);
+            box-shadow: 0 4px 12px rgba(122, 139, 110, 0.08);
         }
 
         .recent-order:last-child {
@@ -270,16 +280,18 @@
         }
 
         .order-img {
-            width: 60px;
-            height: 60px;
-            border-radius: var(--radius-xl);
+            width: 64px;
+            height: 64px;
+            border-radius: 18px;
             overflow: hidden;
-            background: var(--primary-pale);
+            background: linear-gradient(135deg, rgba(122, 139, 110, 0.1) 0%, rgba(155, 170, 142, 0.1) 100%);
             display: flex;
             align-items: center;
             justify-content: center;
-            color: var(--primary-blue);
-            border: 1px solid var(--gray-200);
+            color: #7A8B6E;
+            border: 1px solid rgba(122, 139, 110, 0.2);
+            font-size: 1.5rem;
+            box-shadow: 0 2px 8px rgba(122, 139, 110, 0.1);
         }
 
         .order-details {
@@ -301,29 +313,33 @@
 
         .order-price {
             font-weight: 700;
-            color: var(--accent-green);
+            color: #7A8B6E;
+            font-size: 1.05rem;
         }
 
         .order-status-tag {
-            background: var(--primary-pale);
-            color: var(--primary-blue);
-            padding: 3px 8px;
-            border-radius: var(--radius-xl);
-            font-size: 0.8rem;
+            background: rgba(122, 139, 110, 0.12);
+            color: #5F6E56;
+            padding: 4px 12px;
+            border-radius: 16px;
+            font-size: 0.75rem;
             font-weight: 600;
+            border: 1px solid rgba(122, 139, 110, 0.2);
         }
 
-        /* 健康数据卡片 - 现代主题统一 */
+        /* 健康数据卡片 - 玻璃效果 */
         .health-section {
             padding: 0 15px 15px;
         }
 
         .health-card {
-            background: var(--white);
-            border-radius: var(--radius-3xl);
-            padding: 20px;
-            box-shadow: var(--shadow-lg);
-            border: 1px solid var(--gray-200);
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px) saturate(180%);
+            -webkit-backdrop-filter: blur(12px) saturate(180%);
+            border-radius: 28px;
+            padding: 22px;
+            box-shadow: 0 8px 24px rgba(122, 139, 110, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.6);
         }
 
         .health-grid {
@@ -333,44 +349,47 @@
         }
 
         .health-item {
-            background: var(--gray-100);
-            border-radius: var(--radius-2xl);
-            padding: 15px;
+            background: rgba(122, 139, 110, 0.05);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border-radius: 20px;
+            padding: 16px;
             display: flex;
             align-items: center;
             gap: 12px;
             transition: all var(--transition-base);
-            border: 1px solid var(--gray-200);
+            border: 1px solid rgba(122, 139, 110, 0.15);
         }
 
         .health-item:hover {
-            transform: translateY(-3px);
-            box-shadow: var(--shadow-lg);
-            border-color: var(--primary-light);
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(122, 139, 110, 0.15);
+            border-color: rgba(122, 139, 110, 0.3);
+            background: rgba(122, 139, 110, 0.08);
         }
 
         .health-icon {
-            width: 48px;
-            height: 48px;
-            border-radius: var(--radius-xl);
+            width: 52px;
+            height: 52px;
+            border-radius: 18px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.3rem;
+            font-size: 1.4rem;
             color: white;
-            box-shadow: var(--shadow-md);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
             transition: all var(--transition-base);
         }
 
         .health-item:hover .health-icon {
-            transform: scale(1.05);
-            box-shadow: var(--shadow-lg);
+            transform: scale(1.08);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
         }
 
-        .health-1 { background: var(--gradient-primary); }
-        .health-2 { background: var(--gradient-green); }
-        .health-3 { background: linear-gradient(135deg, var(--warning), #e65100); }
-        .health-4 { background: linear-gradient(135deg, var(--accent-green), var(--accent-green-light)); }
+        .health-1 { background: linear-gradient(135deg, rgba(122, 139, 110, 0.9) 0%, rgba(95, 110, 86, 0.9) 100%); }
+        .health-2 { background: linear-gradient(135deg, #81C784 0%, #66BB6A 100%); }
+        .health-3 { background: linear-gradient(135deg, #FFB74D 0%, #FFA726 100%); }
+        .health-4 { background: linear-gradient(135deg, #4DB6AC 0%, #26A69A 100%); }
 
         .health-info {
             flex: 1;
@@ -389,28 +408,30 @@
             color: var(--gray-800);
         }
 
-        /* 设置项 - 现代主题统一 */
+        /* 设置项 - 玻璃效果 */
         .settings-section {
             padding: 0 15px 15px;
         }
 
         .settings-card {
-            background: var(--white);
-            border-radius: var(--radius-3xl);
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px) saturate(180%);
+            -webkit-backdrop-filter: blur(12px) saturate(180%);
+            border-radius: 28px;
             padding: 15px 0;
-            box-shadow: var(--shadow-lg);
-            border: 1px solid var(--gray-200);
+            box-shadow: 0 8px 24px rgba(122, 139, 110, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.6);
         }
 
         .setting-item {
             display: flex;
             align-items: center;
-            padding: 15px 20px;
+            padding: 16px 20px;
             text-decoration: none;
             color: var(--gray-800);
-            border-bottom: 1px solid var(--gray-200);
+            border-bottom: 1px solid rgba(122, 139, 110, 0.1);
             transition: all var(--transition-base);
-            border-radius: var(--radius-xl);
+            border-radius: 18px;
             margin: 0 10px;
         }
 
@@ -419,29 +440,33 @@
         }
 
         .setting-item:hover {
-            background: var(--gray-100);
+            background: rgba(122, 139, 110, 0.05);
             transform: translateX(5px);
-            box-shadow: var(--shadow-md);
+            box-shadow: 0 4px 12px rgba(122, 139, 110, 0.08);
         }
 
         .setting-icon {
-            width: 48px;
-            height: 48px;
-            border-radius: var(--radius-xl);
-            background: var(--primary-pale);
+            width: 52px;
+            height: 52px;
+            border-radius: 18px;
+            background: rgba(122, 139, 110, 0.12);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.3rem;
-            color: var(--primary-blue);
+            font-size: 1.4rem;
+            color: #7A8B6E;
             margin-right: 15px;
-            box-shadow: var(--shadow-sm);
+            box-shadow: 0 4px 12px rgba(122, 139, 110, 0.1);
             transition: all var(--transition-base);
+            border: 1px solid rgba(122, 139, 110, 0.2);
         }
 
         .setting-item:hover .setting-icon {
-            transform: scale(1.05);
-            box-shadow: var(--shadow-md);
+            transform: scale(1.08);
+            box-shadow: 0 6px 16px rgba(122, 139, 110, 0.15);
+            background: rgba(122, 139, 110, 0.18);
         }
 
         .setting-text {
@@ -458,14 +483,14 @@
         }
 
         .setting-item:hover .setting-arrow {
-            color: var(--primary-blue);
+            color: #7A8B6E;
             transform: translateX(3px);
         }
 
-        /* 特效元素 - 深蓝主题优化 */
+        /* 特效元素 - 柔和绿色主题 */
         .floating-element {
             position: absolute;
-            opacity: 0.1;
+            opacity: 0.15;
             z-index: 1;
         }
 
@@ -473,8 +498,9 @@
             width: 150px;
             height: 150px;
             border-radius: 50%;
-            border: 2px solid rgba(255, 255, 255, 0.3);
+            border: 2px solid rgba(255, 255, 255, 0.4);
             animation: float 6s ease-in-out infinite;
+            filter: blur(1px);
         }
 
         .triangle {
@@ -482,8 +508,9 @@
             height: 0;
             border-left: 60px solid transparent;
             border-right: 60px solid transparent;
-            border-bottom: 100px solid rgba(255, 255, 255, 0.2);
+            border-bottom: 100px solid rgba(255, 255, 255, 0.3);
             animation: float 8s ease-in-out infinite reverse;
+            filter: blur(1px);
         }
 
         @keyframes float {
